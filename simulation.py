@@ -1,4 +1,3 @@
-
 import numpy as np
 from simulation_function_generator import function_generation
 import matplotlib.pyplot as plt
@@ -50,17 +49,12 @@ def get_initial_points(number_of_initial_points):
 
 
 def main():
-    # test Duration selection
-    # test_duration = 1000
-    # tuning_interval = 10
-    # iterations = test_duration // tuning_interval
     max_iterations = 100
 
     # number of initial points for the gaussian
     number_of_initial_points = 8
 
     # call initial functions
-    # variables
     x_plot_data, y_plot_data = ploting.initial_plot()
     get_initial_points(number_of_initial_points)
 

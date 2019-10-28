@@ -3,6 +3,7 @@ import random
 # from skopt.acquisition import gaussian_ei
 from general_utilities.acquisition import gaussian_ei
 
+
 # Bayesian expected improvement calculation
 def bayesian_expected_improvement(x_val, max_expected_improvement, max_improve_points_points, minimum, trade_off_level,
                                   model):
