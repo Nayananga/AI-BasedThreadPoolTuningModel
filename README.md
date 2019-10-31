@@ -1,3 +1,4 @@
 # Auto-Tuning-with-Bayesian
 
-simulation.py - only for one parameter simulation
+Define the variables in Config.py
+Run - simulation.py 
