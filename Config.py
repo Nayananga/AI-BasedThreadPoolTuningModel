@@ -1,10 +1,11 @@
 from simulation_utilities.workload_generator import workload_generator
 
 # number of training points for the gaussian
-number_of_training_points = 100
+number_of_training_points = 10
+default_trade_off_level = 0.1
 
-number_of_parameters = 2
-number_of_features = 3
+# number_of_parameters = 2
+# number_of_features = 3
 
 '''
 For simulation
@@ -12,6 +13,8 @@ For simulation
 # bounds for the gaussian
 thread_pool_max = 100
 thread_pool_min = 4
+
+pause_time = 1
 
 # Define the number of iterations to run the bayesian optimization process
 number_of_iterations = 500

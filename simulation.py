@@ -5,12 +5,11 @@ import numpy as np
 import Config as Cg
 from general_utilities import bayesian_opt
 from general_utilities.gaussian_process import gaussian_model
-from general_utilities.performance_collection import get_performance
+from general_utilities.FIFO import fifo_sampling
 from simulation_utilities import ploting
 from simulation_utilities.workload_generator import workload_config
 from simulation_utilities import min_value_finder
 from simulation_utilities.Training_point_generator import get_training_points
-
 
 np.random.seed(42)
 
@@ -20,6 +19,7 @@ start_time = time.time()
 
 def main():
     one_parameter = False
+    pause_time = Cg.pause_time
 
     workload_ini = Cg.workload_array
 
@@ -47,7 +47,7 @@ def main():
     model = gaussian_model(x_data, y_data)
 
     # exploration and exploitation trade off value
-    trade_off_level = 0.1
+    trade_off_level = Cg.default_trade_off_level
 
     # use bayesian optimization
     for iteration in range(max_iterations):
@@ -56,17 +56,11 @@ def main():
             x_location = y_data.index(min(y_data))
             min_x = x_data[x_location]
         else:
-            print("workers -", workload[iteration])
-            minimum, min_x= min_value_finder.min_point_find(x_value=x_data, y_value=y_data, feature_val=workload[iteration])
-            print(minimum)
-            print(min_x)
+            minimum, min_x, trade_off_level = min_value_finder.min_point_find(x_value=x_data, y_value=y_data, feature_val=workload[iteration], trade_off_level=trade_off_level)
             print("minimum - point", minimum_ref_array[reference_array.index(workload[iteration])])
 
         max_expected_improvement = 0
         max_points = []
-
-        print("trade_off_level -", trade_off_level)
-        print("inter -", iteration)
 
         for evaluating_pool_size in range(thread_pool_min, thread_pool_max + 1):
             if one_parameter:
@@ -80,23 +74,29 @@ def main():
         next_x, next_y, trade_off_level = bayesian_opt.next_x_point_selection(
             max_expected_improvement, min_x, trade_off_level, max_points, one_parameter)
 
-        print("EI -", max_expected_improvement)
-        print("Next x- ", next_x)
         # Data appending
         parameter_history.append(next_x)
         y_data.append(next_y)
         x_data.append(next_x)
+        x_data, y_data, trade_off_level = fifo_sampling(next_x, x_data, y_data, trade_off_level)
+
+        print("inter -", iteration)
+        print("workers -", workload[iteration])
+        print("trade_off_level -", trade_off_level)
+        print("EI -", max_expected_improvement)
+        print("Next x- ", next_x)
         print("Next y- ", next_y)
+        print("minimum_obtained - y", minimum)
+        print("minimum_obtained - x", min_x)
 
         # fit new data to gaussian process
         model = gaussian_model(x_data, y_data)
+        time.sleep(pause_time)
 
         if one_parameter:
             ploting.data_plot(next_x, iteration, model, x_plot_data, y_plot_data, x_data, y_data)
 
         print("-------------------------------------")
-
-        #time.sleep(5)
 
     print("minimum found : %f", min(y_data))
 

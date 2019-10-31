@@ -27,7 +27,7 @@ def min_array(x_value, y_value, z_value):
     return feature_array, minimum_array
 
 
-def min_point_find(x_value, y_value, feature_val):
+def min_point_find(x_value, y_value, feature_val, trade_off_level):
 
     min_y = []
     x_loc = []
@@ -42,6 +42,7 @@ def min_point_find(x_value, y_value, feature_val):
         minimum_x.append(x_val)
         minimum_x.append(feature_val)
         minimum_y = get_performance(minimum_x[0], minimum_x[1])
+        trade_off_level = Cg.default_trade_off_level
 
     else:
         minimum_y = min(min_y)
@@ -49,4 +50,4 @@ def min_point_find(x_value, y_value, feature_val):
         minimum_x_loc = x_loc[x_location]
         minimum_x = x_value[minimum_x_loc]
 
-    return minimum_y, minimum_x
+    return minimum_y, minimum_x, trade_off_level
