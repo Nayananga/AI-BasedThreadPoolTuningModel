@@ -1,30 +1,14 @@
 import numpy as np
+
 import Config as Cg
 from general_utilities.performance_collection import get_performance
 
+"""
+If the system haven explored in the corresponding feature level, a random point is selected as the minimum point
+"""
+
 thread_pool_min = Cg.thread_pool_min
 thread_pool_max = Cg.thread_pool_max
-
-
-def min_array(x_value, y_value, z_value):
-
-    minimum_array = []
-    feature_array = []
-    z_value_list = list(z_value)
-    for i in range(len(z_value_list)):
-        min_raw = []
-        min_y = y_value[i][0]
-        z_value_list = z_value[i]
-        min_z = min(z_value_list)
-        min_location = np.where(z_value_list == min(z_value_list))
-        min_x = x_value[i][min_location]
-
-        feature_array.append(min_y)
-        min_raw.append(min_x[0])
-        min_raw.append(min_z)
-        minimum_array.append(min_raw)
-
-    return feature_array, minimum_array
 
 
 def min_point_find(x_value, y_value, feature_val, trade_off_level):

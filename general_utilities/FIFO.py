@@ -2,6 +2,11 @@ from general_utilities.indexing import index_get
 from general_utilities.variance_calcutation import variance_calculation
 import Config as Cg
 
+'''
+FIFO calculation in y direction of the gaussian process
+According to the variance in distribution in Y direction data was removed
+'''
+
 maximum_in_sampler = 5
 variance_threshold = 50
 
@@ -30,6 +35,6 @@ def fifo_sampling(next_x, x_data, y_data, trade_off_level):
 def remove_data(number_of_points, point_locations, x_data, y_data):
     for i in range(number_of_points - 1):
         x_data.remove(x_data[point_locations[i]])
-        y_data.remove(y_data[point_locations[0]])
+        y_data.remove(y_data[point_locations[i]])
 
     return x_data, y_data

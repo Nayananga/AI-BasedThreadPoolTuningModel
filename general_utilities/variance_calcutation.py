@@ -1,5 +1,9 @@
 import numpy as np
 
+"""
+Variance is calculated according of the given distribution
+"""
+
 
 def variance_calculation(number_of_points, point_locations, y_data):
     variance_matrix = []

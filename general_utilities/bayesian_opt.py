@@ -1,8 +1,13 @@
 import numpy as np
 import random
-# from skopt.acquisition import gaussian_ei
 from general_utilities.acquisition import gaussian_ei
 from general_utilities.performance_collection import get_performance
+
+
+"""
+bayesian_expected_improvement : Bayesian expected improvement calculation
+next_x_point_selection : Next x point selection algorithm according to the expected improvement
+"""
 
 
 # Bayesian expected improvement calculation

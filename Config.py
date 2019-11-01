@@ -22,8 +22,8 @@ number_of_iterations = 500
 # workload to simulate
 # if need to check the bayesian process only for one parameter, keep the workload array as a 1x1 matrix
 # For manual generation give workload manually or generate by changing the function in workload generator
-# workload_array = [10]
-workload_array = workload_generator(number_of_iterations)
+workload_array = [10]
+# workload_array = workload_generator(number_of_iterations)
 
 feature_max = 1000
 feature_min = 10

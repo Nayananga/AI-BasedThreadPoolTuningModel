@@ -1,7 +1,10 @@
 import sklearn.gaussian_process as gp
 
+'''
+Gaussian Model calculation with new data
+'''
 
-# gaussian model calculation with new data
+
 def gaussian_model(xx, yy):
     # Define the Kernel for gaussian process
     kernel = gp.kernels.Matern()

@@ -3,6 +3,11 @@ from simulation_utilities.simulation_function_generator import function_generati
 import time
 import requests
 
+'''
+get_performance : data point is selected according to the parameter and feature values
+Noise is added too
+'''
+
 
 # get the values when the x values are set by bayesian
 def get_performance(x_pass, feature=None):
