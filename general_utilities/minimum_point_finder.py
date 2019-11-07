@@ -1,14 +1,14 @@
 import numpy as np
 
-import Config as Cg
+import Config_simulation as config
 from general_utilities.performance_collection import get_performance
 
 """
 If the system haven explored in the corresponding feature level, a random point is selected as the minimum point
 """
 
-thread_pool_min = Cg.thread_pool_min
-thread_pool_max = Cg.thread_pool_max
+thread_pool_min = config.thread_pool_min
+thread_pool_max = config.thread_pool_max
 
 
 def min_point_find(x_value, y_value, feature_val, trade_off_level):

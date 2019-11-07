@@ -2,9 +2,13 @@ import numpy as np
 
 
 # Function to minimize
-def function_generation(x_value, y_value=None):
-    if y_value is None:
-        return -1.0 * np.sin(x_value / 10.0) * x_value
-    else:
-        # return pow(x_value, 3) - 3 * x_value * pow(y_value, 2)
-        return (pow(x_value, 3) + pow(y_value, 3))/(pow(x_value, 2) + pow(y_value, 2))
+def function_generation(parameter_value, feature_value=None):
+    #return -1.0 * np.sin(parameter_value / 10.0) * parameter_value
+    #return (pow(parameter_value, 3) + pow(feature_value, 3))/(pow(parameter_value, 2) + pow(feature_value, 2))
+    p1 = parameter_value[0]
+    p2 = parameter_value[1]
+    f1 = parameter_value[0]
+    f2 = parameter_value[1]
+    return p1+p2
+
+

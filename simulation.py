@@ -1,14 +1,19 @@
 import time
-
 import numpy as np
+import sys
 
-import Config as Cg
+import Config_simulation_para_and_feature as Config
+from simulation_utilities.data_generations.data_generation_initialization import data_generation_ini
+from general_utilities.gaussian_process import gaussian_model
+from general_utilities import global_data as gd
+
+"""
 from general_utilities.Bayesian_point_selection import each_point_analysis
 from general_utilities.FIFO import fifo_sampling
-from general_utilities.gaussian_process import gaussian_model
-from simulation_utilities import ploting
+from simulation_utilities import ploting"""
 from simulation_utilities import reference_minimum_point_finder
-from simulation_utilities.initial_data_assign import initial_data_assign
+# from simulation_utilities.initial_data_assign import initial_data_assign
+
 
 np.random.seed(42)
 
@@ -17,21 +22,19 @@ start_time = time.time()
 
 
 def main():
-    pause_time = Cg.pause_time
-    max_iterations = Cg.number_of_iterations
+    pause_time = Config.PAUSE_TIME
+    max_iterations = Config.NUMBER_OF_ITERATIONS
+    number_of_features = Config.NUMBER_OF_FEATURES
 
-    # call initial functions
-    one_parameter, x_plot_data, y_plot_data, z_plot_data, x_data, y_data, parameter_history, workload = initial_data_assign()
-
-    if one_parameter:
-        pass
+    if number_of_features == 0:
+        parameter_data, optimizer_data, parameter_plot_data = data_generation_ini()
+        # fit initial data to gaussian model
     else:
-        reference_array, minimum_ref_array = reference_minimum_point_finder.min_array(x_plot_data,
-                                                                                      y_plot_data, z_plot_data)
+        parameter_data, optimizer_data, feature_data, parameter_plot_data, feature_plot_data, feature_changing_data = \
+            data_generation_ini()
+    sys.exit()
 
-    # fit initial data to gaussian model
     model = gaussian_model(x_data, y_data)
-
     # exploration and exploitation trade off value
     trade_off_level = Cg.default_trade_off_level
 

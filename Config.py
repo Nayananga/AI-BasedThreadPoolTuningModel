@@ -1,4 +1,4 @@
-from simulation_utilities.workload_generator import workload_generator
+"""from simulation_utilities.workload_generator import workload_generator
 
 # number of training points for the gaussian
 number_of_training_points = 10
@@ -34,3 +34,4 @@ Server optimizing
 test_duration = 1000
 tuning_interval = 30
 '''
+"""
