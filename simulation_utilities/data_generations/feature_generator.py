@@ -2,7 +2,7 @@ from simulation_utilities import ploting
 import numpy as np
 import Config_simulation as Config
 
-step_num = 100
+step_num = 10
 
 
 def feature_generator(function_name, bounds):
@@ -21,11 +21,10 @@ def step_increase_function(lower, upper):
     data = []
     length = Config.NUMBER_OF_ITERATIONS
     value = lower
-    step = (upper - lower) / np.round(length/step_num)
+    step = np.round((upper - lower) / np.round(length/step_num))
     for i in range(length):
         if i % step_num == 0:
             value = value + step
-
         data.append(value)
     ploting.general_plot(data)
     return data
@@ -38,8 +37,7 @@ def step_decrease_function(lower, upper):
     step = (upper - lower) / np.round(length/step_num)
     for i in range(length):
         if i % step_num == 0:
-            value = value - step
-
+            value = int(value - step)
         data.append(value)
     ploting.general_plot(data)
     return data

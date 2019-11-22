@@ -1,22 +1,18 @@
-# Create your dictionary class
+import Config_simulation as Config
 import numpy as np
+import itertools
 
-class my_dictionary(dict):
+eval_point_size = Config.EVAL_POINT_SIZE
+parameter_bounds = Config.PARAMETER_BOUNDS
+parameter_count = Config.NUMBER_OF_PARAMETERS
 
-    # __init__ function 
-    def __init__(self):
-        self = dict()
+feature_bounds = Config.FEATURE_BOUNDS
+feature_count = Config.NUMBER_OF_FEATURES
 
-        # Function to add key:value 
+print(parameter_count)
+print(feature_count)
 
-    def add(self, key, value):
-        self[key] = value
-
-dict_obj = my_dictionary()
-
-bounds = np.array([[1, 181]])
-
-dict_obj.add('p%s' % 1, np.arange(bounds[:, 0], bounds[:, 1], 1).reshape(-1, 1))
-dict_obj.add(2, 'forGeeks')
-
-print(dict_obj)
+x_plot_data = [1,2,3,4]
+print(x_plot_data)
+x_plot_data = list(np.array(x_plot_data).reshape(-1, 1))
+print(x_plot_data)

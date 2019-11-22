@@ -1,20 +1,18 @@
-# import Config_simulation as Config
-import numpy as np
-import Config_simulation_para_and_feature as Config
 from simulation_utilities.data_generations.feature_generator import feature_generator
 import logging
 from simulation_utilities import ploting
-from simulation_utilities.Training_point_generator import get_training_points
-from simulation_utilities.simulation_function_generator import function_generation
-from general_utilities import global_data
-from simulation_utilities.initial_data_assign import initial_runs
-import sys
-from simulation_utilities.data_generations.min_data_generator import min_data_generator
+from simulation_utilities.data_generations.simulation_get_performance import simulation_get_performance
+from general_utilities.commom_functions import *
+import Config_simulation as Config
+import global_data as gd
 
 parameter_names = Config.PARAMETERS
 parameter_bounds = Config.PARAMETER_BOUNDS
+parameter_count = Config.NUMBER_OF_PARAMETERS
+
 feature_names = Config.FEATURE
 feature_bounds = Config.FEATURE_BOUNDS
+feature_count = Config.NUMBER_OF_FEATURES
 feature_function = Config.FEATURE_FUNCTION
 
 relation_function = Config.FUNCTION
@@ -23,59 +21,26 @@ number_of_initial_points = Config.NUMBER_OF_TRAINING_POINTS
 
 def data_generation_ini():
 
-    parameter_count, feature_count = config_errors()
+    config_errors()
 
     if feature_count == 0:
-        parameter_plot_data = data_generator(parameter_bounds)
-        function_generation(parameter_plot_data)
+        optimizer_plot_data = data_point_finder(parameter_bounds)
+        ref_min_optimizer, ref_min_object = ref_min_data_finder(optimizer_plot_data)
         parameter_data, optimizer_data = get_training_points(number_of_initial_points, parameter_bounds)
-        return parameter_data, optimizer_data, parameter_plot_data
+        if parameter_count == 1:
+            object_plot_data = []
+            for i in range(len(optimizer_plot_data)):
+                object_plot_data.append(simulation_get_performance(optimizer_plot_data[i]))
+            gd.optimizer_plot_data = optimizer_plot_data
+            gd.object_plot_data = object_plot_data
+            ploting.initial_plot(optimizer_plot_data, object_plot_data)
+        return parameter_data, optimizer_data, ref_min_optimizer, ref_min_object
     else:
         feature_changing_data = feature_data_generation()
-        parameter_plot_data = data_generator(parameter_bounds)
-        feature_plot_data = data_generator(feature_bounds)
-        #function_generation(parameter_plot_data, feature_plot_data)
-        parameter_data, optimizer_data, feature_data = get_training_points(number_of_initial_points, parameter_bounds, feature_bounds)
-        return parameter_data, optimizer_data, feature_data, parameter_plot_data, feature_plot_data, feature_changing_data
-"""
-    if parameter_count == 1 and feature_count == 0:
-        print("one")
-        parameter_plot_data = data_generator(parameter_bounds)
-        optimizer_plot_data = function_generation(parameter_plot_data)
-        ploting.initial_plot(parameter_plot_data, optimizer_plot_data)
-        global_data.parameter_plot_data = parameter_plot_data
-        global_data.optimizer_plot_data = optimizer_plot_data
-
-        # parameter_data, optimizer_data, parameter_history = get_training_points_parameter_only(
-        # number_of_initial_points, parameter_bounds[0][0], parameter_bounds[0][1])
-
-    elif (parameter_count == 1 and feature_count == 1) or (parameter_count == 2):
-        print("one_each")
-        feature_data = feature_data_generation()
-        parameter_plot_data = data_generator(parameter_bounds)
-        feature_plot_data = data_generator(feature_bounds)
-        parameter_plot_data, feature_plot_data = np.meshgrid(parameter_plot_data, feature_plot_data)
-        print(len(feature_plot_data))
-        print(len(parameter_plot_data))
-        optimizer_plot_data = function_generation(parameter_plot_data, feature_plot_data)
-        print(len(optimizer_plot_data))
-        # ploting.initial_2d_plot(parameter_bounds[0][0], parameter_bounds[0][1],
-        #                         feature_bounds[0][0], feature_bounds[0][1])
-        ploting.initial_2d_plot(parameter_bounds[0][0], parameter_bounds[0][1],
-                                parameter_bounds[1][0], parameter_bounds[1][1])
-    else:
-        if feature_count == 0:
-            parameter_plot_data = data_generator(parameter_bounds)
-            optimizer_plot_data = function_generation(parameter_plot_data)
-        else:
-            feature_data = feature_data_generation()
-            parameter_plot_data = data_generator(parameter_bounds)
-            feature_plot_data = data_generator(feature_bounds)
-            optimizer_plot_data = function_generation(parameter_plot_data, feature_plot_data)
-            
-    """
-
-#min_data_generator(relation_function, parameter_bounds, feature_bounds)
+        optimizer_plot_data = data_point_finder(parameter_bounds, feature_bounds)
+        ref_min_optimizer, ref_min_object = ref_min_data_finder(optimizer_plot_data)
+        optimize_data, object_data = get_training_points(number_of_initial_points, parameter_bounds, feature_bounds)
+        return optimize_data, object_data, feature_changing_data, ref_min_optimizer, ref_min_object
 
 
 def config_errors():
@@ -88,22 +53,50 @@ def config_errors():
     elif len(feature_names) != len(feature_bounds) or len(feature_names) != len(feature_function):
         logging.error("Feature names or bounds or functions are not defined properly")
     else:
-        return len(parameter_names), len(feature_names)
+        logging.info("Everything is defined properly")
 
 
 def feature_data_generation():
     feature_changing_data = []
     for i in range(len(feature_names)):
         feature_changing_data.append(feature_generator(feature_function[i], feature_bounds[i]))
+    feature_changing_data = list(map(list, zip(*feature_changing_data)))
     return feature_changing_data
 
 
 def data_generator(data_bounds):
     data = []
     for i in range(len(data_bounds)):
+        temp_collect = []
         bounds = np.array([[data_bounds[i][0], data_bounds[i][1]]])
-        data.append(np.arange(bounds[:, 0], bounds[:, 1], 1).reshape(-1, 1))
+        temp = (np.arange(bounds[:, 0], bounds[:, 1], 1).reshape(-1, 1))
+        for j in range(len(temp)):
+            temp_collect.append(temp[j][0])
+        data.append(temp_collect)
     return data
 
 
+def ref_min_data_finder(optimize_data):
+    object_data = []
+    for i in range(len(optimize_data)):
+        object_data.append(simulation_get_performance(optimize_data[i]))
 
+    if feature_count == 0:
+        minimum_x_data, minimum_y_data = min_point_find_no_feature(optimize_data, object_data)
+    else:
+        minimum_x_data, minimum_y_data = ini_min_point_find_with_feature(optimize_data, object_data)
+
+    return minimum_x_data, minimum_y_data
+
+
+def get_training_points(number_of_training_points, para_bounds, feat_bounds=None):
+    object_data = []
+    if feat_bounds is None:
+        optimize_data = selecting_random_point(number_of_training_points, para_bounds)
+    else:
+        optimize_data = selecting_random_point(number_of_training_points, para_bounds, feat_bounds)
+
+    for i in range(len(optimize_data)):
+        object_data.append(simulation_get_performance(optimize_data[i]))
+
+    return optimize_data, object_data

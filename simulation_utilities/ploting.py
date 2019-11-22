@@ -2,21 +2,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 from simulation_utilities.bayesian_optimization_util import plot_approximation
 from simulation_utilities.simulation_function_generator import function_generation
+from simulation_utilities.data_generations.simulation_get_performance import simulation_get_performance
+
 from mpl_toolkits.mplot3d import axes3d
-from general_utilities import global_data as gd
+
 a = axes3d
 
 
 # plotting of initial function
-def initial_plot(parameter_plot_data, optimizer_plot_data):
-
-    plt.plot(parameter_plot_data, optimizer_plot_data, lw=2, label='Noise-free objective')
+def initial_plot(parameter_plot_data, object_plot_data):
+    # object_plot_data = ini_object_plot_data_generator(parameter_plot_data[0])
+    plt.plot(parameter_plot_data, object_plot_data, lw=2, label='Noise-free objective')
     plt.legend()
     plt.show()
-
-    optimizer_min_location = np.where(optimizer_plot_data == min(optimizer_plot_data))
-    optimizer_min = min(optimizer_plot_data)
-    return parameter_plot_data[optimizer_min_location], optimizer_min
 
 
 def initial_2d_plot(parameter_min, parameter_max, feature_min, feature_max):
@@ -49,6 +47,7 @@ def initial_2d_plot(parameter_min, parameter_max, feature_min, feature_max):
 
 # plot the gaussian model with new data points
 def surrogate_data_plot(next_x, i, model, x_plot_data, y_plot_data, parameter_history, y_data):
+    x_plot_data = np.array(x_plot_data).reshape(-1, 1)
     plot_approximation(model, x_plot_data, y_plot_data, parameter_history, y_data, next_x, show_legend=i == 0)
     plt.title(f'Iteration {i + 1}')
     plt.show(block=False)
@@ -71,3 +70,13 @@ def general_plot(data):
 
     # Show the plot
     plt.show()
+
+
+"""def ini_object_plot_data_generator(parameter_plot_data):
+    object_plot_data = []
+    for i in range(len(parameter_plot_data)):
+        pass_val = []
+        pass_val.append(parameter_plot_data[i])
+        object_plot_data.append(simulation_get_performance(pass_val))
+    print(len(parameter_plot_data))
+    return object_plot_data"""

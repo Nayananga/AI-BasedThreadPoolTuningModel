@@ -5,11 +5,10 @@ import numpy as np
 import Config as Cg
 from general_utilities import bayesian_opt
 from general_utilities.gaussian_process import gaussian_model
-from general_utilities.performance_collection import get_performance
 from simulation_utilities import ploting
 from simulation_utilities.workload_generator import workload_config
 from simulation_utilities import min_value_finder
-from simulation_utilities.Training_point_generator import get_training_points
+from old_files.Training_point_generator import get_training_points
 
 logging.basicConfig(level=logging.INFO)
 
