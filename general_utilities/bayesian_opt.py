@@ -39,21 +39,11 @@ def next_x_point_selection(max_expected_improvement, min_x, trade_off_level, max
         idx = random.randint(0, len(max_points) - 1)
         next_x = max_points[idx]
 
-        """if not one_parameter:
-            x_point = next_x[0][0]
-            feature_point = next_x[0][1]
-            next_x = [x_point, feature_point]"""
-
         trade_off_level = trade_off_level + trade_off_level / 8
         if trade_off_level > 0.01:
             trade_off_level = 0.01
         elif trade_off_level == 0:
             trade_off_level = 0.00002
-
-    """if len(next_x) == 1:
-        next_y = get_performance(next_x)
-    else:
-        next_y = get_performance(next_x[0], next_x[1])"""
 
     next_x = list(next_x)
 

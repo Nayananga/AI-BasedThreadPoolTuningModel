@@ -24,6 +24,8 @@ def main():
     number_of_features = Config.NUMBER_OF_FEATURES
     number_of_parameters = Config.NUMBER_OF_PARAMETERS
 
+    print("parameters - ", number_of_parameters, "Features - ", number_of_features)
+
     # exploration and exploitation trade off value
     trade_off_level = Config.DEFAULT_TRADE_OFF_LEVEL
 
