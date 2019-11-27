@@ -15,8 +15,10 @@ def initial_configurations():
     if number_of_total_points > eval_point_size:
         gd.random_eval_check = True
     else:
+        # gd.eval_pool = data_point_finder(parameter_bounds)
+        eval_pool = data_point_finder(parameter_bounds)
+        gd.eval_pool = eval_pool
         gd.random_eval_check = False
-        gd.eval_pool = data_point_finder(parameter_bounds)
 
 
 def evaluation_point_number():

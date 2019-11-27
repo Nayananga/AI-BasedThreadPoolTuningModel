@@ -4,7 +4,7 @@ EVAL_POINT_SIZE = 1000
 DEFAULT_TRADE_OFF_LEVEL = 0.1
 PAUSE_TIME = 1
 
-"""NUMBER_OF_PARAMETERS = 1
+NUMBER_OF_PARAMETERS = 1
 NUMBER_OF_FEATURES = 0
 
 PARAMETERS = ['para_1']
@@ -22,7 +22,7 @@ FEATURE_BOUNDS = []
 FEATURE_FUNCTION = []
 
 #FUNCTION = "-1.0 * sin(p1 / 10.0) * p1"
-FUNCTION = "p1"""
+FUNCTION = "p1"
 
 # #################################################
 
@@ -47,7 +47,7 @@ FUNCTION = "p1+p2"""
 
 # #################################################
 
-NUMBER_OF_PARAMETERS = 1
+"""NUMBER_OF_PARAMETERS = 1
 NUMBER_OF_FEATURES = 1
 
 PARAMETERS = ['para_1']
@@ -64,10 +64,9 @@ FEATURE_BOUNDS = [[1, 10]]
 # To define a new function go to simulation_utilities/data_generations/feature_generator.py
 FEATURE_FUNCTION = ['STEP_INCREASE_FUNCTION']
 
-FUNCTION = "p1+f1"
+FUNCTION = "p1+f1"""
 
 # #################################################
-
 
 """NUMBER_OF_PARAMETERS = 2
 NUMBER_OF_FEATURES = 2
