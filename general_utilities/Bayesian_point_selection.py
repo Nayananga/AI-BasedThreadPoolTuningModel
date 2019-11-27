@@ -40,8 +40,13 @@ def each_point_analysis(x_data, y_data, trade_off_level, model, feature_val=None
             eval_pool = selecting_random_point(Config.EVAL_POINT_SIZE, Config.PARAMETER_BOUNDS, feature_value=feature_val)
 
         for eval_point in range(len(eval_pool)):
+            if feature_val is not None:
+                check_point = list(eval_pool[eval_point])
+                for i in range(len(feature_val)):
+                    check_point.append(feature_val[i])
             max_expected_improvement, max_optimize_point = bayesian_opt.bayesian_expected_improvement(
-                eval_pool[eval_point], max_expected_improvement, max_optimize_point, min_y, trade_off_level, model)
+                check_point, max_expected_improvement, max_optimize_point, min_y, trade_off_level, model)
+            # max_expected_improvement, max_optimize_point = bayesian_opt.bayesian_expected_improvement(eval_pool[eval_point], max_expected_improvement, max_optimize_point, min_y, trade_off_level, model)
 
         next_optimize_point, next_object_point, trade_off_level = bayesian_opt.next_x_point_selection(
             max_expected_improvement, min_x, trade_off_level, max_optimize_point)
