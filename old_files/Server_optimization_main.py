@@ -3,9 +3,8 @@ import logging
 import numpy as np
 
 import Config as Cg
-from general_utilities import bayesian_opt
-from general_utilities.gaussian_process import gaussian_model
-from simulation_utilities import ploting
+from general_utilities import bayesian_opt, data_plot
+from general_utilities.gaussian_process import thread_pool_tuning_model
 from simulation_utilities.workload_generator import workload_config
 from simulation_utilities import min_value_finder
 from old_files.Training_point_generator import get_training_points
@@ -35,16 +34,16 @@ def main():
     # call initial functions
     if len(workload_ini) == 1:
         one_parameter = True
-        x_plot_data, y_plot_data = ploting.initial_plot()
+        x_plot_data, y_plot_data = data_plot.initial_plot()
         x_data, y_data, parameter_history = get_training_points(number_of_training_points)
     else:
         workload = workload_config(workload_ini, max_iterations)
-        x_plot_data, y_plot_data, z_plot_data = ploting.initial_2d_plot()
+        x_plot_data, y_plot_data, z_plot_data = data_plot.initial_2d_plot()
         x_data, y_data, parameter_history = get_training_points(number_of_training_points, workload)
         reference_array, minimum_ref_array = min_value_finder.min_array(x_plot_data, y_plot_data, z_plot_data)
 
     # fit initial data to gaussian model
-    model = gaussian_model(x_data, y_data)
+    model = thread_pool_tuning_model(x_data, y_data)
 
     # exploration and exploitation trade off value
     trade_off_level = 0.1
@@ -88,10 +87,10 @@ def main():
         print("Next y- ", next_y)
 
         # fit new data to gaussian process
-        model = gaussian_model(x_data, y_data)
+        model = thread_pool_tuning_model(x_data, y_data)
 
         if one_parameter:
-            ploting.data_plot(next_x, iteration, model, x_plot_data, y_plot_data, parameter_history, y_data)
+            data_plot.data_plot(next_x, iteration, model, x_plot_data, y_plot_data, parameter_history, y_data)
 
         print("-------------------------------------")
 

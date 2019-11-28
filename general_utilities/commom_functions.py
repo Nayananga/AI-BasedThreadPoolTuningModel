@@ -1,4 +1,4 @@
-import Config_simulation as Config
+import Config as Config
 import itertools
 import numpy as np
 

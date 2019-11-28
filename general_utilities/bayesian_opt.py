@@ -1,7 +1,7 @@
 import numpy as np
 import random
 from general_utilities.acquisition import gaussian_ei
-from simulation_utilities.data_generations.simulation_get_performance import simulation_get_performance
+from sample_system import sample_system
 
 
 """
@@ -47,6 +47,4 @@ def next_x_point_selection(max_expected_improvement, min_x, trade_off_level, max
 
     next_x = list(next_x)
 
-    next_y = simulation_get_performance(next_x)
-
-    return next_x, next_y, trade_off_level
+    return next_x, trade_off_level

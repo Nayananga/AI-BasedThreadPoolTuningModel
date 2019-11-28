@@ -1,5 +1,5 @@
 import numpy as np
-from simulation_utilities.data_generations.simulation_get_performance import simulation_get_performance
+from sample_system import sample_system
 
 '''
 Training points selection for the simulation
@@ -18,7 +18,7 @@ def get_training_points(number_of_training_points, parameter_bounds, feature_bou
             for i in range(len(parameter_bounds)):
                 optimize_value.append(np.random.randint(parameter_bounds[i][0], parameter_bounds[i][1]))
 
-            object_data.append(simulation_get_performance(optimize_value))
+            object_data.append(sample_system(optimize_value))
             optimize_data.append(optimize_value)
 
         print("Initial Parameter length", len(optimize_data))
@@ -40,7 +40,7 @@ def get_training_points(number_of_training_points, parameter_bounds, feature_bou
                 # optimize_value.append(round(np.random.uniform(feature_bounds[j][0], feature_bounds[j][1]), 2))
                 optimize_value.append(np.random.randint(feature_bounds[j][0], feature_bounds[j][1]))
 
-            object_data.append(simulation_get_performance(optimize_value))
+            object_data.append(sample_system(optimize_value))
             optimize_data.append(optimize_value)
 
         print("Initial Parameter length", len(optimize_data))

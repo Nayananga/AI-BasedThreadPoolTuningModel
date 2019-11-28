@@ -1,5 +1,5 @@
 import numpy as np
-import Config_simulation as Config
+import Config as Config
 
 '''
 FIFO calculation in y direction of the gaussian process

@@ -1,18 +1,15 @@
-import Config_simulation as Config
-import numpy as np
-import itertools
+# Python code to demonstrate 
+# splitting nested list 
+# into 2 lists 
 
-eval_point_size = Config.EVAL_POINT_SIZE
-parameter_bounds = Config.PARAMETER_BOUNDS
-parameter_count = Config.NUMBER_OF_PARAMETERS
+# initialising nested lists 
+ini_list = [[1, 2], [4, 3], [45, 65], [223, 2]]
 
-feature_bounds = Config.FEATURE_BOUNDS
-feature_count = Config.NUMBER_OF_FEATURES
+# printing initial lists 
+print("initial list", ini_list)
 
-print(parameter_count)
-print(feature_count)
+# code to split it into 2 lists 
+res1, res2 = map(list, zip(*ini_list))
 
-x_plot_data = [1,2,3,4]
-print(x_plot_data)
-x_plot_data = list(np.array(x_plot_data).reshape(-1, 1))
-print(x_plot_data)
+# printing result 
+print("final lists", res1, "\n", res2)

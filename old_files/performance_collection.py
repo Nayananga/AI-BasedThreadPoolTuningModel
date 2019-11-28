@@ -1,7 +1,5 @@
 import numpy as np
-from simulation_utilities.simulation_function_generator import function_generation
-import time
-import requests
+from old_files.simulation_function_generator import function_generation
 
 '''
 get_performance : data point is selected according to the parameter and feature values

@@ -1,6 +1,7 @@
-import Config_simulation as Config
-from simulation_utilities.data_generations.simulation_get_performance import simulation_get_performance
+import Config as Config
+from sample_system import sample_system
 import itertools
+
 
 def min_data_generator(parameters, features=None):
     minimum_y = 0
@@ -11,7 +12,7 @@ def min_data_generator(parameters, features=None):
         optimizing_data = data_combine(parameters, features)
 
     for i in range(len(optimizing_data)):
-        y_data = simulation_get_performance(optimizing_data[i])
+        y_data = sample_system(optimizing_data[i])
         if i == 0:
             minimum_y = y_data
             minimum_x = optimizing_data[i]

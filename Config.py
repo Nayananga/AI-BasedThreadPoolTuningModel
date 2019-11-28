@@ -1,4 +1,4 @@
-NUMBER_OF_ITERATIONS = 100
+NUMBER_OF_ITERATIONS = 200
 NUMBER_OF_TRAINING_POINTS = 10
 EVAL_POINT_SIZE = 1000
 DEFAULT_TRADE_OFF_LEVEL = 0.1
@@ -47,7 +47,7 @@ FUNCTION = "p1+p2"""
 
 # #################################################
 
-"""NUMBER_OF_PARAMETERS = 1
+NUMBER_OF_PARAMETERS = 1
 NUMBER_OF_FEATURES = 1
 
 PARAMETERS = ['para_1']
@@ -55,20 +55,23 @@ PARAMETERS = ['para_1']
 FEATURE = ['feature_1']
 
 # PARAMETER BOUNDS
-PARAMETER_BOUNDS = [[10, 20]]
+PARAMETER_BOUNDS = [[10, 200]]
 
 # PARAMETER BOUNDS
-FEATURE_BOUNDS = [[1, 10]]
+FEATURE_BOUNDS = [[1, 1000]]
 
 
 # To define a new function go to simulation_utilities/data_generations/feature_generator.py
-FEATURE_FUNCTION = ['STEP_INCREASE_FUNCTION']
+# FEATURE_FUNCTION = ['STEP_INCREASE_FUNCTION']
+# FEATURE_FUNCTION = ['UP_AND_DOWN_FUNCTION']
+FEATURE_FUNCTION = ['RANDOM']
 
-FUNCTION = "p1+f1"""
+FUNCTION = "(p1+f1)"
+# FUNCTION = "(p1^2)/(f1)"
 
 # #################################################
 
-NUMBER_OF_PARAMETERS = 2
+"""NUMBER_OF_PARAMETERS = 2
 NUMBER_OF_FEATURES = 2
 
 PARAMETERS = ['para_1', 'para_2']
@@ -87,4 +90,4 @@ FEATURE_BOUNDS = [[0, 5], [15, 20]]
 # To define a new function go to simulation_utilities/data_generations/feature_generator.py
 FEATURE_FUNCTION = ['STEP_INCREASE_FUNCTION', 'STEP_DECREASE_FUNCTION']
 
-FUNCTION = "p1+p2+f1+f2"
+FUNCTION = "p1+p2+f1+f2"""""

@@ -1,6 +1,5 @@
-import Config_simulation as Config
 import sympy as sy
-from math import *
+
 dic = {'x':2, 'y':2, 'z':1}
 
 

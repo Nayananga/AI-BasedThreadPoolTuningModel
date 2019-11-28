@@ -1,8 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from simulation_utilities.bayesian_optimization_util import plot_approximation
-from simulation_utilities.simulation_function_generator import function_generation
-from simulation_utilities.data_generations.simulation_get_performance import simulation_get_performance
+from old_files.bayesian_optimization_util import plot_approximation
 
 from mpl_toolkits.mplot3d import axes3d
 
@@ -17,7 +15,8 @@ def initial_plot(parameter_plot_data, object_plot_data):
     plt.show()
 
 
-def initial_2d_plot(parameter_min, parameter_max, feature_min, feature_max):
+
+"""def initial_2d_plot(parameter_min, parameter_max, feature_min, feature_max):
 
     # Boundary for the simulation data
     lover_bound = parameter_min - 1
@@ -42,7 +41,7 @@ def initial_2d_plot(parameter_min, parameter_max, feature_min, feature_max):
 
     plt.show()
 
-    return x_plot_data, y_plot_data, z_plot_data
+    return x_plot_data, y_plot_data, z_plot_data"""
 
 
 # plot the gaussian model with new data points
@@ -55,13 +54,13 @@ def surrogate_data_plot(next_x, i, model, x_plot_data, y_plot_data, parameter_hi
     plt.close()
 
 
-def general_plot(data):
+def general_plot(data, title="workload", x_label='time', y_label='workers', pause_time = 0):
 
     plt.plot(data, label='workload')
 
-    plt.title('Workload')
-    plt.xlabel('time')
-    plt.ylabel('workers')
+    plt.title(title)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
 
     plt.grid(color='k', linestyle='-', linewidth=.1)
 
@@ -69,14 +68,34 @@ def general_plot(data):
     plt.legend()
 
     # Show the plot
-    plt.show()
+    plt.show(block=False)
+
+    plt.pause(pause_time)
+    plt.close()
 
 
-"""def ini_object_plot_data_generator(parameter_plot_data):
-    object_plot_data = []
-    for i in range(len(parameter_plot_data)):
-        pass_val = []
-        pass_val.append(parameter_plot_data[i])
-        object_plot_data.append(simulation_get_performance(pass_val))
-    print(len(parameter_plot_data))
-    return object_plot_data"""
+def data_plotting(threadpool_and_concurrency_data, percentile_data, pause_time, save=False):
+    folder_name = 'Data/'
+
+    threapool_size, concurrency = map(list, zip(*threadpool_and_concurrency_data))
+    plt.plot(threapool_size, label='thread pool size')
+    plt.plot(concurrency, label='concurrency')
+    plt.plot(percentile_data, label='latency')
+
+    plt.title("Data plot")
+    plt.xlabel("Time")
+    # plt.ylabel("y_label")
+
+    plt.grid(color='k', linestyle='-', linewidth=.1)
+
+    # Add a legend
+    plt.legend()
+
+    if save:
+        plt.savefig(folder_name+"data.png", bbox_inches="tight")
+
+    # Show the plot
+    plt.show(block=False)
+
+    plt.pause(pause_time)
+    plt.close()

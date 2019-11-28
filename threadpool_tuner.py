@@ -1,13 +1,16 @@
 import time
 
-from simulation_utilities.data_generations.data_generation_initialization import data_generation_ini
-from general_utilities.gaussian_process import gaussian_model
-from general_utilities.Bayesian_point_selection import each_point_analysis
-from general_utilities.initial_configurations import initial_configurations
+from general_utilities.gaussian_process import thread_pool_tuning_model
+from general_utilities.Bayesian_point_selection import min_point_check_with_feature
+from general_utilities.bayesian_opt import bayesian_expected_improvement, next_x_point_selection
+from sample_system import sample_system
 import global_data as gd
 from general_utilities.commom_functions import *
 from general_utilities.FIFO import fifo_sampling
-from simulation_utilities import ploting
+import Config as Config
+from general_utilities.data_plot import data_plotting
+
+from data_generation import data_generator
 
 # from simulation_utilities.initial_data_assign import initial_data_assign
 
@@ -16,118 +19,113 @@ np.random.seed(42)
 # start a timer
 start_time = time.time()
 
-def sample_system(concurrency, thread_pool_size):
-    latency = 0
-    return latency
+"""# Data from the Config file
+pause_time = Config.PAUSE_TIME
+max_iterations = Config.NUMBER_OF_ITERATIONS
+number_of_features = Config.NUMBER_OF_FEATURES
+number_of_parameters = Config.NUMBER_OF_PARAMETERS
 
-def train_thredpool_tunning_model(initial_data):
-    return None
+# exploration and exploitation trade off value
+trade_off_level = Config.DEFAULT_TRADE_OFF_LEVEL
 
-def find_next_threadpool_size(model, concurrency):
-    return None
+threadpool_and_concurrency_data = gd.threadpool_and_concurrency
+percentile_data = gd.percentile
+concurrency_workload = gd.concurrency"""
 
-def update_thredpool_tunning_model(model, concurrency, next_latency_values):
-    return
 
-def tune_threadpool_size(initial_data, threadpool_init_value, concurrency_workload, system_sample_fn):
-    tracing_data = []
-    model = train_thredpool_tunning_model(initial_data)
+def find_next_threadpool_size(threadpool_and_concurrency_data, percentile_data, trade_off_level, model, concurrency):
+    min_threadpool_size, min_percentile = min_point_check_with_feature(threadpool_and_concurrency_data, percentile_data, concurrency)
+
+    if min_percentile is None:
+        next_threadpool_size = min_threadpool_size
+        trade_off_level = Config.DEFAULT_TRADE_OFF_LEVEL
+    else:
+        max_expected_improvement = 0
+        max_threadpool_sizes = []
+        if not gd.random_eval_check:
+            eval_pool = gd.eval_pool
+        else:
+            eval_pool = selecting_random_point(Config.EVAL_POINT_SIZE, Config.PARAMETER_BOUNDS, feature_value=concurrency)
+
+        for eval_point in range(len(eval_pool)):
+            check_point = list(eval_pool[eval_point])
+            for concurrency_val in concurrency:
+                check_point.append(concurrency_val)
+
+            max_expected_improvement, max_threadpool_sizes = bayesian_expected_improvement(
+                check_point, max_expected_improvement, max_threadpool_sizes, min_percentile, trade_off_level, model)
+
+        next_threadpool_size, trade_off_level = next_x_point_selection(
+            max_expected_improvement, min_threadpool_size, trade_off_level, max_threadpool_sizes)
+
+    return next_threadpool_size, trade_off_level
+
+
+def tune_threadpool_size(model, threadpool_and_concurrency_data, percentile_data):
+    iteration = 0
+    x_plot = []
+    y_plot = []
+    pause_time = Config.PAUSE_TIME
+    trade_off_level = Config.DEFAULT_TRADE_OFF_LEVEL
+
+    concurrency_workload = gd.concurrency
+
+    """tracing_data = []
     for concurrency in concurrency_workload:
         next_threadpool_size = find_next_threadpool_size(model, concurrency)
         next_latency_values = system_sample_fn(concurrency, next_threadpool_size)
         model = update_thredpool_tunning_model(model, concurrency, next_latency_values)
         for latency in next_latency_values:
-            tracing_data.append([concurrency, next_threadpool_size, latency])
-    return tracing_data
+            tracing_data.append([concurrency, next_threadpool_size, latency])"""
 
+    # use bayesian optimization
+    for concurrency in concurrency_workload:
+        next_threadpool_size, trade_off_level = \
+            find_next_threadpool_size(threadpool_and_concurrency_data, percentile_data, trade_off_level, model, concurrency)
+
+        next_percentile_values = sample_system(next_threadpool_size)
+
+        # Data appending
+        percentile_data.append(next_percentile_values)
+        threadpool_and_concurrency_data.append(next_threadpool_size)
+
+        threadpool_and_concurrency_data, percentile_data, trade_off_level = \
+            fifo_sampling(next_threadpool_size, threadpool_and_concurrency_data, percentile_data, trade_off_level)
+
+        # fit new data to gaussian process
+        model = thread_pool_tuning_model(threadpool_and_concurrency_data, percentile_data)
+
+        print("inter -", iteration)
+        print("workers -", concurrency)
+        print("trade_off_level -", trade_off_level)
+        print("Next x- ", next_threadpool_size)
+        print("Next y- ", next_percentile_values)
+        print("min_data", gd.min_x_data)
+        print("min_data", gd.min_y_data)
+        print("-------------------------------------")
+
+        #time.sleep(pause_time)
+        y_plot.append(next_percentile_values)
+        x_plot.append(next_threadpool_size)
+        iteration += 1
+        if iteration == len(concurrency_workload):
+            data_plotting(x_plot, y_plot, pause_time, save=True)
+        else:
+            data_plotting(x_plot, y_plot, pause_time)
+    return threadpool_and_concurrency_data, percentile_data
 
 
 def main():
-    # Data from the Config file
-    pause_time = Config.PAUSE_TIME
-    max_iterations = Config.NUMBER_OF_ITERATIONS
-    number_of_features = Config.NUMBER_OF_FEATURES
-    number_of_parameters = Config.NUMBER_OF_PARAMETERS
 
-    # exploration and exploitation trade off value
-    trade_off_level = Config.DEFAULT_TRADE_OFF_LEVEL
+    data_generator.data_generator()
 
-    initial_configurations()
-
-    # generating the initial data
-    """if number_of_features == 0:
-        if number_of_parameters == 1:
-            optimize_data, object_data, optimize_plot_data, object_plot_data, ref_min_optimizer, ref_min_object = data_generation_ini()
-        else:
-            optimize_data, object_data, ref_min_optimizer, ref_min_object = data_generation_ini()
-    else:
-        optimize_data, object_data, feature_changing_data, ref_min_optimizer, ref_min_object = data_generation_ini()"""
-
-    if number_of_features == 0:
-        optimize_data, object_data, ref_min_optimizer, ref_min_object = data_generation_ini()
-        gd.min_x_data, gd.min_y_data = min_point_find_no_feature(optimize_data, object_data)
-    else:
-        optimize_data, object_data, feature_changing_data, ref_min_optimizer, ref_min_object = data_generation_ini()
-        gd.min_x_data, gd.min_y_data = ini_min_point_find_with_feature(optimize_data, object_data)
+    threadpool_and_concurrency_data = gd.threadpool_and_concurrency
+    percentile_data = gd.percentile
 
     # fit initial data to gaussian model
-    model = gaussian_model(optimize_data, object_data)
+    model = thread_pool_tuning_model(threadpool_and_concurrency_data, percentile_data)
 
-    min_optimizer = gd.min_x_data
-    min_object = gd.min_y_data
-
-    # use bayesian optimization
-    for iteration in range(max_iterations):
-        if number_of_features == 0:
-            # next_location, next_value, max_expected_improvement, min_object, min_optimizer, trade_off_level = each_point_analysis(optimize_data, object_data, trade_off_level, model)
-            next_optimize, next_object, max_expected_improvement, min_optimizer, min_object, trade_off_level = each_point_analysis(
-                optimize_data, object_data, trade_off_level, model)
-        else:
-            feature_level = feature_changing_data[iteration]
-            next_optimize, next_object, max_expected_improvement, min_optimizer, min_object, trade_off_level = each_point_analysis(
-                optimize_data, object_data, trade_off_level, model, feature_level)
-
-        """if number_of_features == 0:
-            next_location, next_value, max_expected_improvement, min_object, min_optimizer, trade_off_level = each_point_analysis(
-                optimize_data, object_data, trade_off_level, model)
-        else:
-            if iteration == 0:
-                prev_feature = feature_changing_data[iteration]
-                current_feature = feature_changing_data[iteration]
-            else:
-                prev_feature = current_feature
-                current_feature = feature_changing_data[iteration]
-            next_location, next_value, max_expected_improvement, min_object, min_optimizer, trade_off_level = each_point_analysis(
-                optimize_data, object_data, trade_off_level, model, current_feature, prev_feature)"""
-
-        # Data appending
-        object_data.append(next_object)
-        optimize_data.append(next_optimize)
-        x_data, y_data, trade_off_level = fifo_sampling(next_optimize, optimize_data, object_data, trade_off_level)
-
-        print("inter -", iteration)
-        if number_of_features > 0:
-            print("workers -", feature_changing_data[iteration])
-        print("trade_off_level -", trade_off_level)
-        print("EI -", max_expected_improvement)
-        print("Next x- ", next_optimize)
-        print("Next y- ", next_object)
-        print("minimum_point_obtained", min_object, min_optimizer)
-        print("Minimum data", ref_min_object, ref_min_optimizer)
-
-        # fit new data to gaussian process
-        model = gaussian_model(optimize_data, object_data)
-
-        if number_of_features == 0 and number_of_parameters == 1:
-            optimize_plot_data = gd.optimizer_plot_data
-            object_plot_data = gd.object_plot_data
-            ploting.surrogate_data_plot(next_optimize, iteration, model, optimize_plot_data, object_plot_data, optimize_data, object_data)
-        print("-------------------------------------")
-
-        time.sleep(pause_time)
-
-    print("minimum found : %f", min_object)
-
+    threadpool_and_concurrency_data, percentile_data = tune_threadpool_size(model, threadpool_and_concurrency_data, percentile_data)
 
 if __name__ == "__main__":
     main()

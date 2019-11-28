@@ -1,9 +1,9 @@
-from simulation_utilities.data_generations.feature_generator import feature_generator
+from data_generation.feature_generator import feature_generator
 import logging
-from simulation_utilities import ploting
-from simulation_utilities.data_generations.simulation_get_performance import simulation_get_performance
+from general_utilities import data_plot
+from sample_system import sample_system
 from general_utilities.commom_functions import *
-import Config_simulation as Config
+import Config as Config
 import global_data as gd
 
 parameter_names = Config.PARAMETERS
@@ -25,22 +25,24 @@ def data_generation_ini():
 
     if feature_count == 0:
         optimizer_plot_data = data_point_finder(parameter_bounds)
-        ref_min_optimizer, ref_min_object = ref_min_data_finder(optimizer_plot_data)
+        # ref_min_optimizer, ref_min_object = ref_min_data_finder(optimizer_plot_data)
         parameter_data, optimizer_data = get_training_points(number_of_initial_points, parameter_bounds)
         if parameter_count == 1:
             object_plot_data = []
             for i in range(len(optimizer_plot_data)):
-                object_plot_data.append(simulation_get_performance(optimizer_plot_data[i]))
+                object_plot_data.append(sample_system(optimizer_plot_data[i]))
             gd.optimizer_plot_data = optimizer_plot_data
             gd.object_plot_data = object_plot_data
-            ploting.initial_plot(optimizer_plot_data, object_plot_data)
-        return parameter_data, optimizer_data, ref_min_optimizer, ref_min_object
+            data_plot.initial_plot(optimizer_plot_data, object_plot_data)
+        # return parameter_data, optimizer_data, ref_min_optimizer, ref_min_object
+        return parameter_data, optimizer_data
     else:
         feature_changing_data = feature_data_generation()
         optimizer_plot_data = data_point_finder(parameter_bounds, feature_bounds)
-        ref_min_optimizer, ref_min_object = ref_min_data_finder(optimizer_plot_data)
+        # ref_min_optimizer, ref_min_object = ref_min_data_finder(optimizer_plot_data)
         optimize_data, object_data = get_training_points(number_of_initial_points, parameter_bounds, feature_bounds)
-        return optimize_data, object_data, feature_changing_data, ref_min_optimizer, ref_min_object
+        # return optimize_data, object_data, feature_changing_data, ref_min_optimizer, ref_min_object
+        return optimize_data, object_data, feature_changing_data
 
 
 def config_errors():
@@ -79,7 +81,7 @@ def data_generator(data_bounds):
 def ref_min_data_finder(optimize_data):
     object_data = []
     for i in range(len(optimize_data)):
-        object_data.append(simulation_get_performance(optimize_data[i]))
+        object_data.append(sample_system(optimize_data[i]))
 
     if feature_count == 0:
         minimum_x_data, minimum_y_data = min_point_find_no_feature(optimize_data, object_data)
@@ -97,6 +99,6 @@ def get_training_points(number_of_training_points, para_bounds, feat_bounds=None
         optimize_data = selecting_random_point(number_of_training_points, para_bounds, feat_bounds)
 
     for i in range(len(optimize_data)):
-        object_data.append(simulation_get_performance(optimize_data[i]))
+        object_data.append(sample_system(optimize_data[i]))
 
     return optimize_data, object_data
