@@ -1,5 +1,5 @@
 import Config as Config
-from sample_system import sample_system
+from old_files.sample_system import sample_system
 import itertools
 
 

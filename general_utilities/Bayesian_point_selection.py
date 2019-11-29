@@ -2,14 +2,13 @@ import global_data as gd
 from general_utilities.commom_functions import *
 
 
-def min_point_check_with_feature(x_data, y_data, feature_val):
+def update_min_point(x_data, y_data, feature_val):
     min_x_data = gd.min_x_data
     min_y_data = gd.min_y_data
     min_y = None
     found_feature_val = False
 
     for j in range(len(min_x_data)):
-        check_cal = min_x_data[j][Config.NUMBER_OF_PARAMETERS:]
         if min_x_data[j][Config.NUMBER_OF_PARAMETERS:] == feature_val:
             found_feature_val = True
             min_y = min_y_data[j]

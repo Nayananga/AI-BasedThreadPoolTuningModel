@@ -75,7 +75,7 @@ def general_plot(data, title="workload", x_label='time', y_label='workers', paus
     plt.close()
 
 
-def data_plotting(threadpool_and_concurrency_data, percentile_data, pause_time, save=False):
+def plot_data(threadpool_and_concurrency_data, percentile_data, pause_time, save=False):
     folder_name = 'Data/'
 
     threapool_size, concurrency = map(list, zip(*threadpool_and_concurrency_data))

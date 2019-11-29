@@ -1,5 +1,5 @@
 import numpy as np
-from sample_system import sample_system
+from old_files.sample_system import sample_system
 
 '''
 Training points selection for the simulation

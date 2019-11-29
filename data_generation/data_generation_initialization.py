@@ -1,7 +1,7 @@
 from data_generation.feature_generator import feature_generator
 import logging
 from general_utilities import data_plot
-from sample_system import sample_system
+from old_files.sample_system import sample_system
 from general_utilities.commom_functions import *
 import Config as Config
 import global_data as gd

@@ -1,7 +1,6 @@
 import numpy as np
 import random
 from general_utilities.acquisition import gaussian_ei
-from sample_system import sample_system
 
 
 """
