@@ -1,4 +1,4 @@
-NUMBER_OF_ITERATIONS = 200
+NUMBER_OF_ITERATIONS = 20
 NUMBER_OF_TRAINING_POINTS = 10
 EVAL_POINT_SIZE = 1000
 DEFAULT_TRADE_OFF_LEVEL = 0.1
@@ -58,7 +58,7 @@ FEATURE = ['feature_1']
 PARAMETER_BOUNDS = [[10, 200]]
 
 # PARAMETER BOUNDS
-FEATURE_BOUNDS = [[1, 1000]]
+FEATURE_BOUNDS = [[1, 30]]
 
 
 # To define a new function go to simulation_utilities/data_generations/feature_generator.py

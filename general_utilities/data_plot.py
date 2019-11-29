@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from old_files.bayesian_optimization_util import plot_approximation
+import time
 
 from mpl_toolkits.mplot3d import axes3d
 
@@ -92,10 +93,10 @@ def data_plotting(threadpool_and_concurrency_data, percentile_data, pause_time, 
     plt.legend()
 
     if save:
-        plt.savefig(folder_name+"data.png", bbox_inches="tight")
+        time_stamp = time.asctime(time.localtime(time.time()))
+        plt.savefig(folder_name+time_stamp+" data.png", bbox_inches="tight")
 
     # Show the plot
     plt.show(block=False)
-
     plt.pause(pause_time)
     plt.close()

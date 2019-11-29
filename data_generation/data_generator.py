@@ -7,7 +7,7 @@ import csv
 
 def data_generator():
 
-    folder_name  = 'Data/'
+    folder_name = 'Data/'
     initial_configurations()
 
     optimize_data, object_data, feature_changing_data = data_generation_ini()
@@ -17,9 +17,7 @@ def data_generator():
     gd.percentile = object_data
     gd.concurrency = feature_changing_data
 
-    print(optimize_data)
-
-    with open(folder_name+"99th_percentile.csv", "w") as f:
+    with open(folder_name+"99th_percentile_training.csv", "w") as f:
         writer = csv.writer(f)
         writer.writerow(object_data)
 

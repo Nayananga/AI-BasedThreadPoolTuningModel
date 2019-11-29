@@ -11,8 +11,7 @@ import Config as Config
 from general_utilities.data_plot import data_plotting
 
 from data_generation import data_generator
-
-# from simulation_utilities.initial_data_assign import initial_data_assign
+from general_utilities.Bayesian_point_selection import min_point_check_with_feature
 
 np.random.seed(42)
 
@@ -34,7 +33,8 @@ concurrency_workload = gd.concurrency"""
 
 
 def find_next_threadpool_size(threadpool_and_concurrency_data, percentile_data, trade_off_level, model, concurrency):
-    min_threadpool_size, min_percentile = min_point_check_with_feature(threadpool_and_concurrency_data, percentile_data, concurrency)
+    min_threadpool_size, min_percentile = min_point_check_with_feature(threadpool_and_concurrency_data, percentile_data,
+                                                                       concurrency)
 
     if min_percentile is None:
         next_threadpool_size = min_threadpool_size
@@ -45,7 +45,8 @@ def find_next_threadpool_size(threadpool_and_concurrency_data, percentile_data, 
         if not gd.random_eval_check:
             eval_pool = gd.eval_pool
         else:
-            eval_pool = selecting_random_point(Config.EVAL_POINT_SIZE, Config.PARAMETER_BOUNDS, feature_value=concurrency)
+            eval_pool = selecting_random_point(Config.EVAL_POINT_SIZE, Config.PARAMETER_BOUNDS,
+                                               feature_value=concurrency)
 
         for eval_point in range(len(eval_pool)):
             check_point = list(eval_pool[eval_point])
@@ -81,7 +82,8 @@ def tune_threadpool_size(model, threadpool_and_concurrency_data, percentile_data
     # use bayesian optimization
     for concurrency in concurrency_workload:
         next_threadpool_size, trade_off_level = \
-            find_next_threadpool_size(threadpool_and_concurrency_data, percentile_data, trade_off_level, model, concurrency)
+            find_next_threadpool_size(threadpool_and_concurrency_data, percentile_data, trade_off_level, model,
+                                      concurrency)
 
         next_percentile_values = sample_system(next_threadpool_size)
 
@@ -104,19 +106,22 @@ def tune_threadpool_size(model, threadpool_and_concurrency_data, percentile_data
         print("min_data", gd.min_y_data)
         print("-------------------------------------")
 
-        #time.sleep(pause_time)
+        # time.sleep(pause_time)
         y_plot.append(next_percentile_values)
         x_plot.append(next_threadpool_size)
         iteration += 1
+
         if iteration == len(concurrency_workload):
             data_plotting(x_plot, y_plot, pause_time, save=True)
         else:
             data_plotting(x_plot, y_plot, pause_time)
+
+        min_point_check_with_feature(threadpool_and_concurrency_data, percentile_data, concurrency)
+
     return threadpool_and_concurrency_data, percentile_data
 
 
 def main():
-
     data_generator.data_generator()
 
     threadpool_and_concurrency_data = gd.threadpool_and_concurrency
@@ -125,7 +130,8 @@ def main():
     # fit initial data to gaussian model
     model = thread_pool_tuning_model(threadpool_and_concurrency_data, percentile_data)
 
-    threadpool_and_concurrency_data, percentile_data = tune_threadpool_size(model, threadpool_and_concurrency_data, percentile_data)
+    threadpool_and_concurrency_data, percentile_data = tune_threadpool_size(model, threadpool_and_concurrency_data,
+                                                                            percentile_data)
 
 if __name__ == "__main__":
     main()
