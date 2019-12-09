@@ -6,8 +6,6 @@ import csv
 
 
 def generate_data():
-
-    # folder_name = 'Data/'
     initial_configurations()
 
     optimize_data, object_data, feature_changing_data = data_generation_ini()
@@ -16,17 +14,5 @@ def generate_data():
     gd.threadpool_and_concurrency = optimize_data
     gd.percentile = object_data
     gd.concurrency = feature_changing_data
-
-    """with open(folder_name+"99th_percentile_training.csv", "w") as f:
-        writer = csv.writer(f)
-        writer.writerow(object_data)
-
-    with open(folder_name+"training_data.csv", "w") as f:
-        writer = csv.writer(f, delimiter=',')
-        writer.writerows(optimize_data)
-
-    with open(folder_name+"workload.csv", "w") as f:
-        writer = csv.writer(f)
-        writer.writerow(feature_changing_data)"""
 
     return optimize_data, object_data, feature_changing_data

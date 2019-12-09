@@ -1,0 +1,58 @@
+import Config as Config
+import sympy as sy
+import matplotlib.pyplot as plt
+
+threadpool_bounds = Config.PARAMETER_BOUNDS
+concurrency_bounds = Config.FEATURE_BOUNDS
+
+equation = Config.FUNCTION
+
+threadpool_bounds = Config.PARAMETER_BOUNDS
+concurrency_bounds = Config.FEATURE_BOUNDS
+
+equation = Config.FUNCTION
+
+concurrency = []
+thread_size = []
+
+min_points = []
+min_point_location = []
+
+min_point_collection = []
+
+concurrency_level = 60
+
+
+def sample_system(formula, **kwargs):
+    expr = sy.sympify(formula)
+    return float(expr.evalf(subs=kwargs))
+
+
+def point_plot(data, title="observation", x_label='threadpool size', y_label='latency', pause_time = 0):
+
+    plt.plot(data, label='thread pool size')
+
+    plt.title(title)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+
+    plt.grid(color='k', linestyle='-', linewidth=.1)
+
+    # Add a legend
+    plt.legend()
+
+    # Show the plot
+
+    plt.show()
+
+
+for i in range(len(threadpool_bounds)):
+    for j in range(threadpool_bounds[i][1] - threadpool_bounds[i][0]):
+        thread_size.append(j+threadpool_bounds[i][0])
+
+data_points = []
+
+for thread in thread_size:
+    data_points.append(sample_system(p1=thread, f1=concurrency_level, formula=equation))
+
+point_plot(data_points)

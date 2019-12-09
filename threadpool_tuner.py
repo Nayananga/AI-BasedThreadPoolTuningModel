@@ -2,6 +2,7 @@ import time
 import csv
 import sys
 import sympy as sy
+import os
 
 from general_utilities.gaussian_process import thread_pool_tuning_model
 from general_utilities.bayesian_opt import bayesian_expected_improvement, next_x_point_selection
@@ -10,27 +11,14 @@ import global_data as gd
 from general_utilities.commom_functions import *
 from general_utilities.FIFO import fifo_sampling
 import Config as Config
-from general_utilities.data_plot import plot_data
+from general_utilities.data_plot import plot_data, save_plots
 from data_generation import data_generator
 from general_utilities.Bayesian_point_selection import update_min_point
+from data_generation.Referance_data_plot import compare_data
 
-np.random.seed(42)
 
 # start a timer
 start_time = time.time()
-
-"""# Data from the Config file
-pause_time = Config.PAUSE_TIME
-max_iterations = Config.NUMBER_OF_ITERATIONS
-number_of_features = Config.NUMBER_OF_FEATURES
-number_of_parameters = Config.NUMBER_OF_PARAMETERS
-
-# exploration and exploitation trade off value
-trade_off_level = Config.DEFAULT_TRADE_OFF_LEVEL
-
-threadpool_and_concurrency_data = gd.threadpool_and_concurrency
-percentile_data = gd.percentile
-concurrency_workload = gd.concurrency"""
 
 
 def find_next_threadpool_size(threadpool_and_concurrency_data, percentile_data, trade_off_level, model, concurrency):
@@ -63,12 +51,16 @@ def find_next_threadpool_size(threadpool_and_concurrency_data, percentile_data, 
     return next_threadpool_size, trade_off_level
 
 
-def file_write(threadpool_and_concurrency_data, percentile_data):
-    folder_name = 'Data/'
+def file_write(threadpool_and_concurrency_data, percentile_data, folder_name=Config.PATH):
 
-    with open(folder_name + "99th_percentile_data.csv", "w") as f:
+
+    """with open(folder_name + "99th_percentile_data.csv", "w") as f:
+        writer = csv.writer(f, delimiter=',')
+        writer.writerows(percentile_data)"""
+    with open(folder_name + "99th_percentile_data.csv", 'w') as f:
         writer = csv.writer(f)
-        writer.writerow(percentile_data)
+        for val in percentile_data:
+            writer.writerow([val])
 
     with open(folder_name + "thread_and_con_data.csv", "w") as f:
         writer = csv.writer(f, delimiter=',')
@@ -86,12 +78,22 @@ def update_model(next_threadpool_size, threadpool_and_concurrency_data, percenti
     return threadpool_and_concurrency_data, percentile_data, trade_off_level, model
 
 
+def generate_noise():
+    noise_dist = np.random.normal(0, 5, 20)
+    noise_loc = np.random.randint(0, 19)
+
+    return noise_dist[noise_loc]
+
+
 def sample_system(formula, **kwargs):
     expr = sy.sympify(formula)
-    return float(expr.evalf(subs=kwargs))
+    noise = generate_noise()
+    latency = float(expr.evalf(subs=kwargs)) + noise
+    # latency = float(expr.evalf(subs=kwargs))
+    return latency
 
 
-def tune_threadpool_size(model, threadpool_and_concurrency_data, percentile_data, concurrency_workload, function):
+def tune_threadpool_size(model, threadpool_and_concurrency_data, percentile_data, concurrency_workload, latency_func):
     iteration = 0
     thread_pool_plot_data = []
     percentile_plot_data = []
@@ -104,7 +106,10 @@ def tune_threadpool_size(model, threadpool_and_concurrency_data, percentile_data
                                                                           percentile_data, trade_off_level, model,
                                                                           concurrency)
 
-        next_percentile_values = sample_system(p=next_threadpool_size[0], f=next_threadpool_size[1], formula=function)
+        # next_percentile_values = sample_system(p=next_threadpool_size[0], c=next_threadpool_size[1], formula=latency_func)
+        p = next_threadpool_size[0]
+        c = next_threadpool_size[1]
+        next_percentile_values = sample_system(p = p, c=c, formula=latency_func)
 
         # Data appending
         percentile_data.append(next_percentile_values)
@@ -140,23 +145,44 @@ def tune_threadpool_size(model, threadpool_and_concurrency_data, percentile_data
         # updating the minimum value
         update_min_point(threadpool_and_concurrency_data, percentile_data, concurrency)
 
+    save_plots(thread_pool_plot_data)
+    file_write(thread_pool_plot_data, percentile_plot_data, folder_name=Config.PATH+'plot_')
+    compare_data()
     return threadpool_and_concurrency_data, percentile_data
 
 
+def create_folders():
+    try:
+        os.makedirs(Config.FOLDER)
+    except FileExistsError:
+        print("directory already exists")
+        # if input("are you sure want to go ahead (Y/n)?") == "n":
+        #     exit()
+
+
 def main():
+    # latency_func = "(p-c)^2+c"
+    # latency_func = "((p-c)^2)/20+(c^2/1000)"
+    latency_func = "0.000002*(p - c)^4 - 0.00091*(p - c) ^ 3 + 0.123*(p - c) ^ 2 - 4.8411*(p - c)+200+ (c ^ 2)/1000"
 
-    function = "p+f"
+    for i in range(len(Config.FEATURE_FUNCTION_ARRAY)):
+        Config.FOLDER = Config.COMMON_PATH + Config.FILE_NAME[i]
+        Config.PATH = Config.FOLDER + '/'
+        Config.FEATURE_FUNCTION = Config.FEATURE_FUNCTION_ARRAY[i]
 
-    train_threadpool, train_percentile, concurrency_workload = data_generator.generate_data()
+        print(Config.FEATURE_FUNCTION)
 
-    # fit initial data to gaussian model
-    model = thread_pool_tuning_model(train_threadpool, train_percentile)
+        create_folders()
 
-    threadpool_and_concurrency_data, percentile_data = tune_threadpool_size(model, train_threadpool,
-                                                                            train_percentile, concurrency_workload, function)
+        train_threadpool, train_percentile, concurrency_workload = data_generator.generate_data()
 
-    file_write(threadpool_and_concurrency_data, percentile_data)
+        # fit initial data to gaussian model
+        model = thread_pool_tuning_model(train_threadpool, train_percentile)
 
+        threadpool_and_concurrency_data, percentile_data = tune_threadpool_size(model, train_threadpool,
+                                                                                train_percentile, concurrency_workload, latency_func)
 
+        file_write(threadpool_and_concurrency_data, percentile_data, folder_name=Config.PATH)
 if __name__ == "__main__":
     main()
+

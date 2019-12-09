@@ -20,7 +20,6 @@ number_of_initial_points = Config.NUMBER_OF_TRAINING_POINTS
 
 
 def data_generation_ini():
-
     config_errors()
 
     if feature_count == 0:
@@ -46,6 +45,8 @@ def data_generation_ini():
 
 
 def config_errors():
+    feature_function = Config.FEATURE_FUNCTION
+
     if len(parameter_names) != len(parameter_bounds):
         logging.error("Parameter names or bounds are not defined properly")
     elif len(parameter_names) == 0:
@@ -59,6 +60,8 @@ def config_errors():
 
 
 def feature_data_generation():
+    feature_function = Config.FEATURE_FUNCTION
+
     feature_changing_data = []
     for i in range(len(feature_names)):
         feature_changing_data.append(feature_generator(feature_function[i], feature_bounds[i]))
@@ -102,3 +105,5 @@ def get_training_points(number_of_training_points, para_bounds, feat_bounds=None
         object_data.append(sample_system(optimize_data[i]))
 
     return optimize_data, object_data
+
+

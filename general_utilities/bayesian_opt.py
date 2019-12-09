@@ -26,6 +26,7 @@ def bayesian_expected_improvement(x_val, max_expected_improvement, max_improve_p
 
 
 def next_x_point_selection(max_expected_improvement, min_x, trade_off_level, max_points):
+    print("max_expected - ",max_expected_improvement)
     if max_expected_improvement == 0:
         print("WARN: Maximum expected improvement was 0")
         next_x = min_x
