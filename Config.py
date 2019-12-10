@@ -39,11 +39,14 @@ FEATURE_FUNCTION_ARRAY = [['CONSTANT'], ['PEAKS'], ['RANDOM'], ['STEP_INCREASE_F
 FILE_NAME = ['Constant', 'Peaks', 'Random', 'Step_increase', 'Up_and_down']
 
 # FUNCTION = "((p1-f1)^2)/20+(f1^2/1000)"
-FUNCTION = "0.000002*(p1 - f1)^4 - 0.00091*(p1 - f1) ^ 3 + 0.123*(p1 - f1) ^ 2 - 4.8411*(p1 - f1)+200+ (f1 ^ 2)/1000"
+# FUNCTION = "0.000002*(p1 - f1)^4 - 0.00091*(p1 - f1) ^ 3 + 0.123*(p1 - f1) ^ 2 - 4.8411*(p1 - f1)+200+ (f1 ^ 2)/1000"
+FUNCTION = "((p1-f1)^2)/20+(((0.2*p1-f1)^2)/1000)"
 
+REFERENCE_PATH = '/Users/isuru/PycharmProjects/Auto-Tuning-with-Bayesian/Data/Function_2/Reference_min_point/'
 
-REFERENCE_PATH = 'Data/Function_0/Reference_min_point/'
-COMMON_PATH = '/Users/isuru/PycharmProjects/Auto-Tuning-with-Bayesian/Data/Function_0/With_Noise_std_5/'
+# COMMON_PATH = '/Users/isuru/PycharmProjects/Auto-Tuning-with-Bayesian/Data/Function_2/With_Noise_std_1/'
+# COMMON_PATH = '/Users/isuru/PycharmProjects/Auto-Tuning-with-Bayesian/Data/Function_2/With_Noise_std_5/'
+COMMON_PATH = '/Users/isuru/PycharmProjects/Auto-Tuning-with-Bayesian/Data/Function_2/Without_Noise/'
 
 FOLDER = None
 PATH = None

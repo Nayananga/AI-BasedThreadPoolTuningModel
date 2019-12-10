@@ -163,7 +163,8 @@ def create_folders():
 def main():
     # latency_func = "(p-c)^2+c"
     # latency_func = "((p-c)^2)/20+(c^2/1000)"
-    latency_func = "0.000002*(p - c)^4 - 0.00091*(p - c) ^ 3 + 0.123*(p - c) ^ 2 - 4.8411*(p - c)+200+ (c ^ 2)/1000"
+    # latency_func = "0.000002*(p - c)^4 - 0.00091*(p - c) ^ 3 + 0.123*(p - c) ^ 2 - 4.8411*(p - c)+200+ (c ^ 2)/1000"
+    latency_func = "((p-c)^2)/20+(((0.2*p-c)^2)/1000)"
 
     for i in range(len(Config.FEATURE_FUNCTION_ARRAY)):
         Config.FOLDER = Config.COMMON_PATH + Config.FILE_NAME[i]
