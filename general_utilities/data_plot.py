@@ -1,7 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from old_files.bayesian_optimization_util import plot_approximation
 import time
+
+from old_files.bayesian_optimization_util import plot_approximation
 import Config
 
 from mpl_toolkits.mplot3d import axes3d

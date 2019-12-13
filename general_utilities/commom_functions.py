@@ -1,4 +1,4 @@
-import Config as Config
+import Config
 import itertools
 import numpy as np
 

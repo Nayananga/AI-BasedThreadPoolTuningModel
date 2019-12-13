@@ -1,6 +1,7 @@
+import Config
+
 import global_data as gd
 from general_utilities.commom_functions import *
-import Config as Config
 
 evaluation_size = Config.EVAL_POINT_SIZE
 thread_pool_bound = Config.PARAMETER_BOUNDS

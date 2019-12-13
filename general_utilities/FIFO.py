@@ -1,5 +1,5 @@
 import numpy as np
-import Config as Config
+import Config
 
 '''
 FIFO calculation in y direction of the gaussian process

@@ -1,8 +1,8 @@
-import Config as Config
+import Config
 import sympy as sy
 import csv
+
 from general_utilities.data_plot import min_point_plot
-import os
 
 threadpool_bounds = Config.PARAMETER_BOUNDS
 concurrency_bounds = Config.FEATURE_BOUNDS

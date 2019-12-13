@@ -1,4 +1,4 @@
-import Config as Config
+import Config
 import global_data as gd
 
 

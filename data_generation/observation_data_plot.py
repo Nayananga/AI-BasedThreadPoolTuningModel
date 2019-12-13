@@ -1,5 +1,6 @@
-import Config as Config
 import sympy as sy
+
+import Config as Config
 import matplotlib.pyplot as plt
 
 threadpool_bounds = Config.PARAMETER_BOUNDS

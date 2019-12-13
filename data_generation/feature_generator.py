@@ -1,5 +1,6 @@
-from general_utilities import data_plot
 import numpy as np
+
+from general_utilities import data_plot
 import Config as Config
 
 

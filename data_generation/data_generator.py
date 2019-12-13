@@ -2,7 +2,6 @@ from data_generation.initial_configurations import initial_configurations
 import global_data as gd
 from data_generation.data_generation_initialization import data_generation_ini
 from general_utilities.commom_functions import *
-import csv
 
 
 def generate_data():

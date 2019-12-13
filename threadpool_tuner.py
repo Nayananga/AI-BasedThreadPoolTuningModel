@@ -10,7 +10,7 @@ from general_utilities.bayesian_opt import bayesian_expected_improvement, next_x
 import global_data as gd
 from general_utilities.commom_functions import *
 from general_utilities.FIFO import fifo_sampling
-import Config as Config
+import Config
 from general_utilities.data_plot import plot_data, save_plots
 from data_generation import data_generator
 from general_utilities.Bayesian_point_selection import update_min_point

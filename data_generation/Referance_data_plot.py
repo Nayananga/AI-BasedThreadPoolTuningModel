@@ -1,7 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import Config
 import numpy as np
+
+import Config
 
 
 def compare_data(return_check=False):
