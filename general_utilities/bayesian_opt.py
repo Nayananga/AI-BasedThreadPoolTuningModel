@@ -36,7 +36,7 @@ def next_x_point_selection(max_expected_improvement, min_x, trade_off_level, max
     else:
         # select the point with maximum expected improvement
         # if there're multiple points with same ei, chose randomly
-        idx = random.randint(0, len(max_points) - 1)
+        idx = random.randint(0, len(max_points) -1)
         next_x = max_points[idx]
 
         trade_off_level = trade_off_level + trade_off_level / 8

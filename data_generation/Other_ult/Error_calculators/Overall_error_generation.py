@@ -1,7 +1,7 @@
 import Config
 from data_generation.Referance_data_plot import compare_data
 
-COMMON_PATH = '/Users/isuru/PycharmProjects/Auto-Tuning-with-Bayesian/Data/Function_2/'
+COMMON_PATH = Config.ROOT_PATH + Config.FUNCTION_NAME + '/'
 
 
 def write_overall_all_error(data, data_names, identifiers):
@@ -23,9 +23,9 @@ def write_overall_all_error(data, data_names, identifiers):
     f.close()
 
 
-def main():
+def generate_overall_error():
     error_data = []
-    noise_change = "Without_Noise", "With_Noise_std_1", "With_Noise_std_5"
+    noise_change = Config.NOISE_CHANGE
     overall_error_name = []
     for noise in noise_change:
         for concurrency in range(len(Config.FEATURE_FUNCTION_ARRAY)):
@@ -44,7 +44,3 @@ def main():
 
     data_write_names = "Noise", "Concurrency change", "Threadpool size RMS", "Threadpool size RMS %", "Latency RMS", "Latency RMS %", "Sliced_Threadpool size RMS", "Sliced_Threadpool size RMS %", "Sliced_Latency RMS", "Sliced_Latency RMS %"
     write_overall_all_error(error_data, data_write_names, overall_error_name)
-
-
-if __name__ == "__main__":
-    main()

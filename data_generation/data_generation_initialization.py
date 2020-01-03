@@ -1,6 +1,7 @@
 import logging
+import pandas as pd
 
-from data_generation.feature_generator import feature_generator
+from data_generation.Other_ult.Feature_generator.feature_functions import feature_generator
 from general_utilities import data_plot
 from old_files.sample_system import sample_system
 from general_utilities.commom_functions import *
@@ -37,7 +38,8 @@ def data_generation_ini():
         # return parameter_data, optimizer_data, ref_min_optimizer, ref_min_object
         return parameter_data, optimizer_data
     else:
-        feature_changing_data = feature_data_generation()
+        # feature_changing_data = feature_data_generation()
+        feature_changing_data = read_feature_data()
         optimizer_plot_data = data_point_finder(parameter_bounds, feature_bounds)
         # ref_min_optimizer, ref_min_object = ref_min_data_finder(optimizer_plot_data)
         optimize_data, object_data = get_training_points(number_of_initial_points, parameter_bounds, feature_bounds)
@@ -60,14 +62,29 @@ def config_errors():
         logging.info("Everything is defined properly")
 
 
-def feature_data_generation():
-    feature_function = Config.FEATURE_FUNCTION
+def read_feature_data():
+    folder_name = Config.ROOT_PATH + 'Workload_data/'
+    file_name = Config.FEATURE_FUNCTION[0]
+    actual_data = pd.read_csv(folder_name + file_name + '.csv')
 
+    out_feature_data = []
+
+    feature_data = actual_data.iloc[:, 0]
+    for feature_point in feature_data:
+        point = []
+        point.append(feature_point)
+        out_feature_data.append(point)
+
+    return out_feature_data
+
+
+"""def feature_data_generation():
+    feature_function = Config.FEATURE_FUNCTION
     feature_changing_data = []
     for i in range(len(feature_names)):
         feature_changing_data.append(feature_generator(feature_function[i], feature_bounds[i]))
     feature_changing_data = list(map(list, zip(*feature_changing_data)))
-    return feature_changing_data
+    return feature_changing_data"""
 
 
 def data_generator(data_bounds):
@@ -101,10 +118,7 @@ def get_training_points(number_of_training_points, para_bounds, feat_bounds=None
         optimize_data = selecting_random_point(number_of_training_points, para_bounds)
     else:
         optimize_data = selecting_random_point(number_of_training_points, para_bounds, feat_bounds)
-
     for i in range(len(optimize_data)):
         object_data.append(sample_system(optimize_data[i]))
 
     return optimize_data, object_data
-
-

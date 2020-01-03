@@ -11,10 +11,12 @@ def compare_data(return_check=False):
     actual_data = pd.read_csv(Config.PATH + 'plot_thread_and_con_data.csv')
     actual_latency_data = pd.read_csv(Config.PATH + 'plot_99th_percentile_data.csv')
     reference_data = pd.read_csv(Config.REFERENCE_PATH + 'Reference_min_data.csv')
+    noise_data = pd.read_csv(Config.PATH + 'plot_noise_data.csv')
 
     actual_threadpool = actual_data.iloc[:, 0]
     actual_concurrency = actual_data.iloc[:, 1]
-    actual_latency = actual_latency_data.iloc[:,0]
+    actual_latency = actual_latency_data.iloc[:, 0]
+    noise_data = noise_data.iloc[:, 0]
 
     reference_threadpool = reference_data.iloc[:, 1]
     reference_concurrency = reference_data.iloc[:, 0]
@@ -23,11 +25,11 @@ def compare_data(return_check=False):
     plot_reference_threadpool = []
     plot_reference_latency = []
 
-    for concurrency in actual_concurrency:
+    for j, concurrency in enumerate(actual_concurrency):
         for i in range(len(reference_concurrency)):
             if reference_concurrency[i] == concurrency:
                 plot_reference_threadpool.append(reference_threadpool[i])
-                plot_reference_latency.append(reference_latency[i])
+                plot_reference_latency.append(reference_latency[i] + noise_data[j])
 
     all_data = error_calculations(plot_reference_threadpool, actual_threadpool, plot_reference_latency, actual_latency)
     file_write(all_data, data_write_names)
@@ -158,5 +160,3 @@ def rms_latency_calculation(targets, predictions, title = "Latency"):
     plot_error(error_values, title+'_error', title+'_error', title+'_error')
     plot_error(percentage_error_values, title+'percentage_error', title+'percentage_error', title+'percentage_error')
     return rms, rmsp
-
-

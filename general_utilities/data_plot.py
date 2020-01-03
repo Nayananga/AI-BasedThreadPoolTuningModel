@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+import os
 
 from old_files.bayesian_optimization_util import plot_approximation
 import Config
@@ -57,8 +58,10 @@ def surrogate_data_plot(next_x, i, model, x_plot_data, y_plot_data, parameter_hi
     plt.close()
 
 
-def general_plot(data, title="workload", x_label='time', y_label='workers', pause_time = 5):
-    folder_name = Config.PATH
+def feature_function_plot(data, title="workload", x_label='time', y_label='workers', plot_name='Concurrency', pause_time = 5):
+    folder_name = Config.ROOT_PATH + 'Workload_data/'
+
+    create_folders(folder_name)
 
     plt.plot(data, label='workload')
 
@@ -73,7 +76,31 @@ def general_plot(data, title="workload", x_label='time', y_label='workers', paus
 
     # Show the plot
 
-    plt.savefig(folder_name+"Concurrency.png", bbox_inches="tight")
+    plt.savefig(folder_name + plot_name + ".png", bbox_inches="tight")
+
+    plt.show(block=False)
+
+    plt.pause(pause_time)
+    plt.close()
+
+
+def general_plot(data, title="workload", x_label='time', y_label='workers', label='workload', plot_name="General_plot", pause_time=5):
+    folder_name = Config.PATH
+
+    plt.plot(data, label=label)
+
+    plt.title(title)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+
+    plt.grid(color='k', linestyle='-', linewidth=.1)
+
+    # Add a legend
+    plt.legend()
+
+    # Show the plot
+
+    plt.savefig(folder_name + plot_name + ".png", bbox_inches="tight")
 
     plt.show(block=False)
 
@@ -156,3 +183,10 @@ def min_point_plot(concurrency, thread_pool, title="Minimum_points", x_label='co
 
     plt.pause(pause_time)
     plt.close()
+
+
+def create_folders(path):
+    try:
+        os.makedirs(path)
+    except FileExistsError:
+        print("directory already exists")
