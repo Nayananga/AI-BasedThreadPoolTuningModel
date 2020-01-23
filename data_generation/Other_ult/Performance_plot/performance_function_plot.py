@@ -1,12 +1,11 @@
+"""
+This is used to visualize the performance curve for a given concurrency level through the parameter bounds
+"""
+
 import sympy as sy
 
 import Config as Config
 import matplotlib.pyplot as plt
-
-threadpool_bounds = Config.PARAMETER_BOUNDS
-concurrency_bounds = Config.FEATURE_BOUNDS
-
-equation = Config.FUNCTION
 
 threadpool_bounds = Config.PARAMETER_BOUNDS
 concurrency_bounds = Config.FEATURE_BOUNDS
@@ -21,7 +20,7 @@ min_point_location = []
 
 min_point_collection = []
 
-concurrency_level = 60
+concurrency_level = 300
 
 
 def sample_system(formula, **kwargs):
@@ -47,13 +46,14 @@ def point_plot(data, title="observation", x_label='threadpool size', y_label='la
     plt.show()
 
 
-for i in range(len(threadpool_bounds)):
-    for j in range(threadpool_bounds[i][1] - threadpool_bounds[i][0]):
-        thread_size.append(j+threadpool_bounds[i][0])
+if __name__ == '__main__':
+    for i in range(len(threadpool_bounds)):
+        for j in range(threadpool_bounds[i][1] - threadpool_bounds[i][0]):
+            thread_size.append(j+threadpool_bounds[i][0])
 
-data_points = []
+    data_points = []
 
-for thread in thread_size:
-    data_points.append(sample_system(p1=thread, f1=concurrency_level, formula=equation))
+    for thread in thread_size:
+        data_points.append(sample_system(p1=thread, f1=concurrency_level, formula=equation))
 
-point_plot(data_points)
+    point_plot(data_points)

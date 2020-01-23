@@ -2,11 +2,9 @@ import time
 import csv
 import sys
 import sympy as sy
-import os
 
 from general_utilities.gaussian_process import GPR
 from general_utilities.bayesian_opt import bayesian_expected_improvement, next_x_point_selection
-# from sample_system import sample_system
 import global_data as gd
 from general_utilities.commom_functions import *
 from general_utilities.FIFO import fifo_sampling
@@ -16,6 +14,7 @@ from data_generation import data_generator
 from general_utilities.Bayesian_point_selection import update_min_point
 from data_generation.Referance_data_plot import compare_data
 from data_generation.Other_ult.Error_calculators.Overall_error_generation import generate_overall_error
+from general_utilities.sample_system import sample_system
 
 
 # start a timer
@@ -87,30 +86,13 @@ def update_model(next_threadpool_size, threadpool_and_concurrency_data, percenti
     return threadpool_and_concurrency_data, percentile_data, trade_off_level, model
 
 
-def generate_noise(std):
-    noise_dist = np.random.normal(0, std, 1)
-    return noise_dist[0]
-
-
-def sample_system(formula, noise_level, **kwargs):
-    expr = sy.sympify(formula)
-    if noise_level == 0:
-        latency = float(expr.evalf(subs=kwargs))
-        noise = 0
-    else:
-        noise = generate_noise(noise_level)
-        latency = float(expr.evalf(subs=kwargs)) + noise
-        print(latency)
-    return latency, noise
-
-
-def tune_threadpool_size(model, threadpool_and_concurrency_data, percentile_data, concurrency_workload, latency_func, noise_std):
+def tune_threadpool_size(model, threadpool_and_concurrency_data, percentile_data, concurrency_workload, latency_func,
+                         noise_std):
     iteration = 0
     thread_pool_plot_data = []
     percentile_plot_data = []
     exploration_factor = []
     noise_data = []
-    pause_time = Config.PAUSE_TIME
     trade_off_level = Config.DEFAULT_TRADE_OFF_LEVEL
 
     # use bayesian optimization
@@ -143,8 +125,6 @@ def tune_threadpool_size(model, threadpool_and_concurrency_data, percentile_data
         print("min_data", gd.min_y_data)
         print("-------------------------------------")
 
-        # time.sleep(pause_time)
-
         # data plotting
         percentile_plot_data.append(next_percentile_values)
         thread_pool_plot_data.append(next_threadpool_size)
@@ -152,9 +132,9 @@ def tune_threadpool_size(model, threadpool_and_concurrency_data, percentile_data
         iteration += 1
 
         if iteration == len(concurrency_workload):
-            plot_data(thread_pool_plot_data, percentile_plot_data, pause_time, save=True)
+            plot_data(thread_pool_plot_data, percentile_plot_data, Config.PAUSE_TIME, save=True)
         else:
-            plot_data(thread_pool_plot_data, percentile_plot_data, pause_time)
+            plot_data(thread_pool_plot_data, percentile_plot_data, Config.PAUSE_TIME)
 
         # updating the minimum value
         update_min_point(threadpool_and_concurrency_data, percentile_data, concurrency, model)
@@ -162,18 +142,10 @@ def tune_threadpool_size(model, threadpool_and_concurrency_data, percentile_data
     save_plots(thread_pool_plot_data)
     general_plot(noise_data, title="noise", x_label='time', y_label='noise_level', label='noise_level',
                  plot_name="Noise_plot", pause_time=5)
-    file_write(thread_pool_plot_data, percentile_plot_data, exploration_factor, noise_data, folder_name=Config.PATH+'plot_')
+    file_write(thread_pool_plot_data, percentile_plot_data, exploration_factor, noise_data,
+               folder_name=Config.PATH + 'plot_')
     compare_data()
     return threadpool_and_concurrency_data, percentile_data, exploration_factor
-
-
-def create_folders():
-    try:
-        os.makedirs(Config.FOLDER)
-    except FileExistsError:
-        print("directory already exists")
-        # if input("are you sure want to go ahead (Y/n)?") == "n":
-        #     exit()
 
 
 def main():
@@ -182,7 +154,9 @@ def main():
     noise_name = Config.NOISE_CHANGE
 
     for j, noise in enumerate(Config.NOISE_LEVEL):
+
         Config.COMMON_PATH = common_path + '/' + noise_name[j] + '/'
+
         for i in range(len(Config.FEATURE_FUNCTION_ARRAY)):
             Config.FOLDER = Config.COMMON_PATH + Config.FILE_NAME[i]
             Config.PATH = Config.FOLDER + '/'
@@ -190,15 +164,19 @@ def main():
 
             print(Config.FEATURE_FUNCTION)
 
-            create_folders()
+            create_folders(Config.FOLDER)
 
             train_threadpool, train_percentile, concurrency_workload = data_generator.generate_data()
 
             # fit initial data to gaussian model
             model = GPR(train_threadpool, train_percentile)
 
-            threadpool_and_concurrency_data, percentile_data, exploration_factor = tune_threadpool_size(model, train_threadpool,
-                                                                                    train_percentile, concurrency_workload, latency_func, noise_std=noise)
+            threadpool_and_concurrency_data, percentile_data, exploration_factor = tune_threadpool_size(model,
+                                                                                                        train_threadpool,
+                                                                                                        train_percentile,
+                                                                                                        concurrency_workload,
+                                                                                                        latency_func,
+                                                                                                        noise_std=noise)
 
             file_write(threadpool_and_concurrency_data, percentile_data, exploration_factor, folder_name=Config.PATH)
 

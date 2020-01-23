@@ -36,7 +36,6 @@ def remove_data(number_of_points, point_locations, x_data, y_data):
 
 
 def index_get(value, data):
-
     index_p_val = []
     if type(value) == list or type(value) == tuple:
         p_val = value
@@ -50,12 +49,11 @@ def index_get(value, data):
 
     return index_p_val
 
-"""
-Variance is calculated according of the given distribution
-"""
-
 
 def variance_calculation(number_of_points, point_locations, y_data):
+    """
+    Variance is calculated according of the given distribution
+    """
     variance_matrix = []
 
     for i in range(number_of_points):

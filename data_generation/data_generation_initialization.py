@@ -1,11 +1,10 @@
 import logging
 import pandas as pd
 
-from data_generation.Other_ult.Feature_generator.feature_functions import feature_generator
 from general_utilities import data_plot
 from old_files.sample_system import sample_system
 from general_utilities.commom_functions import *
-import Config as Config
+import Config
 import global_data as gd
 
 parameter_names = Config.PARAMETERS
@@ -15,10 +14,6 @@ parameter_count = Config.NUMBER_OF_PARAMETERS
 feature_names = Config.FEATURE
 feature_bounds = Config.FEATURE_BOUNDS
 feature_count = Config.NUMBER_OF_FEATURES
-feature_function = Config.FEATURE_FUNCTION
-
-relation_function = Config.FUNCTION
-number_of_initial_points = Config.NUMBER_OF_TRAINING_POINTS
 
 
 def data_generation_ini():
@@ -26,8 +21,7 @@ def data_generation_ini():
 
     if feature_count == 0:
         optimizer_plot_data = data_point_finder(parameter_bounds)
-        # ref_min_optimizer, ref_min_object = ref_min_data_finder(optimizer_plot_data)
-        parameter_data, optimizer_data = get_training_points(number_of_initial_points, parameter_bounds)
+        parameter_data, optimizer_data = get_training_points()
         if parameter_count == 1:
             object_plot_data = []
             for i in range(len(optimizer_plot_data)):
@@ -35,15 +29,10 @@ def data_generation_ini():
             gd.optimizer_plot_data = optimizer_plot_data
             gd.object_plot_data = object_plot_data
             data_plot.initial_plot(optimizer_plot_data, object_plot_data)
-        # return parameter_data, optimizer_data, ref_min_optimizer, ref_min_object
         return parameter_data, optimizer_data
     else:
-        # feature_changing_data = feature_data_generation()
         feature_changing_data = read_feature_data()
-        optimizer_plot_data = data_point_finder(parameter_bounds, feature_bounds)
-        # ref_min_optimizer, ref_min_object = ref_min_data_finder(optimizer_plot_data)
-        optimize_data, object_data = get_training_points(number_of_initial_points, parameter_bounds, feature_bounds)
-        # return optimize_data, object_data, feature_changing_data, ref_min_optimizer, ref_min_object
+        optimize_data, object_data = get_training_points()
         return optimize_data, object_data, feature_changing_data
 
 
@@ -71,54 +60,30 @@ def read_feature_data():
 
     feature_data = actual_data.iloc[:, 0]
     for feature_point in feature_data:
-        point = []
-        point.append(feature_point)
+        point = [feature_point]
         out_feature_data.append(point)
 
     return out_feature_data
 
 
-"""def feature_data_generation():
-    feature_function = Config.FEATURE_FUNCTION
-    feature_changing_data = []
-    for i in range(len(feature_names)):
-        feature_changing_data.append(feature_generator(feature_function[i], feature_bounds[i]))
-    feature_changing_data = list(map(list, zip(*feature_changing_data)))
-    return feature_changing_data"""
+def get_training_points():
+    folder_name = Config.ROOT_PATH + 'Training_data/'
+    latency = pd.read_csv(folder_name + 'latency_training_data.csv')
+    thread = pd.read_csv(folder_name + 'threadpool_and_concurrency_training_data.csv')
 
-
-def data_generator(data_bounds):
-    data = []
-    for i in range(len(data_bounds)):
-        temp_collect = []
-        bounds = np.array([[data_bounds[i][0], data_bounds[i][1]]])
-        temp = (np.arange(bounds[:, 0], bounds[:, 1], 1).reshape(-1, 1))
-        for j in range(len(temp)):
-            temp_collect.append(temp[j][0])
-        data.append(temp_collect)
-    return data
-
-
-def ref_min_data_finder(optimize_data):
     object_data = []
-    for i in range(len(optimize_data)):
-        object_data.append(sample_system(optimize_data[i]))
+    optimize_data = []
 
-    if feature_count == 0:
-        minimum_x_data, minimum_y_data = min_point_find_no_feature(optimize_data, object_data)
-    else:
-        minimum_x_data, minimum_y_data = ini_min_point_find_with_feature(optimize_data, object_data)
+    latency_data = latency.iloc[:, 0]
+    thread_data = thread.iloc[:, 0]
+    feature_data = thread.iloc[:, 1]
 
-    return minimum_x_data, minimum_y_data
+    for latency_point in latency_data:
+        point = latency_point
+        object_data.append(point)
 
-
-def get_training_points(number_of_training_points, para_bounds, feat_bounds=None):
-    object_data = []
-    if feat_bounds is None:
-        optimize_data = selecting_random_point(number_of_training_points, para_bounds)
-    else:
-        optimize_data = selecting_random_point(number_of_training_points, para_bounds, feat_bounds)
-    for i in range(len(optimize_data)):
-        object_data.append(sample_system(optimize_data[i]))
+    for i, thread_point in enumerate(thread_data):
+        point = [thread_point, feature_data[i]]
+        optimize_data.append(point)
 
     return optimize_data, object_data

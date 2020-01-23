@@ -1,6 +1,8 @@
-import Config
 import itertools
 import numpy as np
+import os
+
+import Config
 
 parameter_count = Config.NUMBER_OF_PARAMETERS
 feature_count = Config.NUMBER_OF_FEATURES
@@ -82,3 +84,12 @@ def selecting_random_point(number_of_points, parameter_bounds, feature_bounds=No
             random_points.append(point)
 
     return random_points
+
+
+def create_folders(path):
+    try:
+        os.makedirs(path)
+    except FileExistsError:
+        print("directory already exists")
+        # if input("are you sure want to go ahead (Y/n)?") == "n":
+        #     exit()

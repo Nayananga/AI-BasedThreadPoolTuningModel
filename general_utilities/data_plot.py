@@ -161,9 +161,9 @@ def save_plots(threadpool_and_concurrency_data):
     plt.pause(5)
     plt.close()
 
-def min_point_plot(concurrency, thread_pool, title="Minimum_points", x_label='concurrency', y_label='Threadpool size', pause_time = 0):
-    common_path = Config.COMMON_PATH
-    folder_name = Config.REFERENCE_PATH
+
+def min_point_plot(concurrency, thread_pool, title="Minimum_points", x_label='concurrency', y_label='Threadpool size', pause_time = 0.1):
+    path = Config.REFERENCE_PATH
     plt.plot(thread_pool, label='thread pool size')
 
     plt.title(title)
@@ -177,7 +177,7 @@ def min_point_plot(concurrency, thread_pool, title="Minimum_points", x_label='co
 
     # Show the plot
 
-    plt.savefig(common_path+folder_name + "Reference_min.png", bbox_inches="tight")
+    plt.savefig(path + "Reference_min.png", bbox_inches="tight")
 
     plt.show(block=False)
 

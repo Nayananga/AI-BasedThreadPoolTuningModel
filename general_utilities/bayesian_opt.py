@@ -10,8 +10,7 @@ next_x_point_selection : Next x point selection algorithm according to the expec
 
 
 # Bayesian expected improvement calculation
-def bayesian_expected_improvement(x_val, max_expected_improvement, max_improve_points, min_y, trade_off_level,
-                                  model):
+def bayesian_expected_improvement(x_val, max_expected_improvement, max_improve_points, min_y, trade_off_level, model):
     x_val = np.array(x_val).reshape(1, -1)
     expected_improvement = gaussian_ei(x_val, model, min_y, trade_off_level)
 
@@ -26,7 +25,7 @@ def bayesian_expected_improvement(x_val, max_expected_improvement, max_improve_p
 
 
 def next_x_point_selection(max_expected_improvement, min_x, trade_off_level, max_points):
-    print("max_expected - ",max_expected_improvement)
+    print("max_expected - ", max_expected_improvement)
     if max_expected_improvement == 0:
         print("WARN: Maximum expected improvement was 0")
         next_x = min_x
@@ -36,7 +35,7 @@ def next_x_point_selection(max_expected_improvement, min_x, trade_off_level, max
     else:
         # select the point with maximum expected improvement
         # if there're multiple points with same ei, chose randomly
-        idx = random.randint(0, len(max_points) -1)
+        idx = random.randint(0, len(max_points) - 1)
         next_x = max_points[idx]
 
         trade_off_level = trade_off_level + trade_off_level / 8
