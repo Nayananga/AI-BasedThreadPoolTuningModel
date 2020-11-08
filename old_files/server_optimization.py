@@ -1,12 +1,14 @@
-from general_utilities import gaussian_process as gp
-import numpy as np
-import random
-from general_utilities.acquisition import gaussian_ei
-import time
-import requests
-import sys
 import csv
 import logging
+import random
+import sys
+import time
+
+import numpy as np
+import requests
+
+from general_utilities import gaussian_process as gp
+from general_utilities.acquisition import gaussian_ei
 
 logging.basicConfig(level=logging.INFO)
 
@@ -33,7 +35,7 @@ def get_performance(x_pass, lower_bound, loc, online_check):
 
 
 def get_initial_points():
-    for i in range(0, (number_of_initial_points+1)):
+    for i in range(0, (number_of_initial_points + 1)):
         x = thread_pool_min + i * (thread_pool_max - thread_pool_min) / number_of_initial_points
         x = int(x)
         logging.info('X = %i', x)
@@ -52,7 +54,7 @@ def gausian_model(kern, xx, yy):
 
 
 check_srt = sys.argv[7]
-#check_srt = False
+# check_srt = False
 online = True if check_srt == 'True' else False
 
 if online:
@@ -80,7 +82,6 @@ iterations = test_duration // tuning_interval
 noise_level = 1e-6
 number_of_initial_points = 8
 
-
 x_data = []
 y_data = []
 
@@ -95,9 +96,8 @@ model = gausian_model(kernel, x_data, y_data)
 
 xi = 0.1
 
-
 # use bayesian optimization
-for i in range((number_of_initial_points+1), iterations):
+for i in range((number_of_initial_points + 1), iterations):
     minimum = min(y_data)
     x_location = y_data.index(min(y_data))
     max_expected_improvement = 0

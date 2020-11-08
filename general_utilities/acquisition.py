@@ -1,6 +1,6 @@
-import numpy as np
 import warnings
 
+import numpy as np
 from scipy.stats import norm
 
 
@@ -68,7 +68,7 @@ def _gaussian_acquisition(X, model, y_opt=None, acq_func="LCB",
                 mu, std = time_model.predict(X, return_std=True)
 
             # acq = acq / E(t)
-            inv_t = np.exp(-mu + 0.5*std**2)
+            inv_t = np.exp(-mu + 0.5 * std ** 2)
             acq_vals *= inv_t
 
             # grad = d(acq_func) * inv_t + (acq_vals *d(inv_t))
@@ -77,7 +77,7 @@ def _gaussian_acquisition(X, model, y_opt=None, acq_func="LCB",
             # d(inv_t) = inv_t * (-mu_grad + std * std_grad)
             if return_grad:
                 acq_grad *= inv_t
-                acq_grad += acq_vals * (-mu_grad + std*std_grad)
+                acq_grad += acq_vals * (-mu_grad + std * std_grad)
 
     else:
         raise ValueError("Acquisition function not implemented.")
@@ -214,7 +214,7 @@ def gaussian_pi(X, model, y_opt=0.0, xi=0.01, return_grad=False):
         # Substitute (y_opt - xi - mu) / sigma = t and apply chain rule.
         # improve_grad is the gradient of t wrt x.
         improve_grad = -mu_grad * std - std_grad * improve
-        improve_grad /= std**2
+        improve_grad /= std ** 2
 
         return values, improve_grad * norm.pdf(scaled)
 
@@ -277,9 +277,9 @@ def gaussian_ei(X, model, y_opt=0.0, xi=0.01, return_grad=False):
             mu, std = model.predict(X, return_std=True)
 
     values = np.zeros_like(mu)
-    #mask = std > 0
+    # mask = std > 0
     mask = True
-    if std == 0 or std < 0 :
+    if std == 0 or std < 0:
         print("less")
     improve = y_opt - xi - mu[mask]
     scaled = improve / std[mask]

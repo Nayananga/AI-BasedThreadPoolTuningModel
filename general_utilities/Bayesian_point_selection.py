@@ -1,9 +1,8 @@
-import sys
 import numpy as np
 
 import global_data as gd
+from general_utilities.bayesian_opt import bayesian_expected_improvement
 from general_utilities.commom_functions import *
-from general_utilities.bayesian_opt import bayesian_expected_improvement, next_x_point_selection
 
 
 def update_min_point(x_data, y_data, feature_val, model=None):

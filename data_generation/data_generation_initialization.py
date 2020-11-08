@@ -1,11 +1,11 @@
 import logging
+
 import pandas as pd
 
-from general_utilities import data_plot
-from old_files.sample_system import sample_system
-from general_utilities.commom_functions import *
-import Config
 import global_data as gd
+from general_utilities import data_plot
+from general_utilities.commom_functions import *
+from old_files.sample_system import sample_system
 
 parameter_names = Config.PARAMETERS
 parameter_bounds = Config.PARAMETER_BOUNDS

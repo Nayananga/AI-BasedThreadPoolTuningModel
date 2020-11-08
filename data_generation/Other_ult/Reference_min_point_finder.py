@@ -1,9 +1,9 @@
 import csv
 
 import Config
+from general_utilities.commom_functions import create_folders
 from general_utilities.data_plot import min_point_plot
 from general_utilities.sample_system import sample_system
-from general_utilities.commom_functions import create_folders
 
 threadpool_bounds = Config.PARAMETER_BOUNDS
 concurrency_bounds = Config.FEATURE_BOUNDS

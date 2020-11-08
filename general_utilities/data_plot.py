@@ -1,12 +1,12 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import time
 import os
+import time
 
-from old_files.bayesian_optimization_util import plot_approximation
-import Config
-
+import matplotlib.pyplot as plt
+import numpy as np
 from mpl_toolkits.mplot3d import axes3d
+
+import Config
+from old_files.bayesian_optimization_util import plot_approximation
 
 a = axes3d
 
@@ -17,7 +17,6 @@ def initial_plot(parameter_plot_data, object_plot_data):
     plt.plot(parameter_plot_data, object_plot_data, lw=2, label='Noise-free objective')
     plt.legend()
     plt.show()
-
 
 
 """def initial_2d_plot(parameter_min, parameter_max, feature_min, feature_max):
@@ -58,7 +57,8 @@ def surrogate_data_plot(next_x, i, model, x_plot_data, y_plot_data, parameter_hi
     plt.close()
 
 
-def feature_function_plot(data, title="workload", x_label='time', y_label='workers', plot_name='Concurrency', pause_time = 5):
+def feature_function_plot(data, title="workload", x_label='time', y_label='workers', plot_name='Concurrency',
+                          pause_time=5):
     folder_name = Config.ROOT_PATH + 'Workload_data/'
 
     create_folders(folder_name)
@@ -84,7 +84,8 @@ def feature_function_plot(data, title="workload", x_label='time', y_label='worke
     plt.close()
 
 
-def general_plot(data, title="workload", x_label='time', y_label='workers', label='workload', plot_name="General_plot", pause_time=5):
+def general_plot(data, title="workload", x_label='time', y_label='workers', label='workload', plot_name="General_plot",
+                 pause_time=5):
     folder_name = Config.PATH
 
     plt.plot(data, label=label)
@@ -127,7 +128,7 @@ def plot_data(threadpool_and_concurrency_data, percentile_data, pause_time, save
 
     if save:
         time_stamp = time.asctime(time.localtime(time.time()))
-        plt.savefig(folder_name+"data.png", bbox_inches="tight")
+        plt.savefig(folder_name + "data.png", bbox_inches="tight")
 
     # Show the plot
     plt.show(block=False)
@@ -162,7 +163,8 @@ def save_plots(threadpool_and_concurrency_data):
     plt.close()
 
 
-def min_point_plot(concurrency, thread_pool, title="Minimum_points", x_label='concurrency', y_label='Threadpool size', pause_time = 0.1):
+def min_point_plot(concurrency, thread_pool, title="Minimum_points", x_label='concurrency', y_label='Threadpool size',
+                   pause_time=0.1):
     path = Config.REFERENCE_PATH
     plt.plot(thread_pool, label='thread pool size')
 

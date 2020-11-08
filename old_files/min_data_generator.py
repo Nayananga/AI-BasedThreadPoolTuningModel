@@ -1,6 +1,7 @@
+import itertools
+
 import Config as Config
 from old_files.sample_system import sample_system
-import itertools
 
 
 def min_data_generator(parameters, features=None):
@@ -37,4 +38,3 @@ def data_combine(parameters, features=None):
             combined_data = list(itertools.product(*data))
 
     return combined_data
-

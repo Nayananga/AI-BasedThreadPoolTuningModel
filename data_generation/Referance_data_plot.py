@@ -1,6 +1,6 @@
-import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 import Config
 
@@ -52,8 +52,11 @@ def error_calculations(plot_reference_threadpool, actual_threadpool, plot_refere
     sliced_plot_reference_latency = list(plot_reference_latency[sliced_number:])
     sliced_actual_latency = list(actual_latency[sliced_number:])
 
-    sliced_rms_threadpool, sliced_rmsper_threadpool = rms_theadpool_calculation(sliced_plot_reference_threadpool, sliced_actual_threadpool, title="Sliced_Thread_pool")
-    sliced_rms_latency, sliced_rmsper_latency = rms_latency_calculation(sliced_plot_reference_latency, sliced_actual_latency, title="Sliced_Latency")
+    sliced_rms_threadpool, sliced_rmsper_threadpool = rms_theadpool_calculation(sliced_plot_reference_threadpool,
+                                                                                sliced_actual_threadpool,
+                                                                                title="Sliced_Thread_pool")
+    sliced_rms_latency, sliced_rmsper_latency = rms_latency_calculation(sliced_plot_reference_latency,
+                                                                        sliced_actual_latency, title="Sliced_Latency")
 
     all_data.append(rms_threadpool)
     all_data.append(rmsper_threadpool)
@@ -97,7 +100,7 @@ def plot_comparison(p1=None, p1_lable=None, p2=None, p2_lable=None, p3=None, p3_
     # Add a legend
     plt.legend()
 
-    plt.savefig(Config.PATH+"Comparison.png", bbox_inches="tight")
+    plt.savefig(Config.PATH + "Comparison.png", bbox_inches="tight")
 
     # Show the plot
     # plt.show(block=False)
@@ -120,7 +123,7 @@ def plot_error(p1=None, p1_lable=None, title=None, name=None):
     # Add a legend
     plt.legend()
 
-    plt.savefig(Config.PATH+name+".png", bbox_inches="tight")
+    plt.savefig(Config.PATH + name + ".png", bbox_inches="tight")
 
     # Show the plot
     # plt.show(block=False)
@@ -135,16 +138,17 @@ def rms_theadpool_calculation(targets, predictions, title="Thread_pool"):
     for i in range(len(targets)):
         error = predictions[i] - targets[i]
         error_values.append(error)
-        percentage_error = (error/targets[i])*100
+        percentage_error = (error / targets[i]) * 100
         percentage_error_values.append(percentage_error)
     rms = (np.sqrt(np.mean(np.square(error_values))))
     rmsp = (np.sqrt(np.mean(np.square(percentage_error_values))))
-    plot_error(error_values, title+'_error', title+'_error', title+'_error')
-    plot_error(percentage_error_values, title+'percentage_error', title+'percentage_error', title+'percentage_error')
+    plot_error(error_values, title + '_error', title + '_error', title + '_error')
+    plot_error(percentage_error_values, title + 'percentage_error', title + 'percentage_error',
+               title + 'percentage_error')
     return rms, rmsp
 
 
-def rms_latency_calculation(targets, predictions, title = "Latency"):
+def rms_latency_calculation(targets, predictions, title="Latency"):
     error_values = []
     percentage_error_values = []
     for i in range(len(targets)):
@@ -157,6 +161,7 @@ def rms_latency_calculation(targets, predictions, title = "Latency"):
         percentage_error_values.append(percentage_error)
     rms = (np.sqrt(np.mean(np.square(error_values))))
     rmsp = (np.sqrt(np.mean(np.square(percentage_error_values))))
-    plot_error(error_values, title+'_error', title+'_error', title+'_error')
-    plot_error(percentage_error_values, title+'percentage_error', title+'percentage_error', title+'percentage_error')
+    plot_error(error_values, title + '_error', title + '_error', title + '_error')
+    plot_error(percentage_error_values, title + 'percentage_error', title + 'percentage_error',
+               title + 'percentage_error')
     return rms, rmsp

@@ -1,30 +1,25 @@
-import time
 import csv
-import sys
-import sympy as sy
+import time
 
-from general_utilities.gaussian_process import GPR
-from general_utilities.bayesian_opt import bayesian_expected_improvement, next_x_point_selection
 import global_data as gd
-from general_utilities.commom_functions import *
-from general_utilities.FIFO import fifo_sampling
-import Config
-from general_utilities.data_plot import plot_data, save_plots, general_plot
 from data_generation import data_generator
-from general_utilities.Bayesian_point_selection import update_min_point
-from data_generation.Referance_data_plot import compare_data
 from data_generation.Other_ult.Error_calculators.Overall_error_generation import generate_overall_error
+from data_generation.Referance_data_plot import compare_data
+from general_utilities.Bayesian_point_selection import update_min_point
+from general_utilities.FIFO import fifo_sampling
+from general_utilities.bayesian_opt import bayesian_expected_improvement, next_x_point_selection
+from general_utilities.commom_functions import *
+from general_utilities.data_plot import plot_data, save_plots, general_plot
+from general_utilities.gaussian_process import GPR
 from general_utilities.sample_system import sample_system
-
 
 # start a timer
 start_time = time.time()
 
 
 def find_next_threadpool_size(threadpool_and_concurrency_data, percentile_data, trade_off_level, model, concurrency):
-
     min_threadpool_size, min_percentile = update_min_point(threadpool_and_concurrency_data, percentile_data,
-                                                                       concurrency, model)
+                                                           concurrency, model)
 
     if min_percentile is None:
         next_threadpool_size = min_threadpool_size
@@ -52,8 +47,8 @@ def find_next_threadpool_size(threadpool_and_concurrency_data, percentile_data, 
     return next_threadpool_size, trade_off_level
 
 
-def file_write(threadpool_and_concurrency_data, percentile_data, exploration_factor, noise_data=None, folder_name=Config.PATH):
-
+def file_write(threadpool_and_concurrency_data, percentile_data, exploration_factor, noise_data=None,
+               folder_name=Config.PATH):
     with open(folder_name + "99th_percentile_data.csv", 'w') as f:
         writer = csv.writer(f)
         for val in percentile_data:

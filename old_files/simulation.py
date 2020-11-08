@@ -1,13 +1,14 @@
 import time
 
-from data_generation.data_generation_initialization import data_generation_ini
-from general_utilities.gaussian_process import thread_pool_tuning_model
-from general_utilities.Bayesian_point_selection import each_point_analysis
 from data_generation.initial_configurations import initial_configurations
+
 import global_data as gd
-from general_utilities.commom_functions import *
-from general_utilities.FIFO import fifo_sampling
+from data_generation.data_generation_initialization import data_generation_ini
 from general_utilities import data_plot
+from general_utilities.Bayesian_point_selection import each_point_analysis
+from general_utilities.FIFO import fifo_sampling
+from general_utilities.commom_functions import *
+from general_utilities.gaussian_process import thread_pool_tuning_model
 
 # from simulation_utilities.initial_data_assign import initial_data_assign
 
@@ -98,7 +99,8 @@ def main():
         if number_of_features == 0 and number_of_parameters == 1:
             optimize_plot_data = gd.optimizer_plot_data
             object_plot_data = gd.object_plot_data
-            data_plot.surrogate_data_plot(next_optimize, iteration, model, optimize_plot_data, object_plot_data, optimize_data, object_data)
+            data_plot.surrogate_data_plot(next_optimize, iteration, model, optimize_plot_data, object_plot_data,
+                                          optimize_data, object_data)
         print("-------------------------------------")
 
         time.sleep(pause_time)

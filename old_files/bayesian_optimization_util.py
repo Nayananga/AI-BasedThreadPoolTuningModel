@@ -1,6 +1,5 @@
-import numpy as np
-
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def plot_approximation(gpr, X, Y, X_sample, Y_sample, X_next=None, show_legend=False):

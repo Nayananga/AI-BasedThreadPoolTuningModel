@@ -1,21 +1,16 @@
 import csv
+
 import numpy as np
-
-from general_utilities.commom_functions import selecting_random_point
-import Config
-from old_files.sample_system import sample_system
-
 import sympy as sy
-import numpy as np
 
+import Config
 from data_generation.Other_ult.Training_points_genereation.dse_tool.explorer import Explorer
 from data_generation.Other_ult.Training_points_genereation.dse_tool.util import RandomInt
-
-import Config
+from general_utilities.commom_functions import selecting_random_point
+from old_files.sample_system import sample_system
 
 
 def generate_training_points(number_of_training_points, para_bounds, feat_bounds=None, select_random=False):
-
     if select_random:
         """
         This method is for random selection of the training points.
@@ -53,7 +48,6 @@ def generate_training_points(number_of_training_points, para_bounds, feat_bounds
 
 
 def corner_point_selection(para_bounds, feat_bounds):
-
     para_corners = []
     feature_corners = []
     corner_points = []
@@ -86,7 +80,7 @@ def write_training_data(data, name):
                 writer.writerow([val])
 
 
-def dse(number_of_random_points = 10):
+def dse(number_of_random_points=10):
     explorer = Explorer(
         {
             'p1': RandomInt(Config.PARAMETER_BOUNDS[0][0], Config.PARAMETER_BOUNDS[0][1]),
@@ -97,14 +91,16 @@ def dse(number_of_random_points = 10):
 
     expr = sy.sympify(Config.FUNCTION)
     eval_func = lambda x: np.float64(expr.evalf(subs=x))
-    init_df = explorer.explore(Config.NUMBER_OF_TRAINING_POINTS - number_of_random_points, eval_func, init_n=number_of_random_points)
+    init_df = explorer.explore(Config.NUMBER_OF_TRAINING_POINTS - number_of_random_points, eval_func,
+                               init_n=number_of_random_points)
     print(init_df.values)
 
     return init_df.values
 
 
 if __name__ == '__main__':
-    threadpool_and_concurrency, latency = generate_training_points(Config.NUMBER_OF_TRAINING_POINTS, Config.PARAMETER_BOUNDS, Config.FEATURE_BOUNDS)
+    threadpool_and_concurrency, latency = generate_training_points(Config.NUMBER_OF_TRAINING_POINTS,
+                                                                   Config.PARAMETER_BOUNDS, Config.FEATURE_BOUNDS)
 
     print(np.shape(threadpool_and_concurrency))
     print(np.shape(latency))

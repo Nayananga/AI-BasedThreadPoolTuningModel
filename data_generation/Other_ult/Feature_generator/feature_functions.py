@@ -1,8 +1,9 @@
-import numpy as np
 import sys
 
-from general_utilities import data_plot
+import numpy as np
+
 import Config
+from general_utilities import data_plot
 
 
 def feature_generator(function_name, bounds):
@@ -37,12 +38,12 @@ def feature_generator(function_name, bounds):
 def increase_and_decrease(lower, upper):
     data = []
     length = Config.NUMBER_OF_ITERATIONS
-    changing_point = round(length/2)
-    lower_concurrency = np.random.randint(lower, upper/2)
-    upper_concurrency = np.random.randint(upper/2, upper)
+    changing_point = round(length / 2)
+    lower_concurrency = np.random.randint(lower, upper / 2)
+    upper_concurrency = np.random.randint(upper / 2, upper)
 
     value = lower_concurrency
-    step = (upper_concurrency - lower_concurrency)/changing_point
+    step = (upper_concurrency - lower_concurrency) / changing_point
     for i in range(length):
         value = round(value + step)
         if i % changing_point == 0 and i is not 0:
@@ -54,9 +55,9 @@ def increase_and_decrease(lower, upper):
 def one_step_function(lower, upper):
     data = []
     length = Config.NUMBER_OF_ITERATIONS
-    step_num = round(length/2)
+    step_num = round(length / 2)
 
-    value = np.random.randint(lower, upper/2)
+    value = np.random.randint(lower, upper / 2)
     for i in range(length):
         if i % step_num == 0 and i is not 0:
             value = np.random.randint(lower, upper)
@@ -69,12 +70,12 @@ def step_increase_function(lower, upper):
     step_num = 20
     length = Config.NUMBER_OF_ITERATIONS
     value = lower
-    step = np.round((upper - lower) / np.round(length/step_num))
+    step = np.round((upper - lower) / np.round(length / step_num))
     for i in range(length):
         if i % step_num == 0:
             value = value + step
             if value >= upper:
-                value = upper-1
+                value = upper - 1
         data.append(value)
     return data
 
@@ -84,7 +85,7 @@ def step_decrease_function(lower, upper):
     step_num = 10
     length = Config.NUMBER_OF_ITERATIONS
     value = upper
-    step = (upper - lower) / np.round(length/step_num)
+    step = (upper - lower) / np.round(length / step_num)
     for i in range(length):
         if i % step_num == 0:
             value = int(value - step)
@@ -97,9 +98,9 @@ def step_decrease_function(lower, upper):
 def up_and_down_function(lower, upper):
     data = []
     length = Config.NUMBER_OF_ITERATIONS
-    step_num = round(length/5)
+    step_num = round(length / 5)
 
-    value = np.random.randint(lower, upper/2)
+    value = np.random.randint(lower, upper / 2)
     for i in range(length):
         if i % step_num == 0 and i is not 0:
             value = np.random.randint(lower, upper)
@@ -133,14 +134,14 @@ def generating_peaks(lower, upper):
     step_num = 30
     check_iter = 0
     length = Config.NUMBER_OF_ITERATIONS
-    value = np.random.randint(lower, upper/3)
+    value = np.random.randint(lower, upper / 3)
     for i in range(length):
         if i == 0:
             value_old = value
         elif i % step_num == 0:
-            value = np.random.randint(upper/2, upper)
+            value = np.random.randint(upper / 2, upper)
             check_iter = i
-        elif i == (int(check_iter)+2):
+        elif i == (int(check_iter) + 2):
             value = value_old
         data.append(value)
     return data

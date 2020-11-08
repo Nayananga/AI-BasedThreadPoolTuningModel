@@ -37,5 +37,3 @@ class RandomFloat(__RandomDist):
 
     def sample(self, size):
         return np.random.uniform(self.low, self.high, (size, 1))
-
-

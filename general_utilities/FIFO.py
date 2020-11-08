@@ -1,4 +1,5 @@
 import numpy as np
+
 import Config
 
 '''
@@ -11,7 +12,6 @@ variance_threshold = 50
 
 
 def fifo_sampling(next_x, x_data, y_data, trade_off_level):
-
     point_locations = index_get(next_x, x_data)
     number_of_points = len(point_locations)
 

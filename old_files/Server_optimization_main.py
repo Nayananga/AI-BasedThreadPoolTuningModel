@@ -1,12 +1,13 @@
-import time
 import logging
+import time
+
 import numpy as np
+from simulation_utilities import min_value_finder
+from simulation_utilities.workload_generator import workload_config
 
 import Config as Cg
 from general_utilities import bayesian_opt, data_plot
 from general_utilities.gaussian_process import thread_pool_tuning_model
-from simulation_utilities.workload_generator import workload_config
-from simulation_utilities import min_value_finder
 from old_files.Training_point_generator import get_training_points
 
 logging.basicConfig(level=logging.INFO)
@@ -56,7 +57,8 @@ def main():
             min_x = x_data[x_location]
         else:
             print("workers -", workload[iteration])
-            minimum, min_x = min_value_finder.min_point_find(x_value=x_data, y_value=y_data, feature_val=workload[iteration])
+            minimum, min_x = min_value_finder.min_point_find(x_value=x_data, y_value=y_data,
+                                                             feature_val=workload[iteration])
             print(minimum)
             print(min_x)
 
@@ -94,7 +96,7 @@ def main():
 
         print("-------------------------------------")
 
-        #time.sleep(5)
+        # time.sleep(5)
 
     print("minimum found : %f", min(y_data))
 

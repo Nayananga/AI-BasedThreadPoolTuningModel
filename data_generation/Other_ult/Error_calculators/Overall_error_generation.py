@@ -45,5 +45,4 @@ def generate_overall_error():
     data_write_names = "Noise", "Concurrency change", "Threadpool size RMS", "Threadpool size RMS %", "Latency RMS", "Latency RMS %", "Sliced_Threadpool size RMS", "Sliced_Threadpool size RMS %", "Sliced_Latency RMS", "Sliced_Latency RMS %"
     write_overall_all_error(error_data, data_write_names, overall_error_name)
 
-
 # generate_overall_error()

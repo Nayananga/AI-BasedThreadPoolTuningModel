@@ -4,7 +4,6 @@ Data index finding for FIFO method
 
 
 def index_get(value, data):
-
     index_p_val = []
     p_val = value[0]
 

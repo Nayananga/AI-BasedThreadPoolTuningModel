@@ -17,10 +17,10 @@ PARAMETER_BOUNDS = [[1, 1000]]
 # PARAMETER BOUNDS
 FEATURE_BOUNDS = [[1, 500]]
 
-
 # To define a new function go to simulation_utilities/data_generations/feature_generator.py
 
-FEATURE_FUNCTION_ARRAY = [['INCREASE_AND_DECREASE_FUNCTION'], ['ONE_STEP_FUNCTION'], ['CONSTANT'], ['PEAKS'], ['RANDOM'], ['STEP_INCREASE_FUNCTION'], ['UP_AND_DOWN_FUNCTION']]
+FEATURE_FUNCTION_ARRAY = [['INCREASE_AND_DECREASE_FUNCTION'], ['ONE_STEP_FUNCTION'], ['CONSTANT'], ['PEAKS'],
+                          ['RANDOM'], ['STEP_INCREASE_FUNCTION'], ['UP_AND_DOWN_FUNCTION']]
 # FEATURE_FUNCTION_ARRAY = [['RANDOM'], ['STEP_INCREASE_FUNCTION'], ['UP_AND_DOWN_FUNCTION']]
 FILE_NAME = ['Increase_and_decrease', 'One_step', 'Constant', 'Peaks', 'Random', 'Step_increase', 'Up_and_down']
 # FILE_NAME = ['Random', 'Step_increase', 'Up_and_down']
@@ -45,7 +45,6 @@ COMMON_PATH = ROOT_PATH + FUNCTION_NAME
 FOLDER = None
 PATH = None
 FEATURE_FUNCTION = None
-
 
 """Random, From_model, Nearest_point"""
 SELECTION_METHOD = "From_model"

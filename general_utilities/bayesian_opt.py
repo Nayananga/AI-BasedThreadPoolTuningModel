@@ -1,7 +1,8 @@
-import numpy as np
 import random
-from general_utilities.acquisition import gaussian_ei
 
+import numpy as np
+
+from general_utilities.acquisition import gaussian_ei
 
 """
 bayesian_expected_improvement : Bayesian expected improvement calculation

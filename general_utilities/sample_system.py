@@ -1,8 +1,5 @@
-import sympy as sy
 import numpy as np
-import csv
-
-import Config
+import sympy as sy
 
 
 def generate_noise(std):
