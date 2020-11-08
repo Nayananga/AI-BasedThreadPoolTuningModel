@@ -1,9 +1,8 @@
 import time
 
-from data_generation.data_generator import initial_configurations
-
 import global_data as gd
 from data_generation.data_generation_initialization import data_generation_ini
+from data_generation.data_generator import initial_configurations
 from general_utilities import data_plot
 from general_utilities.Bayesian_point_selection import each_point_analysis
 from general_utilities.FIFO import fifo_sampling
