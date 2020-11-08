@@ -1,5 +1,3 @@
-import numpy as np
-
 import global_data as gd
 from general_utilities.bayesian_opt import bayesian_expected_improvement
 from general_utilities.commom_functions import *
