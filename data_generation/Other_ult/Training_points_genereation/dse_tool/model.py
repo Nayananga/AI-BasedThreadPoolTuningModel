@@ -39,28 +39,28 @@ class GPR:
 
         self.gpr = self.optimizer = self.loss_fn = None
 
-    def fit(self, X, y, n_iter=100, learning_rate=0.005):
+    def fit(self, x, y, n_iter=100, learning_rate=0.005):
 
-        if X.shape[1] != self.dim:
-            raise Exception("number of features should be %d, provided %d" % (self.dim, X.shape[1]))
+        if x.shape[1] != self.dim:
+            raise Exception("number of features should be %d, provided %d" % (self.dim, x.shape[1]))
 
-        if not torch.is_tensor(X):
-            X = np.copy(X)
-            X = torch.tensor(X)
+        if not torch.is_tensor(x):
+            x = np.copy(x)
+            x = torch.tensor(x)
 
         if not torch.is_tensor(y):
             y = np.copy(y)
             y = torch.tensor(y)
 
         if self.gpr is None:
-            self.gpr = gp.models.GPRegression(X, y, self.kernel, noise=torch.tensor(0.1))
+            self.gpr = gp.models.GPRegression(x, y, self.kernel, noise=torch.tensor(0.1))
 
             # initiate the optimizer
             self.optimizer = torch.optim.Adam(self.gpr.parameters(), lr=learning_rate)
             self.loss_fn = pyro.infer.Trace_ELBO().differentiable_loss
 
         else:
-            self.gpr.set_data(X, y)
+            self.gpr.set_data(x, y)
 
         # learning hyper-parameters from the model
         losses = []
@@ -73,21 +73,21 @@ class GPR:
 
         return losses
 
-    def predict(self, X, return_unc=True):
+    def predict(self, x, return_unc=True):
 
-        if X.shape[1] != self.dim:
-            raise Exception("number of features should be %d, provided %d" % (self.dim, X.shape[1]))
+        if x.shape[1] != self.dim:
+            raise Exception("number of features should be %d, provided %d" % (self.dim, x.shape[1]))
 
         if self.gpr is None:
             raise Exception("train the model once first")
 
-        X = np.copy(X)
+        x = np.copy(x)
 
-        if not torch.is_tensor(X):
-            X = torch.tensor(X)
+        if not torch.is_tensor(x):
+            x = torch.tensor(x)
 
         with torch.no_grad():
-            mean, cov = self.gpr(X, full_cov=True, noiseless=False)
+            mean, cov = self.gpr(x, full_cov=True, noiseless=False)
         mean, cov = mean.numpy(), cov.numpy()
 
         if return_unc:

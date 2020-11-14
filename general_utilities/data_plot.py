@@ -1,5 +1,4 @@
 import os
-import time
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -127,7 +126,6 @@ def plot_data(threadpool_and_concurrency_data, percentile_data, pause_time, save
     plt.legend()
 
     if save:
-        time_stamp = time.asctime(time.localtime(time.time()))
         plt.savefig(folder_name + "data.png", bbox_inches="tight")
 
     # Show the plot

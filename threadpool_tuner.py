@@ -106,10 +106,8 @@ def tune_threadpool_size(model, threadpool_and_concurrency_data, percentile_data
         threadpool_and_concurrency_data.append(next_threadpool_size)
 
         # Update the model
-        threadpool_and_concurrency_data, percentile_data, trade_off_level, model = update_model(next_threadpool_size,
-                                                                                                threadpool_and_concurrency_data,
-                                                                                                percentile_data,
-                                                                                                trade_off_level)
+        threadpool_and_concurrency_data, percentile_data, trade_off_level, model = update_model(
+            next_threadpool_size, threadpool_and_concurrency_data, percentile_data, trade_off_level)
 
         print("inter -", iteration)
         print("workers -", concurrency)
@@ -166,12 +164,8 @@ def main():
             # fit initial data to gaussian model
             model = GPR(train_threadpool, train_percentile)
 
-            threadpool_and_concurrency_data, percentile_data, exploration_factor = tune_threadpool_size(model,
-                                                                                                        train_threadpool,
-                                                                                                        train_percentile,
-                                                                                                        concurrency_workload,
-                                                                                                        latency_func,
-                                                                                                        noise_std=noise)
+            threadpool_and_concurrency_data, percentile_data, exploration_factor = tune_threadpool_size(
+                model, train_threadpool, train_percentile, concurrency_workload, latency_func, noise_std=noise)
 
             file_write(threadpool_and_concurrency_data, percentile_data, exploration_factor, folder_name=Config.PATH)
 

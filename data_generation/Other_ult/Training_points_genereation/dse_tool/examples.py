@@ -53,26 +53,26 @@ def mean_absolute_percentage_error(y_true, y_pred):
     """
     y_true, y_pred = np.array(y_true), np.array(y_pred)
 
-    for i, y in enumerate(y_true):
-        if y == 0:
-            y_true[i] = 1
-            y_pred[i] = 1
+    for i1, y1 in enumerate(y_true):
+        if y1 == 0:
+            y_true[i1] = 1
+            y_pred[i1] = 1
 
     return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 
 
-def plot1D(X, y, plot_observed_data=False, plot_predictions=False, model=None, n_test=500, ):
+def plot1d(x, y2, plot_observed_data=False, plot_predictions=False, model=None, n_test=500):
     plt.figure(figsize=(20, 10))
 
     if plot_observed_data:
-        plt.plot(X, y, 'kx')
+        plt.plot(x, y2, 'kx')
 
     if plot_predictions:
-        Xtest = np.linspace(-0.05, 1.05, n_test).reshape(-1, 1)  # test inputs
+        xtest = np.linspace(-0.05, 1.05, n_test).reshape(-1, 1)  # test inputs
         # compute predictive mean and variance
-        mean, sd = model.predict(Xtest)
-        plt.plot(Xtest, mean, 'r', lw=2)  # plot the mean
-        plt.fill_between(Xtest.flatten(),  # plot the two-sigma uncertainty about the mean
+        mean, sd = model.predict(xtest)
+        plt.plot(xtest, mean, 'r', lw=2)  # plot the mean
+        plt.fill_between(xtest.flatten(),  # plot the two-sigma uncertainty about the mean
                          (mean - 2.0 * sd),
                          (mean + 2.0 * sd),
                          color='C0', alpha=0.3)
@@ -82,21 +82,21 @@ def plot1D(X, y, plot_observed_data=False, plot_predictions=False, model=None, n
     plt.xlim(-0.05, 1.05)
 
 
-def plot2D(X, y, model, estimator, eval_func, input_domain):
+def plot2d(x, y3, model, estimator, eval_func1, input_domain1):
     fig = plt.figure(figsize=plt.figaspect(0.5))
 
-    n = 30
-    min_X, max_X = input_domain
+    n1 = 30
+    min_x, max_x = input_domain1
 
-    x1 = np.outer(np.linspace(min_X, max_X, n), np.ones(n))
-    x2 = np.outer(np.linspace(min_X, max_X, n), np.ones(n)).T
-    z = eval_func({"x1": x1.flatten(), "x2": x2.flatten()}).reshape(n, n)
+    x1 = np.outer(np.linspace(min_x, max_x, n1), np.ones(n1))
+    x2 = np.outer(np.linspace(min_x, max_x, n1), np.ones(n1)).T
+    z = eval_func1({"x1": x1.flatten(), "x2": x2.flatten()}).reshape(n1, n1)
 
     cmap = 'Spectral'
     ax = fig.add_subplot(1, 5, 1, projection='3d')
     ax.plot_surface(x1, x2, z, cmap=cmap, edgecolor='none')
     ax.set_title("true plot")
-    z = model.predict(np.array([x1, x2]).T.reshape(-1, 2))[0].reshape(n, n).T
+    z = model.predict(np.array([x1, x2]).T.reshape(-1, 2))[0].reshape(n1, n1).T
 
     ax = fig.add_subplot(1, 5, 2, projection='3d')
     # ax.scatter(X.T[0], X.T[1], y, marker="x")
@@ -104,75 +104,75 @@ def plot2D(X, y, model, estimator, eval_func, input_domain):
     ax.set_title("Bayesian + GP")
 
     xgb_adv = clone(estimator)
-    xgb_adv.fit(X, y)
-    z = xgb_adv.predict(np.array([x1, x2]).T.reshape(-1, 2)).reshape(n, n).T
+    xgb_adv.fit(x, y3)
+    z = xgb_adv.predict(np.array([x1, x2]).T.reshape(-1, 2)).reshape(n1, n1).T
 
     ax = fig.add_subplot(1, 5, 3, projection='3d')
     # ax.scatter(X.T[0], X.T[1], y, marker="x")
     ax.plot_surface(x1, x2, z, cmap=cmap, edgecolor='none')
     ax.set_title("Bayesian + XGB")
 
-    rand_X = np.random.uniform(min_X, max_X, X.shape)
-    rand_y = eval_func({"x%d" % i: _x for i, _x in enumerate(rand_X.T)})
+    rand_x = np.random.uniform(min_x, max_x, x.shape)
+    rand_y = eval_func1({"x%d" % i1: _x for i1, _x in enumerate(rand_x.T)})
 
     gpr_rand = GaussianProcessRegressor(RBF(2), alpha=0.01)
-    gpr_rand.fit(rand_X, rand_y)
-    z = gpr_rand.predict(np.array([x1, x2]).T.reshape(-1, 2)).reshape(n, n).T
+    gpr_rand.fit(rand_x, rand_y)
+    z = gpr_rand.predict(np.array([x1, x2]).T.reshape(-1, 2)).reshape(n1, n1).T
 
     ax = fig.add_subplot(1, 5, 4, projection='3d')
-    # ax.scatter(rand_X.T[0], rand_X.T[1], rand_y, marker="x")
+    # ax.scatter(rand_x.T[0], rand_x.T[1], rand_y, marker="x")
     ax.plot_surface(x1, x2, z, cmap=cmap, edgecolor='none')
     ax.set_title("uniform random + GP")
 
     xgb_rand = clone(estimator)
-    xgb_rand.fit(rand_X, rand_y)
-    z = xgb_rand.predict(np.array([x1, x2]).T.reshape(-1, 2)).reshape(n, n).T
+    xgb_rand.fit(rand_x, rand_y)
+    z = xgb_rand.predict(np.array([x1, x2]).T.reshape(-1, 2)).reshape(n1, n1).T
 
     ax = fig.add_subplot(1, 5, 5, projection='3d')
-    # ax.scatter(rand_X.T[0], rand_X.T[1], rand_y, marker="x")
+    # ax.scatter(rand_x.T[0], rand_x.T[1], rand_y, marker="x")
     ax.plot_surface(x1, x2, z, cmap=cmap, edgecolor='none')
     ax.set_title("uniform random + XGB")
 
 
-def eval_accuracy(X, y, model, estimator, eval_func, input_domain):
-    n = 30
-    min_X, max_X, = input_domain
+def eval_accuracy(x, y4, model, estimator, eval_func1, input_domain1):
+    n1 = 30
+    min_x, max_x, = input_domain1
 
-    test_x1 = np.outer(np.linspace(min_X, max_X, n), np.ones(n)).flatten()
-    test_x2 = np.outer(np.linspace(min_X, max_X, n), np.ones(n)).T.flatten()
-    test_X = np.array([test_x1, test_x2]).T.reshape(-1, 2)
-    test_y = eval_func({"x1": test_x1, "x2": test_x2})
+    test_x1 = np.outer(np.linspace(min_x, max_x, n1), np.ones(n1)).flatten()
+    test_x2 = np.outer(np.linspace(min_x, max_x, n1), np.ones(n1)).T.flatten()
+    test_x = np.array([test_x1, test_x2]).T.reshape(-1, 2)
+    test_y = eval_func1({"x1": test_x1, "x2": test_x2})
 
     pred_gpr = model.predict(np.array([test_x1, test_x2]).T.reshape(-1, 2))[0]
     print("Error using %d explored data with GPR MSE : %.4f ,MAPE : %.4f" % (
-        X.shape[0], mean_squared_error(test_y, pred_gpr),
+        x.shape[0], mean_squared_error(test_y, pred_gpr),
         mean_absolute_percentage_error(test_y, pred_gpr)))
 
     model_best = clone(estimator)
-    model_best.fit(X, y)
-    pred_best = model_best.predict(test_X)
+    model_best.fit(x, y4)
+    pred_best = model_best.predict(test_x)
 
     print("Error using %d explored data with XGB MSE : %.4f ,MAPE : %.4f" % (
-        X.shape[0], mean_squared_error(test_y, pred_best),
+        x.shape[0], mean_squared_error(test_y, pred_best),
         mean_absolute_percentage_error(test_y, pred_best)))
 
-    rand_X = np.random.uniform(min_X, max_X, X.shape)
-    rand_y = eval_func({"x%d" % i: _x for i, _x in enumerate(rand_X.T)})
+    rand_x = np.random.uniform(min_x, max_x, x.shape)
+    rand_y = eval_func1({"x%d" % i2: _x for i2, _x in enumerate(rand_x.T)})
 
     model_rand = GaussianProcessRegressor(RBF(2), alpha=0.01)
-    model_rand.fit(rand_X, rand_y)
-    pred_rand = model_rand.predict(test_X)
+    model_rand.fit(rand_x, rand_y)
+    pred_rand = model_rand.predict(test_x)
 
     print("Error using %d uniform sampled data with GPR MSE : %.4f ,MAPE : %.4f" % (
-        rand_X.shape[0], mean_squared_error(test_y, pred_rand),
+        rand_x.shape[0], mean_squared_error(test_y, pred_rand),
         mean_absolute_percentage_error(test_y, pred_rand)))
 
     model_rand = xgboost.XGBRegressor()
-    model_rand.fit(rand_X, rand_y)
-    pred_rand = model_rand.predict(test_X)
+    model_rand.fit(rand_x, rand_y)
+    pred_rand = model_rand.predict(test_x)
 
     print("Error using %d uniform sampled data with XGB MSE : %.4f ,MAPE : %.4f" % (
-        rand_X.shape[0], mean_squared_error(test_y, pred_rand),
+        rand_x.shape[0], mean_squared_error(test_y, pred_rand),
         mean_absolute_percentage_error(test_y, pred_rand)))
 
 
@@ -182,8 +182,8 @@ def test_eval(param_dict):
     :param param_dict:
     :return:
     """
-    X = np.array([param_dict[params] for params in param_dict])
-    return np.cos(X[0].T ** 2 + X[1].T ** 2)
+    x = np.array([param_dict[params] for params in param_dict])
+    return np.cos(x[0].T ** 2 + x[1].T ** 2)
 
 
 def rastrigin_function(param_dict):
@@ -192,8 +192,8 @@ def rastrigin_function(param_dict):
     :param param_dict:
     :return:
     """
-    X = np.array([param_dict[params] for params in param_dict]).T.reshape(-1, 2)
-    return 10 * len(param_dict) + np.sum(np.square(X) - 10 * np.cos(2 * np.pi * X), axis=1).flatten()
+    x = np.array([param_dict[params] for params in param_dict]).T.reshape(-1, 2)
+    return 10 * len(param_dict) + np.sum(np.square(x) - 10 * np.cos(2 * np.pi * x), axis=1).flatten()
 
 
 def rosenbrock_function(param_dict):
@@ -203,8 +203,8 @@ def rosenbrock_function(param_dict):
     :return:
     """
     a, b = 1, 100
-    X = np.array([param_dict[params] for params in param_dict]).reshape(2, -1)
-    return (a - X[0].flatten()) ** 2 + b * (X[1] - X[0] ** 2) ** 2 + np.random.normal(0, 0.2, len(X[0]))
+    x = np.array([param_dict[params] for params in param_dict]).reshape(2, -1)
+    return (a - x[0].flatten()) ** 2 + b * (x[1] - x[0] ** 2) ** 2 + np.random.normal(0, 0.2, len(x[0]))
 
 
 def himmelblau_function(param_dict):
@@ -213,8 +213,8 @@ def himmelblau_function(param_dict):
     :param param_dict:
     :return:
     """
-    X = np.array([param_dict[params] for params in param_dict]).reshape(2, -1)
-    return (X[0] ** 2 + X[1] + 11) ** 2 + (X[0] + X[1] ** 2 - 7) ** 2 + np.random.normal(0, 0.2, len(X[0]))
+    x = np.array([param_dict[params] for params in param_dict]).reshape(2, -1)
+    return (x[0] ** 2 + x[1] + 11) ** 2 + (x[0] + x[1] ** 2 - 7) ** 2 + np.random.normal(0, 0.2, len(x[0]))
 
 
 def styblinski_tang_function(param_dict):
@@ -223,8 +223,8 @@ def styblinski_tang_function(param_dict):
     :param param_dict:
     :return:
     """
-    X = np.array([param_dict[params] for params in param_dict]).reshape(2, -1).T
-    return 0.5 * np.sum(X ** 4 - 16 * X ** 2 + 5 * X, axis=1) + np.random.normal(0, 0.2, X.shape[0])
+    x = np.array([param_dict[params] for params in param_dict]).reshape(2, -1).T
+    return 0.5 * np.sum(x ** 4 - 16 * x ** 2 + 5 * x, axis=1) + np.random.normal(0, 0.2, x.shape[0])
 
 
 def eggholder_function(param_dict):
@@ -233,9 +233,9 @@ def eggholder_function(param_dict):
     :param param_dict:
     :return:
     """
-    X = np.array([param_dict[params] for params in param_dict]).reshape(2, -1)
-    return -(X[1] + 47) * np.sin(np.sqrt(np.abs(X[0] / 2.0 + (X[1] + 47)))) - X[0] * np.sin(
-        np.sqrt(np.abs(X[0] - (X[1] + 47)))) + np.random.normal(0, 0.2, len(X[0]))
+    x = np.array([param_dict[params] for params in param_dict]).reshape(2, -1)
+    return -(x[1] + 47) * np.sin(np.sqrt(np.abs(x[0] / 2.0 + (x[1] + 47)))) - x[0] * np.sin(
+        np.sqrt(np.abs(x[0] - (x[1] + 47)))) + np.random.normal(0, 0.2, len(x[0]))
 
 
 if __name__ == '__main__':
@@ -265,5 +265,5 @@ if __name__ == '__main__':
         print("Number of data points : %d" % X.shape[0])
         eval_accuracy(X, y, explorer.gpr, xgb, eval_func, input_domain)
 
-        plot2D(X, y, explorer.gpr, xgb, eval_func, input_domain)
+        plot2d(X, y, explorer.gpr, xgb, eval_func, input_domain)
         plt.show()

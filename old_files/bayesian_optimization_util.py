@@ -2,33 +2,33 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plot_approximation(gpr, X, Y, X_sample, Y_sample, X_next=None, show_legend=False):
-    mu, std = gpr.predict(X, return_std=True)
-    plt.fill_between(X.ravel(),
+def plot_approximation(gpr, x, y, x_sample, y_sample, x_next=None, show_legend=False):
+    mu, std = gpr.predict(x)
+    plt.fill_between(x.ravel(),
                      mu.ravel() + 1.96 * std,
                      mu.ravel() - 1.96 * std,
                      alpha=0.1)
-    plt.plot(X, Y, 'y--', lw=1, label='Noise-free objective')
-    plt.plot(X, mu, 'b-', lw=1, label='Surrogate function')
-    plt.plot(X_sample, Y_sample, 'kx', mew=3, label='Noisy samples')
-    if X_next:
-        plt.axvline(x=X_next, ls='--', c='k', lw=1)
+    plt.plot(x, y, 'y--', lw=1, label='Noise-free objective')
+    plt.plot(x, mu, 'b-', lw=1, label='Surrogate function')
+    plt.plot(x_sample, y_sample, 'kx', mew=3, label='Noisy samples')
+    if x_next:
+        plt.axvline(x=x_next, ls='--', c='k', lw=1)
     if show_legend:
         plt.legend()
 
 
-def plot_acquisition(X, Y, X_next, show_legend=False):
-    plt.plot(X, Y, 'r-', lw=1, label='Acquisition function')
-    plt.axvline(x=X_next, ls='--', c='k', lw=1, label='Next sampling location')
+def plot_acquisition(x, y, x_next, show_legend=False):
+    plt.plot(x, y, 'r-', lw=1, label='Acquisition function')
+    plt.axvline(x=x_next, ls='--', c='k', lw=1, label='Next sampling location')
     if show_legend:
         plt.legend()
 
 
-def plot_convergence(X_sample, Y_sample, n_init=2):
+def plot_convergence(x_sample, y_sample, n_init=2):
     plt.figure(figsize=(12, 3))
 
-    x = X_sample[n_init:].ravel()
-    y = Y_sample[n_init:].ravel()
+    x = x_sample[n_init:].ravel()
+    y = y_sample[n_init:].ravel()
     r = range(1, len(x) + 1)
 
     x_neighbor_dist = [np.abs(a - b) for a, b in zip(x, x[1:])]

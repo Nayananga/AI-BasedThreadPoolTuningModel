@@ -112,12 +112,12 @@ class Explorer:
 
         params = [param for param in init_df.columns if param != target_col]
         init_df = pd.read_csv(self.path)
-        X = init_df[params].values
+        x = init_df[params].values
         y = init_df[target_col].values
 
         for i in range(n):
 
-            losses = self.gpr.fit(X.astype(np.float), y, n_iter=100 if i > 0 else 2000, learning_rate=0.1)
+            losses = self.gpr.fit(x.astype(np.float), y, n_iter=100 if i > 0 else 2000, learning_rate=0.1)
 
             eval_data = np.empty((samples, 0))
             for param in init_df.columns:
@@ -132,7 +132,7 @@ class Explorer:
             eval_y = np.array(eval_target(exp_func, {param: next_point[i]
                                                      for i, param in enumerate(init_df.columns) if
                                                      param != target_col})).flatten()
-            X = np.append(X, [next_point], axis=0)
+            x = np.append(x, [next_point], axis=0)
             y = np.append(y, eval_y)
 
             logger.info("explored params : %a eval results : %.4f" % (next_point.tolist(), eval_y))
@@ -140,6 +140,6 @@ class Explorer:
             new_row = pd.DataFrame(data=np.append(next_point, eval_y).reshape(1, -1), columns=init_df.columns)
             new_row.to_csv(self.path, mode='a', header=False, index=False)
 
-        new_df = pd.DataFrame(data=np.append(X, y.reshape(-1, 1), axis=1), columns=init_df.columns)
+        new_df = pd.DataFrame(data=np.append(x, y.reshape(-1, 1), axis=1), columns=init_df.columns)
 
         return new_df

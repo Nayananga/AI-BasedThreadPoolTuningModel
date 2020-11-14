@@ -6,7 +6,14 @@ import Config
 
 
 def compare_data(return_check=False):
-    data_write_names = "Threadpool size RMS", "Threadpool size RMS %", "Latency RMS", "Latency RMS %", "Sliced_Threadpool size RMS", "Sliced_Threadpool size RMS %", "Sliced_Latency RMS", "Sliced_Latency RMS %"
+    data_write_names = ("Threadpool size RMS",
+                        "Threadpool size RMS %",
+                        "Latency RMS",
+                        "Latency RMS %",
+                        "Sliced_Threadpool size RMS",
+                        "Sliced_Threadpool size RMS %",
+                        "Sliced_Latency RMS",
+                        "Sliced_Latency RMS %")
 
     actual_data = pd.read_csv(Config.PATH + 'plot_thread_and_con_data.csv')
     actual_latency_data = pd.read_csv(Config.PATH + 'plot_99th_percentile_data.csv')

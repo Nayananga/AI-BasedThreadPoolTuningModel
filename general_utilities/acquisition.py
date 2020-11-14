@@ -4,29 +4,25 @@ import numpy as np
 from scipy.stats import norm
 
 
-def gaussian_acquisition_1D(X, model, y_opt=None, acq_func="LCB",
-                            acq_func_kwargs=None, return_grad=True):
+def gaussian_acquisition_1d(x, model, y_opt=None, acq_func="LCB", acq_func_kwargs=None, return_grad=True):
     """
     A wrapper around the acquisition function that is called by fmin_l_bfgs_b.
 
     This is because lbfgs allows only 1-D input.
     """
-    return _gaussian_acquisition(np.expand_dims(X, axis=0),
-                                 model, y_opt, acq_func=acq_func,
-                                 acq_func_kwargs=acq_func_kwargs,
-                                 return_grad=return_grad)
+    return _gaussian_acquisition(np.expand_dims(x, axis=0), model, y_opt, acq_func=acq_func, return_grad=return_grad,
+                                 acq_func_kwargs=acq_func_kwargs)
 
 
-def _gaussian_acquisition(X, model, y_opt=None, acq_func="LCB",
-                          return_grad=False, acq_func_kwargs=None):
+def _gaussian_acquisition(x, model, y_opt=None, acq_func="LCB", return_grad=False, acq_func_kwargs=None):
     """
     Wrapper so that the output of this function can be
 
     directly passed to a minimizer.
     """
     # Check inputs
-    X = np.asarray(X)
-    if X.ndim != 2:
+    x = np.asarray(x)
+    if x.ndim != 2:
         raise ValueError("X should be 2-dimensional.")
 
     if acq_func_kwargs is None:
@@ -40,7 +36,7 @@ def _gaussian_acquisition(X, model, y_opt=None, acq_func="LCB",
         model, time_model = model.estimators_
 
     if acq_func == "LCB":
-        func_and_grad = gaussian_lcb(X, model, kappa, return_grad)
+        func_and_grad = gaussian_lcb(x, model, kappa, return_grad)
         if return_grad:
             acq_vals, acq_grad = func_and_grad
         else:
@@ -48,9 +44,9 @@ def _gaussian_acquisition(X, model, y_opt=None, acq_func="LCB",
 
     elif acq_func in ["EI", "PI", "EIps", "PIps"]:
         if acq_func in ["EI", "EIps"]:
-            func_and_grad = gaussian_ei(X, model, y_opt, xi, return_grad)
+            func_and_grad = gaussian_ei(x, model, y_opt, xi, return_grad)
         else:
-            func_and_grad = gaussian_pi(X, model, y_opt, xi, return_grad)
+            func_and_grad = gaussian_pi(x, model, y_opt, xi, return_grad)
 
         if return_grad:
             acq_vals = -func_and_grad[0]
@@ -61,11 +57,9 @@ def _gaussian_acquisition(X, model, y_opt=None, acq_func="LCB",
         if acq_func in ["EIps", "PIps"]:
 
             if return_grad:
-                mu, std, mu_grad, std_grad = time_model.predict(
-                    X, return_std=True, return_mean_grad=True,
-                    return_std_grad=True)
+                mu, std, mu_grad, std_grad = time_model.predict(x)
             else:
-                mu, std = time_model.predict(X, return_std=True)
+                mu, std = time_model.predict(x)
 
             # acq = acq / E(t)
             inv_t = np.exp(-mu + 0.5 * std ** 2)
@@ -87,7 +81,7 @@ def _gaussian_acquisition(X, model, y_opt=None, acq_func="LCB",
     return acq_vals
 
 
-def gaussian_lcb(X, model, kappa=1.96, return_grad=False):
+def gaussian_lcb(x, model, kappa=1.96, return_grad=False):
     """
     Use the lower confidence bound to estimate the acquisition
     values.
@@ -131,22 +125,20 @@ def gaussian_lcb(X, model, kappa=1.96, return_grad=False):
         warnings.simplefilter("ignore")
 
         if return_grad:
-            mu, std, mu_grad, std_grad = model.predict(
-                X, return_std=True, return_mean_grad=True,
-                return_std_grad=True)
+            mu, std, mu_grad, std_grad = model.predict(x)
 
             if kappa == "inf":
                 return -std, -std_grad
             return mu - kappa * std, mu_grad - kappa * std_grad
 
         else:
-            mu, std = model.predict(X, return_std=True)
+            mu, std = model.predict(x)
             if kappa == "inf":
                 return -std
             return mu - kappa * std
 
 
-def gaussian_pi(X, model, y_opt=0.0, xi=0.01, return_grad=False):
+def gaussian_pi(x, model, y_opt=0.0, xi=0.01, return_grad=False):
     """
     Use the probability of improvement to calculate the acquisition values.
 
@@ -195,11 +187,9 @@ def gaussian_pi(X, model, y_opt=0.0, xi=0.01, return_grad=False):
         warnings.simplefilter("ignore")
 
         if return_grad:
-            mu, std, mu_grad, std_grad = model.predict(
-                X, return_std=True, return_mean_grad=True,
-                return_std_grad=True)
+            mu, std, mu_grad, std_grad = model.predict(x)
         else:
-            mu, std = model.predict(X, return_std=True)
+            mu, std = model.predict(x)
 
     values = np.zeros_like(mu)
     mask = std > 0
@@ -221,7 +211,7 @@ def gaussian_pi(X, model, y_opt=0.0, xi=0.01, return_grad=False):
     return values
 
 
-def gaussian_ei(X, model, y_opt=0.0, xi=0.01, return_grad=False):
+def gaussian_ei(x, model, y_opt=0.0, xi=0.01, return_grad=False):
     """
     Use the expected improvement to calculate the acquisition values.
 
@@ -269,12 +259,10 @@ def gaussian_ei(X, model, y_opt=0.0, xi=0.01, return_grad=False):
         warnings.simplefilter("ignore")
 
         if return_grad:
-            mu, std, mu_grad, std_grad = model.predict(
-                X, return_std=True, return_mean_grad=True,
-                return_std_grad=True)
+            mu, std, mu_grad, std_grad = model.predict(x)
 
         else:
-            mu, std = model.predict(X, return_std=True)
+            mu, std = model.predict(x)
 
     values = np.zeros_like(mu)
     # mask = std > 0
