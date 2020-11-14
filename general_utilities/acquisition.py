@@ -260,10 +260,11 @@ def gaussian_ei(x, model, y_opt=0.0, xi=0.01, return_grad=False):
         warnings.simplefilter("ignore")
 
         if return_grad:
-            mu, std, mu_grad, std_grad = model.predict(x)
+            mu, std, mu_grad, std_grad = model.predict(x, return_std=True, return_mean_grad=True,
+                                                       return_std_grad=True)
 
         else:
-            mu, std = model.predict(x)
+            mu, std = model.predict(x, return_std=True)
 
     values = np.zeros_like(mu)
     # mask = std > 0
