@@ -21,6 +21,7 @@ def _gaussian_acquisition(x, model, y_opt=None, acq_func="LCB", return_grad=Fals
     directly passed to a minimizer.
     """
     # Check inputs
+    time_model, acq_grad, std_grad, mu_grad, acq_grad, time_model = None, None, None, None, None, None
     x = np.asarray(x)
     if x.ndim != 2:
         raise ValueError("X should be 2-dimensional.")

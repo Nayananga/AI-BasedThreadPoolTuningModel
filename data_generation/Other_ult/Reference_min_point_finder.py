@@ -26,6 +26,7 @@ def file_write(data, path):
 
 
 def find_reference_min_points():
+    min_location = None
     create_folders(Config.REFERENCE_PATH)
 
     for i in range(len(concurrency_bounds)):

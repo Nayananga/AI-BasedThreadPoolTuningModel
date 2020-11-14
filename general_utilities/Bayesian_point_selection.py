@@ -4,6 +4,7 @@ from general_utilities.commom_functions import *
 
 
 def update_min_point(x_data, y_data, feature_val, model=None):
+    min_x1, min_location, min_location = None, None, None
     min_x_data = gd.min_x_data
     min_y_data = gd.min_y_data
     min_y = None
@@ -13,27 +14,28 @@ def update_min_point(x_data, y_data, feature_val, model=None):
         if min_x_data[j][Config.NUMBER_OF_PARAMETERS:] == feature_val:
             found_feature_val = True
             min_y = min_y_data[j]
-            min_x = min_x_data[j]
+            min_x1 = min_x_data[j]
             min_location = j
             break
 
     if found_feature_val:
-        if min_x in x_data and min_y in y_data:
+        if min_x1 in x_data and min_y in y_data:
             if y_data[-1] < min_y and x_data[-1][Config.NUMBER_OF_PARAMETERS:] == feature_val:
                 min_y = y_data[-1]
-                min_x = x_data[-1]
+                min_x1 = x_data[-1]
 
                 gd.min_y_data[min_location] = min_y
-                gd.min_x_data[min_location] = min_x
+                gd.min_x_data[min_location] = min_x1
         else:
-            min_x, min_y = replace_min_point(x_data, y_data, feature_val, min_location, model)
+            min_x1, min_y = replace_min_point(x_data, y_data, feature_val, min_location, model)
     else:
-        min_x = estimate_minimum_point(x_data, y_data, feature_val, model)
+        min_x1 = estimate_minimum_point(x_data, y_data, feature_val, model)
 
-    return min_x, min_y
+    return min_x1, min_y
 
 
 def estimate_minimum_point(x_data, y_data, feature_val, model):
+    min_x = None
     if x_data[-1][Config.NUMBER_OF_PARAMETERS:] == feature_val:
         min_y = y_data[-1]
         min_x = x_data[-1]

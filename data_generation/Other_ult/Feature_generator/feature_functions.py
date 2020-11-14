@@ -109,6 +109,7 @@ def up_and_down_function(lower, upper):
 
 
 def random_data(lower, upper):
+    value = None
     data = []
     length = Config.NUMBER_OF_ITERATIONS
     for i in range(length):
@@ -130,6 +131,7 @@ def constant_value(constant):
 
 
 def generating_peaks(lower, upper):
+    value_old = None
     data = []
     step_num = 30
     check_iter = 0
