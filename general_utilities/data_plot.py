@@ -112,8 +112,8 @@ def general_plot(data, title="workload", x_label='time', y_label='workers', labe
 def plot_data(threadpool_and_concurrency_data, percentile_data, pause_time, save=False):
     folder_name = Config.PATH
 
-    threapool_size, concurrency = map(list, zip(*threadpool_and_concurrency_data))
-    plt.plot(threapool_size, label='thread pool size')
+    threadpool_size, concurrency = map(list, zip(*threadpool_and_concurrency_data))
+    plt.plot(threadpool_size, label='thread pool size')
     plt.plot(concurrency, label='concurrency')
     plt.plot(percentile_data, label='latency')
 
@@ -139,13 +139,12 @@ def plot_data(threadpool_and_concurrency_data, percentile_data, pause_time, save
 def save_plots(threadpool_and_concurrency_data):
     folder_name = Config.PATH
 
-    threapool_size, concurrency = map(list, zip(*threadpool_and_concurrency_data))
-    time_stamp = time.asctime(time.localtime(time.time()))
+    threadpool_size, concurrency = map(list, zip(*threadpool_and_concurrency_data))
 
-    plt.plot(threapool_size, label='thread pool size')
+    plt.plot(threadpool_size, label='thread pool size')
     plt.plot(concurrency, label='concurrency')
 
-    plt.title("Concurency and Threadpool size")
+    plt.title("Concurrency and Threadpool size")
     plt.xlabel("Time")
     # plt.ylabel("y_label")
 
@@ -154,7 +153,7 @@ def save_plots(threadpool_and_concurrency_data):
     # Add a legend
     plt.legend()
 
-    plt.savefig(folder_name + "Concurency and Threadpool size.png", bbox_inches="tight")
+    plt.savefig(folder_name + "Concurrency and Threadpool size.png", bbox_inches="tight")
 
     # Show the plot
     plt.show(block=False)
@@ -163,7 +162,7 @@ def save_plots(threadpool_and_concurrency_data):
     plt.close()
 
 
-def min_point_plot(concurrency, thread_pool, title="Minimum_points", x_label='concurrency', y_label='Threadpool size',
+def min_point_plot(thread_pool, title="Minimum_points", x_label='concurrency', y_label='Threadpool size',
                    pause_time=0.1):
     path = Config.REFERENCE_PATH
     plt.plot(thread_pool, label='thread pool size')

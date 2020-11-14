@@ -55,7 +55,7 @@ def find_reference_min_points():
         min_points.append(_min)
         print(min_point_detail)
 
-    min_point_plot(concurrency, min_point_location)
+    min_point_plot(min_point_location)
     file_write(min_point_collection, Config.REFERENCE_PATH)
 
 

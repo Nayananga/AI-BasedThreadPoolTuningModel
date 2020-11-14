@@ -44,7 +44,7 @@ def compare_data(return_check=False):
 def error_calculations(plot_reference_threadpool, actual_threadpool, plot_reference_latency, actual_latency):
     all_data = []
     sliced_number = 10
-    rms_threadpool, rmsper_threadpool = rms_theadpool_calculation(plot_reference_threadpool, actual_threadpool)
+    rms_threadpool, rmsper_threadpool = rms_threadpool_calculation(plot_reference_threadpool, actual_threadpool)
     rms_latency, rmsper_latency = rms_latency_calculation(plot_reference_latency, actual_latency)
 
     sliced_plot_reference_threadpool = list(plot_reference_threadpool[sliced_number:])
@@ -52,9 +52,9 @@ def error_calculations(plot_reference_threadpool, actual_threadpool, plot_refere
     sliced_plot_reference_latency = list(plot_reference_latency[sliced_number:])
     sliced_actual_latency = list(actual_latency[sliced_number:])
 
-    sliced_rms_threadpool, sliced_rmsper_threadpool = rms_theadpool_calculation(sliced_plot_reference_threadpool,
-                                                                                sliced_actual_threadpool,
-                                                                                title="Sliced_Thread_pool")
+    sliced_rms_threadpool, sliced_rmsper_threadpool = rms_threadpool_calculation(sliced_plot_reference_threadpool,
+                                                                                 sliced_actual_threadpool,
+                                                                                 title="Sliced_Thread_pool")
     sliced_rms_latency, sliced_rmsper_latency = rms_latency_calculation(sliced_plot_reference_latency,
                                                                         sliced_actual_latency, title="Sliced_Latency")
 
@@ -84,12 +84,12 @@ def file_write(data, data_names):
     f.close()
 
 
-def plot_comparison(p1=None, p1_lable=None, p2=None, p2_lable=None, p3=None, p3_lable=None):
+def plot_comparison(p1=None, p1_label=None, p2=None, p2_label=None, p3=None, p3_label=None):
     plt.figure(figsize=(17, 10))
 
-    plt.plot(p1, label=p1_lable)
-    plt.plot(p2, label=p2_lable)
-    plt.plot(p3, label=p3_lable)
+    plt.plot(p1, label=p1_label)
+    plt.plot(p2, label=p2_label)
+    plt.plot(p3, label=p3_label)
 
     plt.title('Thread pool comparison')
     plt.xlabel('time')
@@ -109,10 +109,10 @@ def plot_comparison(p1=None, p1_lable=None, p2=None, p2_lable=None, p3=None, p3_
     plt.close()
 
 
-def plot_error(p1=None, p1_lable=None, title=None, name=None):
+def plot_error(p1=None, p1_label=None, title=None, name=None):
     plt.figure(figsize=(17, 10))
 
-    plt.plot(p1, label=p1_lable)
+    plt.plot(p1, label=p1_label)
 
     plt.title(title)
     plt.xlabel('time')
@@ -132,7 +132,7 @@ def plot_error(p1=None, p1_lable=None, title=None, name=None):
     plt.close()
 
 
-def rms_theadpool_calculation(targets, predictions, title="Thread_pool"):
+def rms_threadpool_calculation(targets, predictions, title="Thread_pool"):
     error_values = []
     percentage_error_values = []
     for i in range(len(targets)):

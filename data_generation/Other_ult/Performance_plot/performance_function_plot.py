@@ -28,7 +28,7 @@ def sample_system(formula, **kwargs):
     return float(expr.evalf(subs=kwargs))
 
 
-def point_plot(data, title="observation", x_label='threadpool size', y_label='latency', pause_time=0):
+def point_plot(data, title="observation", x_label='threadpool size', y_label='latency'):
     plt.plot(data, label='thread pool size')
 
     plt.title(title)

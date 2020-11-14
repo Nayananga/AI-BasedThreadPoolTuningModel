@@ -43,7 +43,6 @@ def index_get(value, data):
         p_val = list(value)
 
     for i in range(len(data)):
-        darsdf = data[i]
         if data[i] == p_val:
             index_p_val.append(i)
 

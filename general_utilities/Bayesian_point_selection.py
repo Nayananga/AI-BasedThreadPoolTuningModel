@@ -79,7 +79,7 @@ def replace_min_point(x_data, y_data, feature_val, min_location, model):
     return min_x, min_y
 
 
-def from_model(feature_val, model):
+def from_model(model):
     print("check")
     model.predict([[100], [100]])
     return [100, 100]
@@ -124,7 +124,6 @@ def generate_min_point_based_on_distance(feature_value):
     min_y_data = gd.min_y_data
     min_distance = None
     min_distance_location = None
-    min_x = []
     min_y = []
     for i in range(len(min_x_data)):
         distance = distance_calculation(feature_value, min_x_data[i][num_parameters:])

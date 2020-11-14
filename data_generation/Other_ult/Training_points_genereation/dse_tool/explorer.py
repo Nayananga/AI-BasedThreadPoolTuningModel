@@ -34,6 +34,16 @@ plt3d = mplot3d
 logger = logging.getLogger()
 
 
+def eval_target(exp_func, eval_points):
+    if isinstance(eval_points, dict):
+        return exp_func(eval_points)
+    elif isinstance(eval_points, pd.DataFrame):
+        target_values = []
+        for i, eval_point in eval_points.iterrows():
+            target_values.append(exp_func(eval_point.to_dict()))
+        return np.array(target_values).flatten()
+
+
 class Explorer:
 
     def __init__(self, param_dist, path=None):
@@ -78,15 +88,6 @@ class Explorer:
 
         return pd.DataFrame(data=to_explore)
 
-    def eval_target(self, exp_func, eval_points):
-        if isinstance(eval_points, dict):
-            return exp_func(eval_points)
-        elif isinstance(eval_points, pd.DataFrame):
-            target_values = []
-            for i, eval_point in eval_points.iterrows():
-                target_values.append(exp_func(eval_point.to_dict()))
-            return np.array(target_values).flatten()
-
     def explore(self, n: int, exp_func, target_col='target', samples=500, init_n=20):
         """
         performs Bayesian exploration
@@ -104,7 +105,7 @@ class Explorer:
             if not os.path.exists(_dir):
                 os.makedirs(_dir)
             init_df = self.initialize(init_n)
-            init_df[target_col] = self.eval_target(exp_func, init_df)
+            init_df[target_col] = eval_target(exp_func, init_df)
             init_df.to_csv(self.path, index=False)
         else:
             init_df = pd.read_csv(self.path)
@@ -128,13 +129,13 @@ class Explorer:
             max_idx = np.argmax(shuffle(unc, random_state=seed))
             next_point = np.array([eval_data[max_idx]]).flatten()
 
-            eval_y = np.array(self.eval_target(exp_func, {param: next_point[i]
-                                                          for i, param in enumerate(init_df.columns) if
-                                                          param != target_col})).flatten()
+            eval_y = np.array(eval_target(exp_func, {param: next_point[i]
+                                                     for i, param in enumerate(init_df.columns) if
+                                                     param != target_col})).flatten()
             X = np.append(X, [next_point], axis=0)
             y = np.append(y, eval_y)
 
-            logger.info("explored params : %a eval resuts : %.4f" % (next_point.tolist(), eval_y))
+            logger.info("explored params : %a eval results : %.4f" % (next_point.tolist(), eval_y))
             logger.info("iter %d with loss %.4f" % (i, losses[-1]))
             new_row = pd.DataFrame(data=np.append(next_point, eval_y).reshape(1, -1), columns=init_df.columns)
             new_row.to_csv(self.path, mode='a', header=False, index=False)
