@@ -10,10 +10,10 @@ def generate_noise(std):
 def sample_system(formula, noise_level=0, **kwargs):
     expr = sy.sympify(formula)
     if noise_level == 0:
-        latency = float(expr.evalf(subs=kwargs))
+        latency = float(expr.evalf(subs=kwargs))  # estimating latency
         noise = 0
     else:
         noise = generate_noise(noise_level)
-        latency = float(expr.evalf(subs=kwargs)) + noise
+        latency = float(expr.evalf(subs=kwargs)) + noise  # add noise to the latency
         print(latency)
     return latency, noise

@@ -25,6 +25,7 @@ def find_next_threadpool_size(threadpool_and_concurrency_data, percentile_data, 
         next_threadpool_size = min_threadpool_size
         trade_off_level = Config.DEFAULT_TRADE_OFF_LEVEL
     else:
+        # else means we found exact match for the concurrency from the training data
         max_expected_improvement = 0
         max_threadpool_sizes = []
         if not gd.random_eval_check:
@@ -32,6 +33,7 @@ def find_next_threadpool_size(threadpool_and_concurrency_data, percentile_data, 
         else:
             eval_pool = selecting_random_point(Config.EVAL_POINT_SIZE, Config.PARAMETER_BOUNDS,
                                                feature_value=concurrency)
+            # get a list of length is 1000 of lists including random numbers including concurrency value
 
         for eval_point in range(len(eval_pool)):
             check_point = list(eval_pool[eval_point])
@@ -43,6 +45,7 @@ def find_next_threadpool_size(threadpool_and_concurrency_data, percentile_data, 
 
         next_threadpool_size, trade_off_level = next_x_point_selection(
             max_expected_improvement, min_threadpool_size, trade_off_level, max_threadpool_sizes)
+        # select a random threadpool_size from max_threadpool_sizes
 
     return next_threadpool_size, trade_off_level
 
@@ -96,7 +99,7 @@ def tune_threadpool_size(model, threadpool_and_concurrency_data, percentile_data
                                                                           percentile_data, trade_off_level, model,
                                                                           concurrency)
 
-        p1 = next_threadpool_size[0]
+        p1 = next_threadpool_size[0]  # TODO: why only get the first value?
         f1 = next_threadpool_size[1]
         next_percentile_values, noise = sample_system(p1=p1, f1=f1, formula=latency_func, noise_level=noise_std)
 
@@ -131,6 +134,7 @@ def tune_threadpool_size(model, threadpool_and_concurrency_data, percentile_data
 
         # updating the minimum value
         update_min_point(threadpool_and_concurrency_data, percentile_data, concurrency, model)
+        # returns min_x, min_y (may be None value) no use of it
 
     save_plots(thread_pool_plot_data)
     general_plot(noise_data, title="noise", x_label='time', y_label='noise_level', label='noise_level',

@@ -50,11 +50,13 @@ def ini_min_point_find_with_feature(x_data, y_data):
     min_y_data = []
     for i in range(len(x_data)):
         found_feature_val = False
-        check_feature_val = x_data[i][Config.NUMBER_OF_PARAMETERS:]
+        check_feature_val = x_data[i][Config.NUMBER_OF_PARAMETERS:]  # why not[:Config.NUMBER_OF_PARAMETERS]?
         for j in range(len(min_x_data)):
-            if min_x_data[j][Config.NUMBER_OF_PARAMETERS:] == check_feature_val:
+            if min_x_data[j][Config.NUMBER_OF_PARAMETERS:] == check_feature_val:  # why not[:Config.NUMBER_OF_PARAMETERS]?
                 found_feature_val = True
                 if y_data[i] < min_y_data[j]:
+                    # TODO: We dont need our training data to confuse model with two diffrent values for same
+                    #  concurrency where the later latency is higher than the previous one
                     min_y_data[j] = y_data[i]
                     min_x_data[j] = x_data[i]
                 break

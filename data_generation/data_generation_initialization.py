@@ -79,8 +79,7 @@ def get_training_points():
     feature_data = thread.iloc[:, 1]
 
     for latency_point in latency_data:
-        point = latency_point
-        object_data.append(point)
+        object_data.append(latency_point)
 
     for i, thread_point in enumerate(thread_data):
         point = [thread_point, feature_data[i]]
