@@ -52,10 +52,11 @@ def ini_min_point_find_with_feature(x_data, y_data):
         found_feature_val = False
         check_feature_val = x_data[i][Config.NUMBER_OF_PARAMETERS:]  # why not[:Config.NUMBER_OF_PARAMETERS]?
         for j in range(len(min_x_data)):
-            if min_x_data[j][Config.NUMBER_OF_PARAMETERS:] == check_feature_val:  # why not[:Config.NUMBER_OF_PARAMETERS]?
+            if min_x_data[j][Config.NUMBER_OF_PARAMETERS:] == check_feature_val:
+                # why not[:Config.NUMBER_OF_PARAMETERS]?
                 found_feature_val = True
                 if y_data[i] < min_y_data[j]:
-                    # TODO: We dont need our training data to confuse model with two diffrent values for same
+                    # TODO: We dont need our training data to confuse model with two different values for same
                     #  concurrency where the later latency is higher than the previous one
                     min_y_data[j] = y_data[i]
                     min_x_data[j] = x_data[i]
@@ -94,5 +95,3 @@ def create_folders(path):
         os.makedirs(path)
     except FileExistsError:
         print("directory already exists")
-        # if input("are you sure want to go ahead (Y/n)?") == "n":
-        #     exit()

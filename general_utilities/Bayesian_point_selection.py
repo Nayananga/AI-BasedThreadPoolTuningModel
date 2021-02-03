@@ -4,7 +4,7 @@ from general_utilities.commom_functions import *
 
 
 def update_min_point(x_data, y_data, feature_val, model=None):
-    min_x1, min_y, min_location, min_location = None, None, None, None
+    min_x, min_y, min_location = None, None, None
     min_x_data = gd.min_x_data
     min_y_data = gd.min_y_data
     found_feature_val = False
@@ -13,28 +13,28 @@ def update_min_point(x_data, y_data, feature_val, model=None):
         if min_x_data[j][Config.NUMBER_OF_PARAMETERS:] == feature_val:
             found_feature_val = True
             min_y = min_y_data[j]
-            min_x1 = min_x_data[j]
+            min_x = min_x_data[j]
             min_location = j  # saved first occurrence
             break
             # TODO: what if feature_val found more than one time?
 
     if found_feature_val:
-        if min_x1 in x_data and min_y in y_data:
+        if min_x in x_data and min_y in y_data:
             # min_x1 is in min_x_data which made up from x_data later it may change min_x1 can be removed from x_data
             if y_data[-1] < min_y and x_data[-1][Config.NUMBER_OF_PARAMETERS:] == feature_val:
                 # estimated value may be the best one for the same feature_val
                 min_y = y_data[-1]
-                min_x1 = x_data[-1]
+                min_x = x_data[-1]
 
                 gd.min_y_data[min_location] = min_y
-                gd.min_x_data[min_location] = min_x1
+                gd.min_x_data[min_location] = min_x
         else:
-            min_x1, min_y = replace_min_point(x_data, y_data, feature_val, min_location, model)
+            min_x, min_y = replace_min_point(x_data, y_data, feature_val, min_location, model)
     else:
-        min_x1 = estimate_minimum_point(x_data, y_data, feature_val, model)
+        min_x = estimate_minimum_point(x_data, y_data, feature_val, model)
         # we dont know the latency for the estimated parameters so min_y is none
 
-    return min_x1, min_y
+    return min_x, min_y
 
 
 def estimate_minimum_point(x_data, y_data, feature_val, model):
