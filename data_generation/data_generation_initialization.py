@@ -17,11 +17,9 @@ feature_count = Config.NUMBER_OF_FEATURES
 
 
 def data_generation_ini():
-    config_errors()
 
     if feature_count == 0:
         optimizer_plot_data = data_point_finder(parameter_bounds)
-        parameter_data, optimizer_data = get_training_points()
         if parameter_count == 1:
             object_plot_data = []
             for i in range(len(optimizer_plot_data)):
@@ -29,11 +27,10 @@ def data_generation_ini():
             gd.optimizer_plot_data = optimizer_plot_data
             gd.object_plot_data = object_plot_data
             data_plot.initial_plot(optimizer_plot_data, object_plot_data)
-        return parameter_data, optimizer_data
-    else:
-        feature_changing_data = read_feature_data()
-        optimize_data, object_data = get_training_points()
-        return optimize_data, object_data, feature_changing_data
+
+    config_errors()
+    optimize_data, object_data = get_training_points()
+    return optimize_data, object_data
 
 
 def config_errors():
@@ -51,19 +48,19 @@ def config_errors():
         logging.info("Everything is defined properly")
 
 
-def read_feature_data():
-    folder_name = Config.ROOT_PATH + 'Workload_data/'
-    file_name = Config.FEATURE_FUNCTION[0]
-    actual_data = pd.read_csv(folder_name + file_name + '.csv')
-
-    out_feature_data = []
-
-    feature_data = actual_data.iloc[:, 0]
-    for feature_point in feature_data:
-        point = [feature_point]
-        out_feature_data.append(point)
-
-    return out_feature_data
+# def read_feature_data():
+#     folder_name = Config.ROOT_PATH + 'Workload_data/'
+#     file_name = Config.FEATURE_FUNCTION[0]
+#     actual_data = pd.read_csv(folder_name + file_name + '.csv')
+#
+#     out_feature_data = []
+#
+#     feature_data = actual_data.iloc[:, 0]
+#     for feature_point in feature_data:
+#         point = [feature_point]
+#         out_feature_data.append(point)
+#
+#     return out_feature_data
 
 
 def get_training_points():

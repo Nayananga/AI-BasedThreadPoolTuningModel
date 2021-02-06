@@ -53,5 +53,3 @@ def generate_overall_error():
                         "Sliced_Latency RMS",
                         "Sliced_Latency RMS % ")
     write_overall_all_error(error_data, data_write_names, overall_error_name)
-
-# generate_overall_error()

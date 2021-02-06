@@ -8,14 +8,13 @@ def generate_data():
     """initial data Configuration"""
     initial_configurations()
 
-    optimize_data, object_data, feature_changing_data = data_generation_ini()
+    optimize_data, object_data = data_generation_ini()
     gd.min_x_data, gd.min_y_data = ini_min_point_find_with_feature(optimize_data, object_data)
 
     gd.threadpool_and_concurrency = optimize_data
     gd.percentile = object_data
-    gd.concurrency = feature_changing_data
 
-    return optimize_data, object_data, feature_changing_data
+    return optimize_data, object_data
 
 
 def initial_configurations():
