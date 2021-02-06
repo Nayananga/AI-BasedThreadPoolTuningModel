@@ -2,9 +2,12 @@
 
 Find the optimal parameter values minimizing the number of experiments to accurately profile selected system behaviors.
 
-Designing and conducting experiments mostly involve measuring certain observations while changing some parameters. The quality of the observations is determined by the number of measurements and the parameter values used during the measurements.
+Designing and conducting experiments mostly involve measuring certain observations while changing some parameters. The
+quality of the observations is determined by the number of measurements and the parameter values used during the
+measurements.
 
-This tool allows minimize the number of measurements require by finding optimal set of parameters to run the experiments.
+This tool allows minimize the number of measurements require by finding optimal set of parameters to run the
+experiments.
 
 ### Some example use-cases:
 
@@ -18,7 +21,6 @@ These are some mandatory dependencies. Use the same version as indicated below.
 
     pyro-ppl - v1.0.0
     torch    - v1.3.1
-
 
 ### Usage:
 
@@ -37,7 +39,8 @@ The basic usage is as follows
     # run the exploration NO_OF_STEPS defined by the user
     results_df = explorer.explore(NO_OF_STEPS, EVAL_FUNC)
 
-The EVAL_FUNC is the function that actually execute the experiment and return the measurements. It should follow the below template.
+The EVAL_FUNC is the function that actually execute the experiment and return the measurements. It should follow the
+below template.
 
     def EVAL_FUNC(param_dict)
 
@@ -51,7 +54,6 @@ The EVAL_FUNC is the function that actually execute the experiment and return th
         # wait till the measurement is recieved
 
         return the mesurement
-
 
 ### Examples
 

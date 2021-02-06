@@ -38,7 +38,6 @@ REFERENCE_PATH = ROOT_PATH + FUNCTION_NAME + '/Reference_min_point/'
 # NOISE_CHANGE = ['Without_Noise', 'With_Noise_std_1', 'With_Noise_std_5']
 NOISE_CHANGE = ['Without_Noise']
 
-
 NOISE_LEVEL = [0, 1, 5]
 
 COMMON_PATH = ROOT_PATH + FUNCTION_NAME

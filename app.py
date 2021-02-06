@@ -1,8 +1,8 @@
 from flask import Flask, request, session
 
 import Config
-import threadpool_tuner as tp
 import global_data as gd
+import threadpool_tuner as tp
 from data_generation import data_generator
 from general_utilities.Bayesian_point_selection import update_min_point
 from general_utilities.commom_functions import create_folders

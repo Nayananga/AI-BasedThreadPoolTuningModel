@@ -17,7 +17,6 @@ feature_count = Config.NUMBER_OF_FEATURES
 
 
 def data_generation_ini():
-
     if feature_count == 0:
         optimizer_plot_data = data_point_finder(parameter_bounds)
         if parameter_count == 1:
