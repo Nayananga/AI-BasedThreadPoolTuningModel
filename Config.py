@@ -24,7 +24,7 @@ FEATURE_BOUNDS = [[1, 500]]
 FEATURE_FUNCTION_ARRAY = [['ACTUAL']]
 
 # FILE_NAME = ['Increase_and_decrease', 'One_step', 'Constant', 'Peaks', 'Random', 'Step_increase', 'Up_and_down']
-FILE_NAME = [['ACTUAL']]
+FILE_NAME = ['ACTUAL']
 
 # FUNCTION = "((p1-f1)^2)/20+(f1^2/1000)"
 FUNCTION = "0.000002*(p1 - f1)^4 - 0.00091*(p1 - f1) ^ 3 + 0.123*(p1 - f1) ^ 2 - 4.8411*(p1 - f1)+200+ (f1 ^ 2)/1000"
@@ -38,7 +38,8 @@ REFERENCE_PATH = ROOT_PATH + FUNCTION_NAME + '/Reference_min_point/'
 # NOISE_CHANGE = ['Without_Noise', 'With_Noise_std_1', 'With_Noise_std_5']
 NOISE_CHANGE = ['Without_Noise']
 
-NOISE_LEVEL = [0, 1, 5]
+# NOISE_LEVEL = [0, 1, 5]
+NOISE_LEVEL = [0]
 
 COMMON_PATH = ROOT_PATH + FUNCTION_NAME
 
