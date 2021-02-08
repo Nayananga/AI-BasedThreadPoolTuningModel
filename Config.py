@@ -29,7 +29,7 @@ FILE_NAME = ['ACTUAL']
 # FUNCTION = "((p1-f1)^2)/20+(f1^2/1000)"
 FUNCTION = "0.000002*(p1 - f1)^4 - 0.00091*(p1 - f1) ^ 3 + 0.123*(p1 - f1) ^ 2 - 4.8411*(p1 - f1)+200+ (f1 ^ 2)/1000"
 
-ROOT_PATH = '/home/nayananga/PycharmProjects/Auto-Tuning-with-Bayesian/Data/'
+ROOT_PATH = '/home/nayananga/PycharmProjects/AI-BasedThreadPoolTuningModel/Data/'
 
 FUNCTION_NAME = 'Function_2'
 

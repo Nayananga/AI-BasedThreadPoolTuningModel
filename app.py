@@ -34,7 +34,7 @@ def build_model():
 
     train_threadpool, train_latency = data_generator.generate_data()
     model = GPR(train_threadpool, train_latency)  # fit initial data to gaussian model
-    session['ITERATION'] = int(0)
+    session['ITERATION'] = int(1)
     session['TRADE_OFF_LEVEL'] = float(Config.DEFAULT_TRADE_OFF_LEVEL)
     session['EXPLORATION_FACTOR'] = list([])
     session['PLOT_DATA'] = list([[], [], []])
@@ -68,7 +68,6 @@ def threadpool_tuner():
 @app.after_request
 def after_request_func(response):
     global model
-    print(session.items())
     iteration = int(session['ITERATION'])
     next_threadpool_size = list(session['NEXT_THREADPOOL_SIZE'])
     trade_off_level = float(session['TRADE_OFF_LEVEL'])
