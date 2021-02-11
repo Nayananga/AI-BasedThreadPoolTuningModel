@@ -108,11 +108,6 @@ def plot_comparison(p1=None, p1_label=None, p2=None, p2_label=None, p3=None, p3_
     plt.legend()
 
     plt.savefig(Config.PATH + "Comparison.png", bbox_inches="tight")
-
-    # Show the plot
-    # plt.show(block=False)
-    #
-    # plt.pause(5)
     plt.close()
 
 

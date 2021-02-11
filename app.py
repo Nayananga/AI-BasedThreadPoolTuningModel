@@ -90,7 +90,7 @@ def after_request_func(response):
     print("min_data", gd.min_y_data)
     print("-------------------------------------")
 
-    plot_data_1[0].append(concurrency)
+    plot_data_1[0].append(next_latency_value)
     plot_data_1[1].append(next_threadpool_size)
     plot_data_1[2].append(trade_off_level)
 
@@ -102,6 +102,8 @@ def after_request_func(response):
         save_plots(plot_data_1[1])
         tp.file_write(plot_data_1[1], plot_data_1[0], exploration_factor, folder_name=Config.PATH + 'plot_')
         tp.file_write(threadpool_and_concurrency_data, latency_data, exploration_factor, folder_name=Config.PATH)
+        # compare_data()
+        # generate_overall_error()
 
     else:
         plot_data(plot_data_1[1], plot_data_1[0], Config.PAUSE_TIME)
@@ -118,5 +120,3 @@ def after_request_func(response):
 
 if __name__ == '__main__':
     app.run()
-# compare_data()
-# generate_overall_error()
