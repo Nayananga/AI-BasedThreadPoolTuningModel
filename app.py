@@ -21,6 +21,7 @@ def build_model():
     global model
     common_path = Config.COMMON_PATH
     noise_name = Config.NOISE_CHANGE
+    train_exploration_factor = list()
     for j, noise in enumerate(Config.NOISE_LEVEL):
         Config.COMMON_PATH = common_path + '/' + noise_name[j] + '/'
         for i in range(len(Config.FEATURE_FUNCTION_ARRAY)):
@@ -32,14 +33,17 @@ def build_model():
 
             create_folders(Config.FOLDER)
 
-    train_threadpool, train_latency = data_generator.generate_data()
-    model = GPR(train_threadpool, train_latency)  # fit initial data to gaussian model
+    train_exploration_factor.append(Config.DEFAULT_TRADE_OFF_LEVEL)
+    train_threadpool_and_concurrency_data, train_latency_data = data_generator.generate_data()
+
+    model = GPR(train_threadpool_and_concurrency_data, train_latency_data)  # fit initial data to gaussian model
+
     session['ITERATION'] = int(1)
     session['TRADE_OFF_LEVEL'] = float(Config.DEFAULT_TRADE_OFF_LEVEL)
-    session['EXPLORATION_FACTOR'] = list([])
+    session['EXPLORATION_FACTOR'] = train_exploration_factor
     session['PLOT_DATA'] = list([[], [], []])
-    session['LATENCY_DATA'] = list(train_latency)
-    session['THREADPOOL_DATA'] = list(train_threadpool)
+    session['LATENCY_DATA'] = list(train_latency_data)
+    session['THREADPOOL_AND_CONCURRENCY_DATA'] = list(train_threadpool_and_concurrency_data)
 
 
 @app.route('/', methods=['POST'])
@@ -47,7 +51,7 @@ def threadpool_tuner():
     global model
     trade_off_level = float(session['TRADE_OFF_LEVEL'])
     latency_data = list(session['LATENCY_DATA'])
-    threadpool_and_concurrency_data = list(session['THREADPOOL_DATA'])
+    threadpool_and_concurrency_data = list(session['THREADPOOL_AND_CONCURRENCY_DATA'])
     request_data = request.get_json()
     print(request_data)
     next_threadpool_size, trade_off_level = tp.find_next_threadpool_size(threadpool_and_concurrency_data,
@@ -55,13 +59,14 @@ def threadpool_tuner():
                                                                          [request_data['currentTenSecondRate']])
 
     latency_data.append(float(request_data['currentMeanLatency']))
-    threadpool_and_concurrency_data.append(next_threadpool_size)
+    threadpool_and_concurrency_data.append(
+        [request_data['currentThreadPoolSize'], request_data['currentTenSecondRate']])
 
     session['CONCURRENCY'] = [request_data['currentTenSecondRate']]
     session['NEXT_THREADPOOL_SIZE'] = next_threadpool_size
     session['TRADE_OFF_LEVEL'] = trade_off_level
     session['LATENCY_DATA'] = latency_data
-    session['THREADPOOL_DATA'] = threadpool_and_concurrency_data
+    session['THREADPOOL_AND_CONCURRENCY_DATA'] = threadpool_and_concurrency_data
     return str(next_threadpool_size[0])
 
 
@@ -74,25 +79,24 @@ def after_request_func(response):
     exploration_factor = list(session['EXPLORATION_FACTOR'])
     concurrency = list(session['CONCURRENCY'])
     latency_data = list(session['LATENCY_DATA'])
-    threadpool_and_concurrency_data = list(session['THREADPOOL_DATA'])
+    threadpool_and_concurrency_data = list(session['THREADPOOL_AND_CONCURRENCY_DATA'])
     plot_data_1 = list(session['PLOT_DATA'])
-    next_latency_value = latency_data[-1]
 
     threadpool_and_concurrency_data, latency_data, trade_off_level, model = tp.update_model(
         next_threadpool_size, threadpool_and_concurrency_data, latency_data, trade_off_level)
 
     print("inter -", iteration)
     print("workers -", concurrency)
-    print("trade_off_level -", trade_off_level)
-    print("Next x- ", next_threadpool_size)
-    print("Next y- ", next_latency_value)
+    print("trade_off_level -", exploration_factor[-1])
+    print("Next x- ", threadpool_and_concurrency_data[-1])
+    print("Next y- ", latency_data[-1])
     print("min_x_data", gd.min_x_data)
     print("min_y_data", gd.min_y_data)
     print("-------------------------------------")
 
-    plot_data_1[0].append(next_latency_value)
-    plot_data_1[1].append(next_threadpool_size)
-    plot_data_1[2].append(trade_off_level)
+    plot_data_1[0].append(latency_data[-1])
+    plot_data_1[1].append(threadpool_and_concurrency_data[-1])
+    plot_data_1[2].append(exploration_factor[-1])
 
     update_min_point(threadpool_and_concurrency_data, latency_data, concurrency, model)
     exploration_factor.append(trade_off_level)
@@ -112,7 +116,7 @@ def after_request_func(response):
     session['TRADE_OFF_LEVEL'] = trade_off_level
     session['EXPLORATION_FACTOR'] = exploration_factor
     session['LATENCY_DATA'] = latency_data
-    session['THREADPOOL_DATA'] = threadpool_and_concurrency_data
+    session['THREADPOOL_AND_CONCURRENCY_DATA'] = threadpool_and_concurrency_data
     session['PLOT_DATA'] = plot_data_1
 
     return response
