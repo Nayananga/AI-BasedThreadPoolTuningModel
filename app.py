@@ -86,8 +86,8 @@ def after_request_func(response):
     print("trade_off_level -", trade_off_level)
     print("Next x- ", next_threadpool_size)
     print("Next y- ", next_latency_value)
-    print("min_data", gd.min_x_data)
-    print("min_data", gd.min_y_data)
+    print("min_x_data", gd.min_x_data)
+    print("min_y_data", gd.min_y_data)
     print("-------------------------------------")
 
     plot_data_1[0].append(next_latency_value)
@@ -97,7 +97,7 @@ def after_request_func(response):
     update_min_point(threadpool_and_concurrency_data, latency_data, concurrency, model)
     exploration_factor.append(trade_off_level)
 
-    if iteration % 100 == 0:
+    if iteration % 20 == 0:
         plot_data(plot_data_1[1], plot_data_1[0], Config.PAUSE_TIME, save=True)
         save_plots(plot_data_1[1])
         tp.file_write(plot_data_1[1], plot_data_1[0], exploration_factor, folder_name=Config.PATH + 'plot_')

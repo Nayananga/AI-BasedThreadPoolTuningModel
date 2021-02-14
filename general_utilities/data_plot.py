@@ -83,11 +83,11 @@ def plot_data(threadpool_and_concurrency_data, percentile_data, pause_time, save
 
     threadpool_size, concurrency = map(list, zip(*threadpool_and_concurrency_data))
     plt.plot(threadpool_size, label='thread pool size')
-    plt.plot(concurrency, label='concurrency')
-    plt.plot(percentile_data, label='latency')
+    plt.plot(concurrency, label='throughput')
+    plt.plot(percentile_data, label='latency (ns)')
 
     plt.title("Data plot")
-    plt.xlabel("Time")
+    plt.xlabel("Time (Minutes)")
 
     plt.grid(color='k', linestyle='-', linewidth=.1)
 
@@ -109,10 +109,10 @@ def save_plots(threadpool_and_concurrency_data):
     threadpool_size, concurrency = map(list, zip(*threadpool_and_concurrency_data))
 
     plt.plot(threadpool_size, label='thread pool size')
-    plt.plot(concurrency, label='concurrency')
+    plt.plot(concurrency, label='throughput')
 
-    plt.title("Concurrency and Threadpool size")
-    plt.xlabel("Time")
+    plt.title("Throughput and Threadpool size")
+    plt.xlabel("Time (Minutes)")
 
     plt.grid(color='k', linestyle='-', linewidth=.1)
 
