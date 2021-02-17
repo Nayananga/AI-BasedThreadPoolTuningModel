@@ -27,10 +27,10 @@ def bayesian_expected_improvement(x_val, max_expected_improvement, max_improve_p
 
 def next_x_point_selection(max_expected_improvement, min_x, trade_off_level, max_points):
     print("max_expected - ", max_expected_improvement)
-    if max_expected_improvement == 0:
+    if not max_expected_improvement:
         print("WARN: Maximum expected improvement was 0")
         next_x = min_x
-        trade_off_level = trade_off_level - trade_off_level / 10
+        trade_off_level = trade_off_level - (trade_off_level / 10)
         if trade_off_level < 0.00001:
             trade_off_level = 0
     else:
@@ -39,7 +39,7 @@ def next_x_point_selection(max_expected_improvement, min_x, trade_off_level, max
         idx = random.randint(0, len(max_points) - 1)
         next_x = max_points[idx]
 
-        trade_off_level = trade_off_level + trade_off_level / 8
+        trade_off_level = trade_off_level + (trade_off_level / 8)
         if trade_off_level > 0.01:
             trade_off_level = 0.01
         elif trade_off_level == 0:
