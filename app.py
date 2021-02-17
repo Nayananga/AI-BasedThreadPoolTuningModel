@@ -97,7 +97,7 @@ def after_request_func(response):
 
     plot_data_1[0].append(latency_data[-1])
     plot_data_1[1].append(threadpool_and_concurrency_data[-1])
-    plot_data_1[2].append(exploration_factor[-1])
+    plot_data_1[2].append(exploration_factor[-1])  # if we want to plot this
 
     update_min_point(threadpool_and_concurrency_data, latency_data, concurrency, model)
     exploration_factor.append(trade_off_level)
