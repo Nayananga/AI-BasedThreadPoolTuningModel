@@ -2,7 +2,6 @@ import os
 
 import matplotlib.pyplot as plt
 import numpy as np
-from mpl_toolkits.mplot3d import axes3d
 
 import Config
 from old_files.bayesian_optimization_util import plot_approximation

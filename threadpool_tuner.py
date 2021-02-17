@@ -41,20 +41,19 @@ def find_next_threadpool_size(threadpool_and_concurrency_data, percentile_data, 
     return next_threadpool_size, trade_off_level
 
 
-def update_model(next_threadpool_size, threadpool_and_concurrency_data, percentile_data, trade_off_level):
-    threadpool_and_concurrency_data, percentile_data, trade_off_level = fifo_sampling(next_threadpool_size,
-                                                                                      threadpool_and_concurrency_data,
-                                                                                      percentile_data, trade_off_level)
+def update_model(next_threadpool_size, threadpool_and_concurrency_data, latency_data, trade_off_level):
+    threadpool_and_concurrency_data, latency_data, trade_off_level = fifo_sampling(next_threadpool_size,
+                                                                                   threadpool_and_concurrency_data,
+                                                                                   latency_data, trade_off_level)
 
     # fit new data to gaussian process
-    model = GPR(threadpool_and_concurrency_data, percentile_data)
+    model = GPR(threadpool_and_concurrency_data, latency_data)
 
-    return threadpool_and_concurrency_data, percentile_data, trade_off_level, model
+    return threadpool_and_concurrency_data, latency_data, trade_off_level, model
 
 
 def file_write(threadpool_and_concurrency_data, percentile_data, exploration_factor, noise_data=None,
                folder_name=Config.PATH):
-
     if os.path.exists(folder_name + "99th_percentile_data.csv"):
         os.remove(folder_name + "99th_percentile_data.csv")  # this deletes the file
 
