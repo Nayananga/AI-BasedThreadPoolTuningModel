@@ -26,8 +26,8 @@ def find_next_threadpool_size(threadpool_and_concurrency_data, percentile_data, 
                                                feature_value=concurrency)
             # get a list of length is 1000 of lists including random numbers including concurrency value
 
-        for eval_point in range(len(eval_pool)):
-            check_point = list(eval_pool[eval_point])
+        for eval_point in eval_pool:
+            check_point = list(eval_point)
             for concurrency_val in concurrency:
                 check_point.append(concurrency_val)
 

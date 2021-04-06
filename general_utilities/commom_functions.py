@@ -11,23 +11,17 @@ feature_count = Config.NUMBER_OF_FEATURES
 
 def data_point_finder(parameter_bounds, feature_bounds=None):
     print(feature_bounds)
-    points_combined = []
-    for i in range(parameter_count):
-        points = []
-        for j in range(parameter_bounds[i][0], parameter_bounds[i][1]):
-            points.append(j)
-        points_combined.append(points)
 
-    if feature_bounds is not None:
-        for k in range(feature_count):
-            points = []
-            for m in range(feature_bounds[k][0], feature_bounds[k][1]):
-                points.append(m)
-            points_combined.append(points)
+    points_combined = [
+        np.arange(parameter_bounds[i][0], parameter_bounds[i][1]).tolist() for i in range(parameter_count)]
 
     if parameter_count == 1 and feature_count == 0:
         points_combined = points_combined[0]
     else:
+        if feature_bounds is not None:
+            for k in range(feature_count):
+                points_combined.append(np.arange(feature_bounds[k][0], feature_bounds[k][1]).tolist())
+
         points_combined = list(itertools.product(*points_combined))
 
     return points_combined
