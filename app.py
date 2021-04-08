@@ -1,7 +1,9 @@
+import redis as redis
 from flask import Flask, request, session
+from flask_session import Session
 
 import Config
-import global_data as gd
+import global_data
 import threadpool_tuner as tp
 from data_generation import data_generator
 from general_utilities.Bayesian_point_selection import update_min_point
@@ -12,6 +14,15 @@ from general_utilities.gaussian_process import GPR
 app = Flask(__name__)
 
 app.secret_key = "My secret key"
+
+# Configure Redis for storing the session data on the server-side
+app.config['SESSION_TYPE'] = 'redis'
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_USE_SIGNER'] = True
+app.config['SESSION_REDIS'] = redis.from_url('redis://localhost:6379')
+
+# Create and initialize the Flask-Session object AFTER `app` has been configured
+server_session = Session(app)
 
 model = None
 
@@ -45,6 +56,22 @@ def build_model():
     session['LATENCY_DATA'] = list(train_latency_data)
     session['THREADPOOL_AND_CONCURRENCY_DATA'] = list(train_threadpool_and_concurrency_data)
 
+    session["min_x"] = global_data.min_x
+    session["min_y"] = global_data.min_y
+
+    session["min_x_data"] = global_data.min_x_data
+    session["min_y_data"] = global_data.min_y_data
+
+    session["random_eval_check"] = global_data.random_eval_check
+    session["eval_pool"] = global_data.eval_pool
+
+    session["optimizer_plot_data"] = global_data.optimizer_plot_data
+    session["object_plot_data"] = global_data.object_plot_data
+
+    session["threadpool_and_concurrency"] = global_data.threadpool_and_concurrency
+    session["percentile"] = global_data.percentile
+    session["percentile"] = global_data.concurrency
+
 
 @app.route('/', methods=['POST'])
 def threadpool_tuner():
@@ -54,6 +81,22 @@ def threadpool_tuner():
     threadpool_and_concurrency_data = list(session['THREADPOOL_AND_CONCURRENCY_DATA'])
     request_data = request.get_json()
     print(request_data)
+
+    global_data.min_x = session["min_x"]
+    global_data.min_y = session["min_y"]
+
+    global_data.min_x_data = session["min_x_data"]
+    global_data.min_y_data = session["min_y_data"]
+
+    global_data.random_eval_check = session["random_eval_check"]
+    global_data.eval_pool = session["eval_pool"]
+
+    global_data.optimizer_plot_data = session["optimizer_plot_data"]
+    global_data.object_plot_data = session["object_plot_data"]
+
+    global_data.threadpool_and_concurrency = session["threadpool_and_concurrency"]
+    global_data.percentile = session["percentile"]
+    global_data.concurrency = session["percentile"]
 
     next_threadpool_size, trade_off_level = tp.find_next_threadpool_size(threadpool_and_concurrency_data,
                                                                          latency_data, trade_off_level, model,
@@ -68,6 +111,23 @@ def threadpool_tuner():
     session['TRADE_OFF_LEVEL'] = trade_off_level
     session['LATENCY_DATA'] = latency_data
     session['THREADPOOL_AND_CONCURRENCY_DATA'] = threadpool_and_concurrency_data
+
+    session["min_x"] = global_data.min_x
+    session["min_y"] = global_data.min_y
+
+    session["min_x_data"] = global_data.min_x_data
+    session["min_y_data"] = global_data.min_y_data
+
+    session["random_eval_check"] = global_data.random_eval_check
+    session["eval_pool"] = global_data.eval_pool
+
+    session["optimizer_plot_data"] = global_data.optimizer_plot_data
+    session["object_plot_data"] = global_data.object_plot_data
+
+    session["threadpool_and_concurrency"] = global_data.threadpool_and_concurrency
+    session["percentile"] = global_data.percentile
+    session["percentile"] = global_data.concurrency
+
     return str(next_threadpool_size[0])
 
 
@@ -83,6 +143,22 @@ def after_request_func(response):
     threadpool_and_concurrency_data = list(session['THREADPOOL_AND_CONCURRENCY_DATA'])
     plot_data_1 = list(session['PLOT_DATA'])
 
+    global_data.min_x = session["min_x"]
+    global_data.min_y = session["min_y"]
+
+    global_data.min_x_data = session["min_x_data"]
+    global_data.min_y_data = session["min_y_data"]
+
+    global_data.random_eval_check = session["random_eval_check"]
+    global_data.eval_pool = session["eval_pool"]
+
+    global_data.optimizer_plot_data = session["optimizer_plot_data"]
+    global_data.object_plot_data = session["object_plot_data"]
+
+    global_data.threadpool_and_concurrency = session["threadpool_and_concurrency"]
+    global_data.percentile = session["percentile"]
+    global_data.concurrency = session["percentile"]
+
     threadpool_and_concurrency_data, latency_data, trade_off_level, model = tp.update_model(
         next_threadpool_size, threadpool_and_concurrency_data, latency_data, trade_off_level)
 
@@ -91,8 +167,8 @@ def after_request_func(response):
     print("trade_off_level -", exploration_factor[-1])
     print("Next x- ", threadpool_and_concurrency_data[-1])
     print("Next y- ", latency_data[-1])
-    print("min_x_data", gd.min_x_data)
-    print("min_y_data", gd.min_y_data)
+    print("min_x_data", global_data.min_x_data)
+    print("min_y_data", global_data.min_y_data)
     print("-------------------------------------")
 
     plot_data_1[0].append(latency_data[-1])
@@ -119,6 +195,22 @@ def after_request_func(response):
     session['LATENCY_DATA'] = latency_data
     session['THREADPOOL_AND_CONCURRENCY_DATA'] = threadpool_and_concurrency_data
     session['PLOT_DATA'] = plot_data_1
+
+    session["min_x"] = global_data.min_x
+    session["min_y"] = global_data.min_y
+
+    session["min_x_data"] = global_data.min_x_data
+    session["min_y_data"] = global_data.min_y_data
+
+    session["random_eval_check"] = global_data.random_eval_check
+    session["eval_pool"] = global_data.eval_pool
+
+    session["optimizer_plot_data"] = global_data.optimizer_plot_data
+    session["object_plot_data"] = global_data.object_plot_data
+
+    session["threadpool_and_concurrency"] = global_data.threadpool_and_concurrency
+    session["percentile"] = global_data.percentile
+    session["percentile"] = global_data.concurrency
 
     return response
 
