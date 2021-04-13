@@ -60,7 +60,7 @@ def estimate_minimum_point(x_data, y_data, feature_val, model):
         elif Config.SELECTION_METHOD == "Nearest_point":
             _min_y, min_x = generate_min_point_based_on_distance(feature_val)
 
-        return min_x
+    return min_x
 
 
 def replace_min_point(x_data, y_data, feature_val, min_location, model):
