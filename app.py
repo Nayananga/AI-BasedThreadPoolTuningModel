@@ -54,6 +54,7 @@ def threadpool_tuner():
     threadpool_and_concurrency_data = list(session['THREADPOOL_AND_CONCURRENCY_DATA'])
     request_data = request.get_json()
     print(request_data)
+
     next_threadpool_size, trade_off_level = tp.find_next_threadpool_size(threadpool_and_concurrency_data,
                                                                          latency_data, trade_off_level, model,
                                                                          [request_data['currentTenSecondRate']])
@@ -63,7 +64,7 @@ def threadpool_tuner():
         [request_data['currentThreadPoolSize'], request_data['currentTenSecondRate']])
 
     session['CONCURRENCY'] = [request_data['currentTenSecondRate']]
-    session['NEXT_THREADPOOL_SIZE'] = next_threadpool_size
+    session['NEXT_THREADPOOL_SIZE'] = [request_data['currentThreadPoolSize'], request_data['currentTenSecondRate']]
     session['TRADE_OFF_LEVEL'] = trade_off_level
     session['LATENCY_DATA'] = latency_data
     session['THREADPOOL_AND_CONCURRENCY_DATA'] = threadpool_and_concurrency_data
