@@ -1,5 +1,6 @@
 import itertools
 import os
+import random
 
 import numpy as np
 
@@ -69,11 +70,13 @@ def selecting_random_point(number_of_points, parameter_bounds, feature_bounds=No
 
     while size < number_of_points:
         point = []
-        for j in range(len(parameter_bounds)):
-            point.append(np.random.randint(parameter_bounds[j][0], parameter_bounds[j][1]))
+        random_choice = []
+        for parameter_bound in parameter_bounds:
+            random_choice.append(np.random.randint(parameter_bound[0], parameter_bound[1]))
         if feature_bounds is not None:
-            for k in range(len(feature_bounds)):
-                point.append(np.random.randint(feature_bounds[k][0], feature_bounds[k][1]))
+            for feature_bound in feature_bounds:
+                random_choice.append(np.random.randint(feature_bound[0], feature_bound[1]))
+        point.append(random.choice(random_choice))
         if feature_value is not None:
             for f_loc in range(Config.NUMBER_OF_FEATURES):
                 point.append(feature_value[f_loc])

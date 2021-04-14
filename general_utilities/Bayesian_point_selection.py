@@ -76,8 +76,6 @@ def replace_min_point(x_data, y_data, feature_val, min_location, model):
                 min_x = x_data[i]
 
     if min_x is None:
-        print(min_x)
-        print(min_y)
         gd.min_y_data.remove(gd.min_y_data[min_location])
         gd.min_x_data.remove(gd.min_x_data[min_location])
         min_x = estimate_minimum_point(x_data, y_data, feature_val, model)
@@ -88,12 +86,6 @@ def replace_min_point(x_data, y_data, feature_val, min_location, model):
         gd.min_x_data[min_location] = min_x
 
     return min_x, min_y
-
-
-def from_model(model):
-    print("check")
-    model.predict([[100], [100]])
-    return [100, 100]
 
 
 def generate_min_point(feature_value, model):
@@ -109,8 +101,8 @@ def generate_min_point(feature_value, model):
 
     min_percentile, min_eval_value = generate_min_point_based_on_distance(feature_value)
     explore_factor = 0.01
-    for eval_point in range(len(eval_pool)):
-        check_point = list(eval_pool[eval_point])
+    for eval_point in eval_pool:
+        check_point = list(eval_point)
         for f_val in feature_value:
             check_point.append(f_val)
 
@@ -158,8 +150,6 @@ def generate_min_point_based_on_distance(feature_value):
 
 def distance_calculation(v, u):
     s = 0
-    # dist = [(v_i - v_i)**2 for a, b in zip(v, U)]
-    # dist = math.sqrt(sum(dist))
     for v_i, u_i in zip(v, u):
         s += (v_i - u_i) ** 2
     return s ** 0.5

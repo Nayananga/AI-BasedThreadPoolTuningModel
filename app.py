@@ -162,6 +162,13 @@ def after_request_func(response):
     threadpool_and_concurrency_data, latency_data, trade_off_level, model = tp.update_model(
         next_threadpool_size, threadpool_and_concurrency_data, latency_data, trade_off_level)
 
+    plot_data_1[0].append(latency_data[-1])
+    plot_data_1[1].append(threadpool_and_concurrency_data[-1])
+    plot_data_1[2].append(exploration_factor[-1])  # if we want to plot this
+
+    update_min_point(threadpool_and_concurrency_data, latency_data, concurrency, model)
+    exploration_factor.append(trade_off_level)
+
     print("inter -", iteration)
     print("workers -", concurrency)
     print("trade_off_level -", exploration_factor[-1])
@@ -170,13 +177,6 @@ def after_request_func(response):
     print("min_x_data", global_data.min_x_data)
     print("min_y_data", global_data.min_y_data)
     print("-------------------------------------")
-
-    plot_data_1[0].append(latency_data[-1])
-    plot_data_1[1].append(threadpool_and_concurrency_data[-1])
-    plot_data_1[2].append(exploration_factor[-1])  # if we want to plot this
-
-    update_min_point(threadpool_and_concurrency_data, latency_data, concurrency, model)
-    exploration_factor.append(trade_off_level)
 
     if iteration % 20 == 0:
         plot_data(plot_data_1[1], plot_data_1[0], Config.PAUSE_TIME, save=True)
