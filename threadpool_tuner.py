@@ -10,7 +10,7 @@ from general_utilities.gaussian_process import GPR
 
 def find_next_threadpool_size(threadpool_and_throughput_data, latency_data, trade_off_level, model, throughput):
     min_threadpool_size, min_latency = update_min_point(threadpool_and_throughput_data, latency_data,
-                                                           throughput, model)
+                                                        throughput, model)
 
     if min_latency is None:
         next_threadpool_size = min_threadpool_size
