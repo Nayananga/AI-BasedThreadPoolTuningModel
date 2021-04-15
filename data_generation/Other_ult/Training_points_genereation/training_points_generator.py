@@ -99,11 +99,11 @@ def dse(number_of_random_points=10):
 
 
 if __name__ == '__main__':
-    threadpool_and_concurrency, latency = generate_training_points(Config.NUMBER_OF_TRAINING_POINTS,
-                                                                   Config.PARAMETER_BOUNDS, Config.FEATURE_BOUNDS)
+    threadpool_and_throughput, latency = generate_training_points(Config.NUMBER_OF_TRAINING_POINTS,
+                                                                  Config.PARAMETER_BOUNDS, Config.FEATURE_BOUNDS)
 
-    print(np.shape(threadpool_and_concurrency))
+    print(np.shape(threadpool_and_throughput))
     print(np.shape(latency))
 
-    write_training_data(threadpool_and_concurrency, "threadpool_and_concurrency")
+    write_training_data(threadpool_and_throughput, "threadpool_and_throughput")
     write_training_data(latency, "latency")

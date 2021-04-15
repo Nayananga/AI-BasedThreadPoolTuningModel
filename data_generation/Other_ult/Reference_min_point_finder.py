@@ -10,7 +10,7 @@ concurrency_bounds = Config.FEATURE_BOUNDS
 
 equation = Config.FUNCTION
 
-concurrency = []
+throughput = []
 thread_size = []
 
 min_points = []
@@ -31,13 +31,13 @@ def find_reference_min_points():
 
     for i in range(len(concurrency_bounds)):
         for j in range(concurrency_bounds[i][1] - concurrency_bounds[i][0]):
-            concurrency.append(j + concurrency_bounds[i][0])
+            throughput.append(j + concurrency_bounds[i][0])
 
     for i in range(len(threadpool_bounds)):
         for j in range(threadpool_bounds[i][1] - threadpool_bounds[i][0]):
             thread_size.append(j + threadpool_bounds[i][0])
 
-    for con in concurrency:
+    for con in throughput:
         _min = None
         min_point_detail = []
         for thread in thread_size:

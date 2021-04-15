@@ -42,7 +42,7 @@ def compare_data(return_check=False):
     file_write(all_data, data_write_names)
 
     plot_comparison(plot_reference_threadpool, 'reference', actual_threadpool, 'actual', actual_concurrency,
-                    'concurrency')
+                    'throughput')
 
     if return_check:
         return all_data

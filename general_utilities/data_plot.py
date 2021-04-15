@@ -130,7 +130,7 @@ def save_plots(threadpool_and_concurrency_data):
     plt.close()
 
 
-def min_point_plot(thread_pool, title="Minimum_points", x_label='concurrency', y_label='Threadpool size',
+def min_point_plot(thread_pool, title="Minimum_points", x_label='throughput', y_label='Threadpool size',
                    pause_time=0.1):
     path = Config.REFERENCE_PATH
     plt.plot(thread_pool, label='thread pool size')

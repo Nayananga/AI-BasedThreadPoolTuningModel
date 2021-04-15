@@ -138,14 +138,14 @@ def generate_min_point_based_on_distance(feature_value):
             min_distance = distance
             min_distance_location = i
             min_y = min_y_data[i]
-    # get the most similar concurrency to the feature value from min_x_data and get the respective latency from
+    # get the most similar throughput to the feature value from min_x_data and get the respective latency from
     # min_y_data using the location value
     min_x = min_x_data[min_distance_location][:num_parameters]
-    # get the threadpool size to the respective similar concurrency we found
+    # get the threadpool size to the respective similar throughput we found
     for feature in feature_value:
-        min_x.append(feature)  # threadpool_size, concurrency
+        min_x.append(feature)  # threadpool_size, throughput
 
-    return min_y, min_x  # respective latency, respective threadpool_size, similar concurrency to the feature_val
+    return min_y, min_x  # respective latency, respective threadpool_size, similar throughput to the feature_val
 
 
 def distance_calculation(v, u):

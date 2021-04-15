@@ -16,7 +16,7 @@ def find_next_threadpool_size(threadpool_and_concurrency_data, percentile_data, 
         next_threadpool_size = min_threadpool_size
         trade_off_level = Config.DEFAULT_TRADE_OFF_LEVEL
     else:
-        # else means we found exact match for the concurrency from the training data
+        # else means we found exact match for the throughput from the training data
         max_expected_improvement = 0
         max_threadpool_sizes = []
         if not gd.random_eval_check:
@@ -24,7 +24,7 @@ def find_next_threadpool_size(threadpool_and_concurrency_data, percentile_data, 
         else:
             eval_pool = selecting_random_point(Config.EVAL_POINT_SIZE, Config.PARAMETER_BOUNDS,
                                                feature_value=concurrency)
-            # get a list of length is 1000 of lists including random numbers including concurrency value
+            # get a list of length is 1000 of lists including random numbers including throughput value
 
         for eval_point in eval_pool:
             check_point = list(eval_point)

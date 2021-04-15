@@ -52,7 +52,7 @@ def ini_min_point_find_with_feature(x_data, y_data):
                 found_feature_val = True
                 if y_data[i] < min_y_data[j]:
                     # TODO: We dont need our training data to confuse model with two different values for same
-                    #  concurrency where the later latency is higher than the previous one
+                    #  throughput where the later latency is higher than the previous one
                     min_y_data[j] = y_data[i]
                     min_x_data[j] = x_data[i]
                 break

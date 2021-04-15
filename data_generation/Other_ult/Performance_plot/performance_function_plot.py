@@ -1,5 +1,5 @@
 """
-This is used to visualize the performance curve for a given concurrency level through the parameter bounds
+This is used to visualize the performance curve for a given throughput level through the parameter bounds
 """
 
 import matplotlib.pyplot as plt
@@ -12,7 +12,7 @@ concurrency_bounds = Config.FEATURE_BOUNDS
 
 equation = Config.FUNCTION
 
-concurrency = []
+throughput = []
 thread_size = []
 
 min_points = []
