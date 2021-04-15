@@ -99,7 +99,7 @@ def generate_min_point(feature_value, model):
         eval_pool = selecting_random_point(Config.EVAL_POINT_SIZE, Config.PARAMETER_BOUNDS,
                                            feature_value=feature_value)
 
-    min_percentile, min_eval_value = generate_min_point_based_on_distance(feature_value)
+    min_latency, min_eval_value = generate_min_point_based_on_distance(feature_value)
     explore_factor = 0.01
     for eval_point in eval_pool:
         check_point = list(eval_point)
@@ -107,7 +107,7 @@ def generate_min_point(feature_value, model):
             check_point.append(f_val)
 
         max_expected_improvement, max_threadpool_sizes = bayesian_expected_improvement(
-            check_point, max_expected_improvement, max_threadpool_sizes, min_percentile, explore_factor, model)
+            check_point, max_expected_improvement, max_threadpool_sizes, min_latency, explore_factor, model)
 
     if max_expected_improvement == 0:
         next_x = min_eval_value

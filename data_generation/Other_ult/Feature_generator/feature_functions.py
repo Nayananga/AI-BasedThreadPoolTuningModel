@@ -39,11 +39,11 @@ def increase_and_decrease(lower, upper):
     data = []
     length = Config.NUMBER_OF_ITERATIONS
     changing_point = round(length / 2)
-    lower_concurrency = np.random.randint(lower, upper / 2)
-    upper_concurrency = np.random.randint(upper / 2, upper)
+    lower_throughput = np.random.randint(lower, upper / 2)
+    upper_throughput = np.random.randint(upper / 2, upper)
 
-    value = lower_concurrency
-    step = (upper_concurrency - lower_concurrency) / changing_point
+    value = lower_throughput
+    step = (upper_throughput - lower_throughput) / changing_point
     for i in range(length):
         value = round(value + step)
         if i % changing_point == 0 and i is not 0:

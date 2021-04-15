@@ -8,7 +8,7 @@ import sympy as sy
 import Config as Config
 
 threadpool_bounds = Config.PARAMETER_BOUNDS
-concurrency_bounds = Config.FEATURE_BOUNDS
+throughput_bounds = Config.FEATURE_BOUNDS
 
 equation = Config.FUNCTION
 
@@ -20,7 +20,7 @@ min_point_location = []
 
 min_point_collection = []
 
-concurrency_level = 300
+throughput_level = 300
 
 
 def sample_system(formula, **kwargs):
@@ -53,6 +53,6 @@ if __name__ == '__main__':
     data_points = []
 
     for thread in thread_size:
-        data_points.append(sample_system(p1=thread, f1=concurrency_level, formula=equation))
+        data_points.append(sample_system(p1=thread, f1=throughput_level, formula=equation))
 
     point_plot(data_points)

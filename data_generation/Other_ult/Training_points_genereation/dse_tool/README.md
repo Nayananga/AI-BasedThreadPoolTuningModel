@@ -3,10 +3,10 @@
 Find the optimal parameter values minimizing the number of experiments to accurately profile selected system behaviors.
 
 Designing and conducting experiments mostly involve measuring certain observations while changing some parameters. The
-quality of the observations is determined by the number of measurements and the parameter values used during the
+quality of the observations is determined by the number of measurements, and the parameter values used during the
 measurements.
 
-This tool allows minimize the number of measurements require by finding optimal set of parameters to run the
+This tool allows to minimize the number of measurements require by finding optimal set of parameters to run the
 experiments.
 
 ### Some example use-cases:
@@ -61,7 +61,7 @@ examples.py includes an example of efficiently estimating the Styblinski-Tang fu
 
 Below is the result after exploring 45 data-points.
 
-![plots Styblinski-Tang](figs/styblinski_tang.png)
+![plots Styblinski-Tang]
 
 - Bayesian + GP : data collected using explorer tool, interpolated using Gaussian Process regression.
 - Bayesian + XGB : data collected using explorer tool, interpolated using XGBoost.

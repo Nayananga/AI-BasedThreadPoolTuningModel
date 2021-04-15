@@ -25,7 +25,7 @@ def surrogate_data_plot(next_x, i, model, x_plot_data, y_plot_data, parameter_hi
     plt.close()
 
 
-def feature_function_plot(data, title="workload", x_label='time', y_label='workers', plot_name='Concurrency',
+def feature_function_plot(data, title="workload", x_label='time', y_label='workers', plot_name='Throughput',
                           pause_time=5):
     folder_name = Config.ROOT_PATH + 'Workload_data/'
 
@@ -77,13 +77,13 @@ def general_plot(data, title="workload", x_label='time', y_label='workers', labe
     plt.close()
 
 
-def plot_data(threadpool_and_concurrency_data, percentile_data, pause_time, save=False):
+def plot_data(threadpool_and_throughput_data, latency_data, pause_time, save=False):
     folder_name = Config.PATH
 
-    threadpool_size, concurrency = map(list, zip(*threadpool_and_concurrency_data))
+    threadpool_size, throughput = map(list, zip(*threadpool_and_throughput_data))
     plt.plot(threadpool_size, label='thread pool size')
-    plt.plot(concurrency, label='throughput')
-    plt.plot(percentile_data, label='latency (ns)')
+    plt.plot(throughput, label='throughput')
+    plt.plot(latency_data, label='latency (ns)')
 
     plt.title("Data plot")
     plt.xlabel("Time (Minutes)")
@@ -102,13 +102,13 @@ def plot_data(threadpool_and_concurrency_data, percentile_data, pause_time, save
     plt.close()
 
 
-def save_plots(threadpool_and_concurrency_data):
+def save_plots(threadpool_and_throughput_data):
     folder_name = Config.PATH
 
-    threadpool_size, concurrency = map(list, zip(*threadpool_and_concurrency_data))
+    threadpool_size, throughput = map(list, zip(*threadpool_and_throughput_data))
 
     plt.plot(threadpool_size, label='thread pool size')
-    plt.plot(concurrency, label='throughput')
+    plt.plot(throughput, label='throughput')
 
     plt.title("Throughput and Threadpool size")
     plt.xlabel("Time (Minutes)")
@@ -118,10 +118,10 @@ def save_plots(threadpool_and_concurrency_data):
     # Add a legend
     plt.legend()
 
-    if os.path.exists(folder_name + "Concurrency and Threadpool size.png"):
-        os.remove(folder_name + "Concurrency and Threadpool size.png")
+    if os.path.exists(folder_name + "Throughput and Threadpool size.png"):
+        os.remove(folder_name + "Throughput and Threadpool size.png")
 
-    plt.savefig(folder_name + "Concurrency and Threadpool size.png", bbox_inches="tight")
+    plt.savefig(folder_name + "Throughput and Threadpool size.png", bbox_inches="tight")
 
     # Show the plot
     plt.show(block=False)

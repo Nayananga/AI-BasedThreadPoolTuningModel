@@ -133,7 +133,7 @@ def threadpool_tuner():
     global model
     trade_off_level = float(session['TRADE_OFF_LEVEL'])
     latency_data = list(session['LATENCY_DATA'])
-    threadpool_and_concurrency_data = list(session['THREADPOOL_AND_THROUGHPUT_DATA'])
+    threadpool_and_throughput_data = list(session['THREADPOOL_AND_THROUGHPUT_DATA'])
 
     update_global_data()
 
@@ -141,19 +141,19 @@ def threadpool_tuner():
     print(request_data)
 
     next_threadpool_size_with_throughput, trade_off_level = tp.find_next_threadpool_size(
-        threadpool_and_concurrency_data,
+        threadpool_and_throughput_data,
         latency_data, trade_off_level, model,
         [request_data['currentTenSecondRate']])
 
     latency_data.append(float(request_data['currentMeanLatency']))
-    threadpool_and_concurrency_data.append(
+    threadpool_and_throughput_data.append(
         [request_data['currentThreadPoolSize'], request_data['currentTenSecondRate']])
 
     session['NEXT_THROUGHPUT'] = [request_data['currentTenSecondRate']]
     session['NEXT_THREADPOOL_SIZE_WITH_THROUGHPUT'] = next_threadpool_size_with_throughput
     session['TRADE_OFF_LEVEL'] = trade_off_level
     session['LATENCY_DATA'] = latency_data
-    session['THREADPOOL_AND_THROUGHPUT_DATA'] = threadpool_and_concurrency_data
+    session['THREADPOOL_AND_THROUGHPUT_DATA'] = threadpool_and_throughput_data
 
     update_session_data()
 
@@ -230,8 +230,8 @@ def update_global_data():
     global_data.object_plot_data = session["object_plot_data"]
 
     global_data.threadpool_and_throughput = session["threadpool_and_throughput"]
-    global_data.percentile = session["latency"]
-    global_data.concurrency = session["latency"]
+    global_data.latency = session["latency"]
+    global_data.throughput = session["latency"]
 
 
 def update_session_data():

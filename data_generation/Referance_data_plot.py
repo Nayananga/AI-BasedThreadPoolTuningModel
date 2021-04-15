@@ -21,27 +21,27 @@ def compare_data(return_check=False):
     noise_data = pd.read_csv(Config.PATH + 'plot_noise_data.csv')
 
     actual_threadpool = actual_data.iloc[:, 0]
-    actual_concurrency = actual_data.iloc[:, 1]
+    actual_throughput = actual_data.iloc[:, 1]
     actual_latency = actual_latency_data.iloc[:, 0]
     noise_data = noise_data.iloc[:, 0]
 
     reference_threadpool = reference_data.iloc[:, 1]
-    reference_concurrency = reference_data.iloc[:, 0]
+    reference_throughput = reference_data.iloc[:, 0]
     reference_latency = reference_data.iloc[:, 2]
 
     plot_reference_threadpool = []
     plot_reference_latency = []
 
-    for j, concurrency in enumerate(actual_concurrency):
-        for i in range(len(reference_concurrency)):
-            if reference_concurrency[i] == concurrency:
+    for j, throughput in enumerate(actual_throughput):
+        for i in range(len(reference_throughput)):
+            if reference_throughput[i] == throughput:
                 plot_reference_threadpool.append(reference_threadpool[i])
                 plot_reference_latency.append(reference_latency[i] + noise_data[j])
 
     all_data = error_calculations(plot_reference_threadpool, actual_threadpool, plot_reference_latency, actual_latency)
     file_write(all_data, data_write_names)
 
-    plot_comparison(plot_reference_threadpool, 'reference', actual_threadpool, 'actual', actual_concurrency,
+    plot_comparison(plot_reference_threadpool, 'reference', actual_threadpool, 'actual', actual_throughput,
                     'throughput')
 
     if return_check:

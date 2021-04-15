@@ -6,7 +6,7 @@ from general_utilities.data_plot import min_point_plot
 from general_utilities.sample_system import sample_system
 
 threadpool_bounds = Config.PARAMETER_BOUNDS
-concurrency_bounds = Config.FEATURE_BOUNDS
+throughput_bounds = Config.FEATURE_BOUNDS
 
 equation = Config.FUNCTION
 
@@ -29,9 +29,9 @@ def find_reference_min_points():
     min_location = None
     create_folders(Config.REFERENCE_PATH)
 
-    for i in range(len(concurrency_bounds)):
-        for j in range(concurrency_bounds[i][1] - concurrency_bounds[i][0]):
-            throughput.append(j + concurrency_bounds[i][0])
+    for i in range(len(throughput_bounds)):
+        for j in range(throughput_bounds[i][1] - throughput_bounds[i][0]):
+            throughput.append(j + throughput_bounds[i][0])
 
     for i in range(len(threadpool_bounds)):
         for j in range(threadpool_bounds[i][1] - threadpool_bounds[i][0]):

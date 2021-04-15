@@ -28,16 +28,16 @@ def generate_overall_error():
     noise_change = Config.NOISE_CHANGE
     overall_error_name = []
     for noise in noise_change:
-        for concurrency in range(len(Config.FEATURE_FUNCTION_ARRAY)):
+        for throughput in range(len(Config.FEATURE_FUNCTION_ARRAY)):
             error_name = []
-            Config.FOLDER = COMMON_PATH + noise + '/' + Config.FILE_NAME[concurrency]
+            Config.FOLDER = COMMON_PATH + noise + '/' + Config.FILE_NAME[throughput]
             Config.PATH = Config.FOLDER + '/'
-            Config.FEATURE_FUNCTION = Config.FEATURE_FUNCTION_ARRAY[concurrency]
+            Config.FEATURE_FUNCTION = Config.FEATURE_FUNCTION_ARRAY[throughput]
 
             print(Config.FEATURE_FUNCTION)
 
             error_name.append(noise)
-            error_name.append(Config.FILE_NAME[concurrency])
+            error_name.append(Config.FILE_NAME[throughput])
             overall_error_name.append(error_name)
 
             error_data.append(compare_data(return_check=True))

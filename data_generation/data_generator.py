@@ -11,8 +11,8 @@ def generate_data():
     optimize_data, object_data = data_generation_ini()
     gd.min_x_data, gd.min_y_data = ini_min_point_find_with_feature(optimize_data, object_data)
 
-    gd.threadpool_and_concurrency = optimize_data
-    gd.percentile = object_data
+    gd.threadpool_and_throughput = optimize_data
+    gd.latency = object_data
 
     return optimize_data, object_data
 

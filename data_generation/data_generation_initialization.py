@@ -47,21 +47,6 @@ def config_errors():
         logging.info("Everything is defined properly")
 
 
-# def read_feature_data():
-#     folder_name = Config.ROOT_PATH + 'Workload_data/'
-#     file_name = Config.FEATURE_FUNCTION[0]
-#     actual_data = pd.read_csv(folder_name + file_name + '.csv')
-#
-#     out_feature_data = []
-#
-#     feature_data = actual_data.iloc[:, 0]
-#     for feature_point in feature_data:
-#         point = [feature_point]
-#         out_feature_data.append(point)
-#
-#     return out_feature_data
-
-
 def get_training_points():
     folder_name = Config.ROOT_PATH + 'Training_data/'
     latency = pd.read_csv(folder_name + 'latency_training_data.csv')
