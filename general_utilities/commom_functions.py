@@ -1,5 +1,6 @@
 import itertools
 import os
+import random
 
 import numpy as np
 
@@ -11,23 +12,17 @@ feature_count = Config.NUMBER_OF_FEATURES
 
 def data_point_finder(parameter_bounds, feature_bounds=None):
     print(feature_bounds)
-    points_combined = []
-    for i in range(parameter_count):
-        points = []
-        for j in range(parameter_bounds[i][0], parameter_bounds[i][1]):
-            points.append(j)
-        points_combined.append(points)
 
-    if feature_bounds is not None:
-        for k in range(feature_count):
-            points = []
-            for m in range(feature_bounds[k][0], feature_bounds[k][1]):
-                points.append(m)
-            points_combined.append(points)
+    points_combined = [
+        np.arange(parameter_bounds[i][0], parameter_bounds[i][1]).tolist() for i in range(parameter_count)]
 
     if parameter_count == 1 and feature_count == 0:
         points_combined = points_combined[0]
     else:
+        if feature_bounds is not None:
+            for k in range(feature_count):
+                points_combined.append(np.arange(feature_bounds[k][0], feature_bounds[k][1]).tolist())
+
         points_combined = list(itertools.product(*points_combined))
 
     return points_combined
@@ -75,11 +70,13 @@ def selecting_random_point(number_of_points, parameter_bounds, feature_bounds=No
 
     while size < number_of_points:
         point = []
-        for j in range(len(parameter_bounds)):
-            point.append(np.random.randint(parameter_bounds[j][0], parameter_bounds[j][1]))
+        random_choice = []
+        for parameter_bound in parameter_bounds:
+            random_choice.append(np.random.randint(parameter_bound[0], parameter_bound[1]))
         if feature_bounds is not None:
-            for k in range(len(feature_bounds)):
-                point.append(np.random.randint(feature_bounds[k][0], feature_bounds[k][1]))
+            for feature_bound in feature_bounds:
+                random_choice.append(np.random.randint(feature_bound[0], feature_bound[1]))
+        point.append(random.choice(random_choice))
         if feature_value is not None:
             for f_loc in range(Config.NUMBER_OF_FEATURES):
                 point.append(feature_value[f_loc])

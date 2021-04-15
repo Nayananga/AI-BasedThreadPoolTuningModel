@@ -12,51 +12,40 @@ variance_threshold = 50
 
 
 def fifo_sampling(next_x, x_data, y_data, trade_off_level):
-    point_locations = index_get(next_x, x_data)  # TODO: np.where(x_data == next_x)[0]
+    point_locations = index_get(next_x, x_data)
+    points = [[x_data[i], y_data[i]] for i in point_locations]
     number_of_points = len(point_locations)
 
     if number_of_points > 1:
-        variance = variance_calculation(number_of_points, point_locations, y_data)
+        variance = variance_calculation(points)
         if variance >= variance_threshold:
-            x_data, y_data = remove_data(number_of_points, point_locations, x_data, y_data)
+            x_data, y_data = remove_data(number_of_points, points, x_data, y_data)
             trade_off_level = Config.DEFAULT_TRADE_OFF_LEVEL
         elif number_of_points >= maximum_in_sampler:
-            x_data.remove(x_data[point_locations[0]])
-            y_data.remove(y_data[point_locations[0]])
+            x_data.remove(points[0][0])
+            y_data.remove(points[0][1])
 
     return x_data, y_data, trade_off_level
 
 
-def remove_data(number_of_points, point_locations, x_data, y_data):
+def remove_data(number_of_points, points, x_data, y_data):
     for i in range(number_of_points - 1, -1, -1):
-        x_data.remove(x_data[point_locations[i]])
-        y_data.remove(y_data[point_locations[i]])
+        x_data.remove(points[i][0])
+        y_data.remove(points[i][1])
 
     return x_data, y_data
 
 
 def index_get(value, data):
-    index_p_val = []
-    if type(value) == list or type(value) == tuple:
-        p_val = value
-    else:
-        p_val = list(value)
-
-    for i in range(len(data)):
-        if data[i] == p_val:
-            index_p_val.append(i)
-
-    return index_p_val
+    return [i for i, data_item in enumerate(data) if data_item == value]
 
 
-def variance_calculation(number_of_points, point_locations, y_data):
+def variance_calculation(points):
     """
     Variance is calculated according of the given distribution
     """
-    variance_matrix = []
 
-    for i in range(number_of_points):
-        variance_matrix.append(y_data[point_locations[i]])
-
+    variance_matrix = [i[1] for i in points]
     variance = np.var(variance_matrix)
+
     return variance

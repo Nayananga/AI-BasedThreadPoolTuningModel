@@ -1,7 +1,9 @@
+import redis as redis
 from flask import Flask, request, session
+from flask_session import Session
 
 import Config
-import global_data as gd
+import global_data
 import threadpool_tuner as tp
 from data_generation import data_generator
 from general_utilities.Bayesian_point_selection import update_min_point
@@ -13,15 +15,45 @@ app = Flask(__name__)
 
 app.secret_key = "My secret key"
 
+# Configure Redis for storing the session data on the server-side
+app.config['SESSION_TYPE'] = 'redis'
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_USE_SIGNER'] = True
+app.config['SESSION_REDIS'] = redis.from_url('redis://localhost:6379')
+
+# Create and initialize the Flask-Session object AFTER `app` has been configured
+server_session = Session(app)
+
 model = None
+train_threadpool_and_concurrency_data = []
+train_latency_data = []
+
+min_x = 0
+min_y = 0
+
+min_x_data = []
+min_y_data = []
+
+random_eval_check = False
+eval_pool = []
+
+optimizer_plot_data = []
+object_plot_data = []
+
+threadpool_and_concurrency = []
+percentile = []
+concurrency = []
 
 
 @app.before_first_request
 def build_model():
-    global model
+    global model, train_threadpool_and_concurrency_data, train_latency_data, min_x, \
+        min_y, min_x_data, min_y_data, random_eval_check, eval_pool, optimizer_plot_data, \
+        object_plot_data, threadpool_and_concurrency, percentile, concurrency
+
     common_path = Config.COMMON_PATH
     noise_name = Config.NOISE_CHANGE
-    train_exploration_factor = list()
+
     for j, noise in enumerate(Config.NOISE_LEVEL):
         Config.COMMON_PATH = common_path + '/' + noise_name[j] + '/'
         for i in range(len(Config.FEATURE_FUNCTION_ARRAY)):
@@ -33,17 +65,67 @@ def build_model():
 
             create_folders(Config.FOLDER)
 
-    train_exploration_factor.append(Config.DEFAULT_TRADE_OFF_LEVEL)
     train_threadpool_and_concurrency_data, train_latency_data = data_generator.generate_data()
 
     model = GPR(train_threadpool_and_concurrency_data, train_latency_data)  # fit initial data to gaussian model
 
-    session['ITERATION'] = int(1)
-    session['TRADE_OFF_LEVEL'] = float(Config.DEFAULT_TRADE_OFF_LEVEL)
-    session['EXPLORATION_FACTOR'] = train_exploration_factor
-    session['PLOT_DATA'] = list([[], [], []])
-    session['LATENCY_DATA'] = list(train_latency_data)
-    session['THREADPOOL_AND_CONCURRENCY_DATA'] = list(train_threadpool_and_concurrency_data)
+    min_x = global_data.min_x
+    min_y = global_data.min_y
+
+    min_x_data = global_data.min_x_data
+    min_y_data = global_data.min_y_data
+
+    random_eval_check = global_data.random_eval_check
+    eval_pool = global_data.eval_pool
+
+    optimizer_plot_data = global_data.optimizer_plot_data
+    object_plot_data = global_data.object_plot_data
+
+    threadpool_and_concurrency = global_data.threadpool_and_concurrency
+    percentile = global_data.percentile
+    concurrency = global_data.concurrency
+
+
+@app.before_request
+def before_request_func():
+    global model, train_threadpool_and_concurrency_data, train_latency_data, min_x, \
+        min_y, min_x_data, min_y_data, random_eval_check, eval_pool, optimizer_plot_data, \
+        object_plot_data, threadpool_and_concurrency, percentile, concurrency
+
+    if "initialized" not in session:
+        print("New User : ", session.sid)
+
+        session["initialized"] = True
+
+        session['ITERATION'] = int(1)
+
+        session['TRADE_OFF_LEVEL'] = float(Config.DEFAULT_TRADE_OFF_LEVEL)
+
+        train_exploration_factor = list()
+        train_exploration_factor.append(Config.DEFAULT_TRADE_OFF_LEVEL)
+        session['EXPLORATION_FACTOR'] = train_exploration_factor
+
+        session['PLOT_DATA'] = list([[], [], []])
+
+        session['LATENCY_DATA'] = list(train_latency_data)
+
+        session['THREADPOOL_AND_CONCURRENCY_DATA'] = list(train_threadpool_and_concurrency_data)
+
+        session["min_x"] = min_x
+        session["min_y"] = min_y
+
+        session["min_x_data"] = min_x_data
+        session["min_y_data"] = min_y_data
+
+        session["random_eval_check"] = random_eval_check
+        session["eval_pool"] = eval_pool
+
+        session["optimizer_plot_data"] = optimizer_plot_data
+        session["object_plot_data"] = object_plot_data
+
+        session["threadpool_and_concurrency"] = threadpool_and_concurrency
+        session["percentile"] = percentile
+        session["percentile"] = concurrency
 
 
 @app.route('/', methods=['POST'])
@@ -52,6 +134,9 @@ def threadpool_tuner():
     trade_off_level = float(session['TRADE_OFF_LEVEL'])
     latency_data = list(session['LATENCY_DATA'])
     threadpool_and_concurrency_data = list(session['THREADPOOL_AND_CONCURRENCY_DATA'])
+
+    update_global_data()
+
     request_data = request.get_json()
     print(request_data)
 
@@ -64,10 +149,13 @@ def threadpool_tuner():
         [request_data['currentThreadPoolSize'], request_data['currentTenSecondRate']])
 
     session['CONCURRENCY'] = [request_data['currentTenSecondRate']]
-    session['NEXT_THREADPOOL_SIZE'] = [request_data['currentThreadPoolSize'], request_data['currentTenSecondRate']]
+    session['NEXT_THREADPOOL_SIZE'] = next_threadpool_size
     session['TRADE_OFF_LEVEL'] = trade_off_level
     session['LATENCY_DATA'] = latency_data
     session['THREADPOOL_AND_CONCURRENCY_DATA'] = threadpool_and_concurrency_data
+
+    update_session_data()
+
     return str(next_threadpool_size[0])
 
 
@@ -78,29 +166,31 @@ def after_request_func(response):
     next_threadpool_size = list(session['NEXT_THREADPOOL_SIZE'])
     trade_off_level = float(session['TRADE_OFF_LEVEL'])
     exploration_factor = list(session['EXPLORATION_FACTOR'])
-    concurrency = list(session['CONCURRENCY'])
+    throughput = list(session['CONCURRENCY'])
     latency_data = list(session['LATENCY_DATA'])
     threadpool_and_concurrency_data = list(session['THREADPOOL_AND_CONCURRENCY_DATA'])
     plot_data_1 = list(session['PLOT_DATA'])
 
+    update_global_data()
+
     threadpool_and_concurrency_data, latency_data, trade_off_level, model = tp.update_model(
         next_threadpool_size, threadpool_and_concurrency_data, latency_data, trade_off_level)
 
+    plot_data_1[0].append(latency_data[-1])
+    plot_data_1[1].append(threadpool_and_concurrency_data[-1])
+    plot_data_1[2].append(exploration_factor[-1])  # if we want to plot this
+
+    update_min_point(threadpool_and_concurrency_data, latency_data, throughput, model)
+    exploration_factor.append(trade_off_level)
+
     print("inter -", iteration)
-    print("workers -", concurrency)
+    print("workers -", throughput)
     print("trade_off_level -", exploration_factor[-1])
     print("Next x- ", threadpool_and_concurrency_data[-1])
     print("Next y- ", latency_data[-1])
-    print("min_x_data", gd.min_x_data)
-    print("min_y_data", gd.min_y_data)
+    print("min_x_data", global_data.min_x_data)
+    print("min_y_data", global_data.min_y_data)
     print("-------------------------------------")
-
-    plot_data_1[0].append(latency_data[-1])
-    plot_data_1[1].append(threadpool_and_concurrency_data[-1])
-    plot_data_1[2].append(exploration_factor[-1])
-
-    update_min_point(threadpool_and_concurrency_data, latency_data, concurrency, model)
-    exploration_factor.append(trade_off_level)
 
     if iteration % 20 == 0:
         plot_data(plot_data_1[1], plot_data_1[0], Config.PAUSE_TIME, save=True)
@@ -120,7 +210,45 @@ def after_request_func(response):
     session['THREADPOOL_AND_CONCURRENCY_DATA'] = threadpool_and_concurrency_data
     session['PLOT_DATA'] = plot_data_1
 
+    update_session_data()
+
     return response
+
+
+def update_global_data():
+    global_data.min_x = session["min_x"]
+    global_data.min_y = session["min_y"]
+
+    global_data.min_x_data = session["min_x_data"]
+    global_data.min_y_data = session["min_y_data"]
+
+    global_data.random_eval_check = session["random_eval_check"]
+    global_data.eval_pool = session["eval_pool"]
+
+    global_data.optimizer_plot_data = session["optimizer_plot_data"]
+    global_data.object_plot_data = session["object_plot_data"]
+
+    global_data.threadpool_and_concurrency = session["threadpool_and_concurrency"]
+    global_data.percentile = session["percentile"]
+    global_data.concurrency = session["percentile"]
+
+
+def update_session_data():
+    session["min_x"] = global_data.min_x
+    session["min_y"] = global_data.min_y
+
+    session["min_x_data"] = global_data.min_x_data
+    session["min_y_data"] = global_data.min_y_data
+
+    session["random_eval_check"] = global_data.random_eval_check
+    session["eval_pool"] = global_data.eval_pool
+
+    session["optimizer_plot_data"] = global_data.optimizer_plot_data
+    session["object_plot_data"] = global_data.object_plot_data
+
+    session["threadpool_and_concurrency"] = global_data.threadpool_and_concurrency
+    session["percentile"] = global_data.percentile
+    session["percentile"] = global_data.concurrency
 
 
 if __name__ == '__main__':
