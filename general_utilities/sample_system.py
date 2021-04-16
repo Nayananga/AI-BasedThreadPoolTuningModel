@@ -15,5 +15,4 @@ def sample_system(formula, noise_level=0, **kwargs):
     else:
         noise = generate_noise(noise_level)
         latency = float(expr.evalf(subs=kwargs)) + noise  # add noise to the latency
-        print(latency)
     return latency, noise

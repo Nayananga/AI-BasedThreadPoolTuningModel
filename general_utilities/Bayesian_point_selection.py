@@ -51,12 +51,10 @@ def estimate_minimum_point(x_data, y_data, feature_val, model):
             min_x = selecting_random_point(number_of_points=1, parameter_bounds=Config.PARAMETER_BOUNDS,
                                            feature_value=feature_val)
             min_x = min_x[0]
-            print('Random_selection')
         elif Config.SELECTION_METHOD == "From_model":
             min_x = generate_min_point(feature_val, model)
             # we got the best threadpool size for the feature_val nothing minimum may be minimum latency value can
             # obtain while keeping the same feature_val
-            print('From_model')
         elif Config.SELECTION_METHOD == "Nearest_point":
             _min_y, min_x = generate_min_point_based_on_distance(feature_val)
 

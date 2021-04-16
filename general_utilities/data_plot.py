@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import Config
+from general_utilities.commom_functions import create_folders
 from old_files.bayesian_optimization_util import plot_approximation
 
 
@@ -152,10 +153,3 @@ def min_point_plot(thread_pool, title="Minimum_points", x_label='throughput', y_
 
     plt.pause(pause_time)
     plt.close()
-
-
-def create_folders(path):
-    try:
-        os.makedirs(path)
-    except FileExistsError:
-        print("directory already exists")

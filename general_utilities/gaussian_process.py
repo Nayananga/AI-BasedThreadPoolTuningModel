@@ -20,7 +20,6 @@ class GPR:
         self.model = gp.GaussianProcessRegressor(kernel=kernel, alpha=noise_level, n_restarts_optimizer=10,
                                                  normalize_y=True)  # TODO: Check
         self.model.fit(x, y)
-        print(self.model.log_marginal_likelihood_value_)  # TODO: Check
 
     def predict(self, x, return_std=False):
         x = self.scaler.transform(x)
@@ -35,5 +34,4 @@ class GPR:
 
         model = gp.GaussianProcessRegressor(kernel=kernel, alpha=noise_level, n_restarts_optimizer=10, normalize_y=True)
         model.fit(self, yy)
-        print(model.log_marginal_likelihood_value_)
         return model

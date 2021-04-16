@@ -1,6 +1,3 @@
-min_x = 0
-min_y = 0
-
 min_x_data = []
 min_y_data = []
 
@@ -12,4 +9,3 @@ object_plot_data = []
 
 threadpool_and_throughput = []
 latency = []
-throughput = []

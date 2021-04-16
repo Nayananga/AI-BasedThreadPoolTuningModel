@@ -11,8 +11,6 @@ feature_count = Config.NUMBER_OF_FEATURES
 
 
 def data_point_finder(parameter_bounds, feature_bounds=None):
-    print(feature_bounds)
-
     points_combined = [
         np.arange(parameter_bounds[i][0], parameter_bounds[i][1]).tolist() for i in range(parameter_count)]
 
@@ -91,4 +89,4 @@ def create_folders(path):
     try:
         os.makedirs(path)
     except FileExistsError:
-        print("directory already exists")
+        print("requested directory already exists")
