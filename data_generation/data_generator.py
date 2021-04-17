@@ -1,4 +1,4 @@
-import global_data as gd
+import global_data
 from data_generation.data_generation_initialization import data_generation_ini
 from general_utilities.commom_functions import *
 from general_utilities.commom_functions import data_point_finder
@@ -9,10 +9,10 @@ def generate_data():
     initial_configurations()
 
     optimize_data, object_data = data_generation_ini()
-    gd.min_x_data, gd.min_y_data = ini_min_point_find_with_feature(optimize_data, object_data)
+    global_data.min_x_data, global_data.min_y_data = ini_min_point_find_with_feature(optimize_data, object_data)
 
-    gd.threadpool_and_throughput = optimize_data
-    gd.latency = object_data
+    global_data.threadpool_and_throughput = optimize_data
+    global_data.latency = object_data
 
     return optimize_data, object_data
 
@@ -29,8 +29,8 @@ def initial_configurations():
         number_of_points = number_of_points + (thread_pool_bound[i][1] - thread_pool_bound[i][0])
 
     if number_of_points > Config.EVAL_POINT_SIZE:
-        gd.random_eval_check = True
+        global_data.random_eval_check = True
     else:
         eval_pool = data_point_finder(thread_pool_bound)
-        gd.eval_pool = eval_pool
-        gd.random_eval_check = False
+        global_data.eval_pool = eval_pool
+        global_data.random_eval_check = False

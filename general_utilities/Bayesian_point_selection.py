@@ -1,12 +1,12 @@
-import global_data as gd
+import global_data
 from general_utilities.bayesian_opt import bayesian_expected_improvement
 from general_utilities.commom_functions import *
 
 
 def update_min_point(x_data, y_data, feature_val, model=None):
     min_x, min_y, min_location = None, None, None
-    min_x_data = gd.min_x_data
-    min_y_data = gd.min_y_data
+    min_x_data = global_data.min_x_data
+    min_y_data = global_data.min_y_data
     found_feature_val = False
 
     for j in range(len(min_x_data)):
@@ -26,8 +26,8 @@ def update_min_point(x_data, y_data, feature_val, model=None):
                 min_y = y_data[-1]
                 min_x = x_data[-1]
 
-                gd.min_y_data[min_location] = min_y
-                gd.min_x_data[min_location] = min_x
+                global_data.min_y_data[min_location] = min_y
+                global_data.min_x_data[min_location] = min_x
         else:
             min_x, min_y = replace_min_point(x_data, y_data, feature_val, min_location, model)
     else:
@@ -44,8 +44,8 @@ def estimate_minimum_point(x_data, y_data, feature_val, model):
         # TODO: what if feature_val found more than one time?
         min_y = y_data[-1]
         min_x = x_data[-1]
-        gd.min_y_data.append(min_y)
-        gd.min_x_data.append(min_x)
+        global_data.min_y_data.append(min_y)
+        global_data.min_x_data.append(min_x)
     else:
         if Config.SELECTION_METHOD == "Random":
             min_x = selecting_random_point(number_of_points=1, parameter_bounds=Config.PARAMETER_BOUNDS,
@@ -74,14 +74,14 @@ def replace_min_point(x_data, y_data, feature_val, min_location, model):
                 min_x = x_data[i]
 
     if min_x is None:
-        gd.min_y_data.remove(gd.min_y_data[min_location])
-        gd.min_x_data.remove(gd.min_x_data[min_location])
+        global_data.min_y_data.remove(global_data.min_y_data[min_location])
+        global_data.min_x_data.remove(global_data.min_x_data[min_location])
         min_x = estimate_minimum_point(x_data, y_data, feature_val, model)
         # this is a fucking redundant but have make sure this to happen if not exact match found for the feature_val
         # from training data we dont know the latency for the estimated parameters so min_y is none
     else:
-        gd.min_y_data[min_location] = min_y  # ok
-        gd.min_x_data[min_location] = min_x
+        global_data.min_y_data[min_location] = min_y  # ok
+        global_data.min_x_data[min_location] = min_x
 
     return min_x, min_y
 
@@ -91,8 +91,8 @@ def generate_min_point(feature_value, model):
 
     max_expected_improvement = 0
     max_threadpool_sizes = []
-    if not gd.random_eval_check:
-        eval_pool = gd.eval_pool
+    if not global_data.random_eval_check:
+        eval_pool = global_data.eval_pool
     else:
         eval_pool = selecting_random_point(Config.EVAL_POINT_SIZE, Config.PARAMETER_BOUNDS,
                                            feature_value=feature_value)
@@ -121,8 +121,8 @@ def generate_min_point(feature_value, model):
 def generate_min_point_based_on_distance(feature_value):
     # Finding the minimum points according to the closest point
     num_parameters = Config.NUMBER_OF_PARAMETERS
-    min_x_data = gd.min_x_data
-    min_y_data = gd.min_y_data
+    min_x_data = global_data.min_x_data
+    min_y_data = global_data.min_y_data
     min_distance = None
     min_distance_location = None
     min_y = []

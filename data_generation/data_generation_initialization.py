@@ -2,7 +2,7 @@ import logging
 
 import pandas as pd
 
-import global_data as gd
+import global_data
 from general_utilities import data_plot
 from general_utilities.commom_functions import *
 from old_files.sample_system import sample_system
@@ -23,8 +23,8 @@ def data_generation_ini():
             object_plot_data = []
             for i in range(len(optimizer_plot_data)):
                 object_plot_data.append(sample_system(optimizer_plot_data[i]))
-            gd.optimizer_plot_data = optimizer_plot_data
-            gd.object_plot_data = object_plot_data
+            global_data.optimizer_plot_data = optimizer_plot_data
+            global_data.object_plot_data = object_plot_data
             data_plot.initial_plot(optimizer_plot_data, object_plot_data)
 
     config_errors()

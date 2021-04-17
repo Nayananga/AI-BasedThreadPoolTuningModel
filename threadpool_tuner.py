@@ -1,6 +1,6 @@
 import csv
 
-import global_data as gd
+import global_data
 from general_utilities.Bayesian_point_selection import update_min_point
 from general_utilities.FIFO import fifo_sampling
 from general_utilities.bayesian_opt import bayesian_expected_improvement, next_x_point_selection
@@ -19,8 +19,8 @@ def find_next_threadpool_size(threadpool_and_throughput_data, latency_data, trad
         # else means we found exact match for the throughput from the training data
         max_expected_improvement = 0
         max_threadpool_sizes = []
-        if not gd.random_eval_check:
-            eval_pool = gd.eval_pool
+        if not global_data.random_eval_check:
+            eval_pool = global_data.eval_pool
         else:
             eval_pool = selecting_random_point(Config.EVAL_POINT_SIZE, Config.PARAMETER_BOUNDS,
                                                feature_value=throughput)

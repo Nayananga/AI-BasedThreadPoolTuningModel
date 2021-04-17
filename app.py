@@ -61,13 +61,12 @@ def before_request_func():
 
         session['EXPLORATION_FACTOR'] = [float(Config.DEFAULT_TRADE_OFF_LEVEL)]
 
-        session['PLOT_DATA'] = list([[], [], []])
+        session['USER_PLOT_DATA'] = list([[], [], []])
 
         session['USER_LATENCY_DATA'] = list(initial_data.train_latency_data)
 
         session['USER_THREADPOOL_AND_THROUGHPUT_DATA'] = list(initial_data.train_threadpool_and_throughput_data)
 
-        print(initial_data.min_x_data)
         session['MIN_X_DATA'] = initial_data.min_x_data
         session['MIN_Y_DATA'] = initial_data.min_y_data
 
@@ -121,9 +120,9 @@ def after_request_func(response):
     next_throughput = list(session['NEXT_THROUGHPUT'])
     next_threadpool_size_with_throughput = list(session['NEXT_THREADPOOL_SIZE_WITH_THROUGHPUT'])
     exploration_factor = list(session['EXPLORATION_FACTOR'])
+    plot_data_1 = list(session['USER_PLOT_DATA'])
     latency_data = list(session['USER_LATENCY_DATA'])
     threadpool_and_throughput_data = list(session['USER_THREADPOOL_AND_THROUGHPUT_DATA'])
-    plot_data_1 = list(session['PLOT_DATA'])
 
     update_global_data()
 
@@ -162,7 +161,7 @@ def after_request_func(response):
     session['EXPLORATION_FACTOR'] = exploration_factor
     session['USER_LATENCY_DATA'] = latency_data
     session['USER_THREADPOOL_AND_THROUGHPUT_DATA'] = threadpool_and_throughput_data
-    session['PLOT_DATA'] = plot_data_1
+    session['USER_PLOT_DATA'] = plot_data_1
 
     update_session_data()
 
