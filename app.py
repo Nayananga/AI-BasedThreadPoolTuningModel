@@ -1,3 +1,5 @@
+import json
+
 import redis as redis
 from flask import Flask, request, session
 from flask_session import Session
@@ -24,34 +26,17 @@ app.config['SESSION_REDIS'] = redis.from_url('redis://localhost:6379')
 # Create and initialize the Flask-Session object AFTER `app` has been configured
 Session(app)
 
-
-class InitialData:
-    min_x_data = []
-    min_y_data = []
-
-    random_eval_check = False
-    eval_pool = []
-
-    optimizer_plot_data = []
-    object_plot_data = []
-
-    threadpool_and_throughput = []
-    latency = []
-
-    train_threadpool_and_throughput_data = []
-    train_latency_data = []
-
-
 model = None
-initial_data = None
 
 
 @app.before_request
 def before_request_func():
-    global model, initial_data
 
     if "INITIALIZED" not in session:
         print("New User : ", session.sid)
+
+        with open('Data/Training_data/initial_global_data.json') as f:
+            initial_global_data = json.load(f)
 
         session['INITIALIZED'] = True
 
@@ -63,21 +48,22 @@ def before_request_func():
 
         session['USER_PLOT_DATA'] = list([[], [], []])
 
-        session['USER_LATENCY_DATA'] = list(initial_data.train_latency_data)
+        session['USER_LATENCY_DATA'] = list(initial_global_data['train_latency_data'])
 
-        session['USER_THREADPOOL_AND_THROUGHPUT_DATA'] = list(initial_data.train_threadpool_and_throughput_data)
+        session['USER_THREADPOOL_AND_THROUGHPUT_DATA'] = list(
+            initial_global_data['train_threadpool_and_throughput_data'])
 
-        session['MIN_X_DATA'] = initial_data.min_x_data
-        session['MIN_Y_DATA'] = initial_data.min_y_data
+        session['MIN_X_DATA'] = initial_global_data['min_x_data']
+        session['MIN_Y_DATA'] = initial_global_data['min_y_data']
 
-        session['RANDOM_EVAL_CHECK'] = initial_data.random_eval_check
-        session['EVAL_POOL'] = initial_data.eval_pool
+        session['RANDOM_EVAL_CHECK'] = initial_global_data['random_eval_check']
+        session['EVAL_POOL'] = initial_global_data['eval_pool']
 
-        session['OPTIMIZER_PLOT_DATA'] = initial_data.optimizer_plot_data
-        session['OBJECT_PLOT_DATA'] = initial_data.object_plot_data
+        session['OPTIMIZER_PLOT_DATA'] = initial_global_data['optimizer_plot_data']
+        session['OBJECT_PLOT_DATA'] = initial_global_data['object_plot_data']
 
-        session['LATENCY'] = initial_data.latency
-        session['THREADPOOL_AND_THROUGHPUT'] = initial_data.threadpool_and_throughput
+        session['LATENCY'] = initial_global_data['latency']
+        session['THREADPOOL_AND_THROUGHPUT'] = initial_global_data['threadpool_and_throughput']
 
 
 @app.route('/', methods=['POST'])
@@ -97,7 +83,17 @@ def threadpool_tuner():
         latency_data, trade_off_level, model,
         [request_data['currentTenSecondRate']])
 
-    latency_data.append(float(request_data['currentMeanLatency']))
+    # T = ThroughputOptimized, M = Mean latency Optimized, 99P = 99th Percentile of latency optimized
+    if request_data['optimization'] == 'T':
+        latency_data.append(float(request_data['currentTenSecondRate']))
+    elif request_data['optimization'] == 'M':
+        latency_data.append(float(request_data['currentMeanLatency']))
+    elif request_data['optimization'] == '99P':
+        latency_data.append(float(request_data['current99PLatency']))
+    else:
+        Exception("Invalid optimization, use T = ThroughputOptimized, M = Mean latency Optimized, 99P = 99th "
+                  "Percentile of latency optimized")
+
     threadpool_and_throughput_data.append(
         [request_data['currentThreadPoolSize'], request_data['currentTenSecondRate']])
 
@@ -199,7 +195,6 @@ def update_session_data():
 def build_model():
     common_path = Config.COMMON_PATH
     noise_name = Config.NOISE_CHANGE
-    initial_global_data = InitialData()
 
     for j, noise in enumerate(Config.NOISE_LEVEL):
         Config.COMMON_PATH = common_path + '/' + noise_name[j] + '/'
@@ -214,24 +209,29 @@ def build_model():
 
     gpr_model = GPR(train_threadpool_and_throughput_data, train_latency_data)  # fit initial data to gaussian model
 
-    initial_global_data.min_x_data = global_data.min_x_data
-    initial_global_data.min_y_data = global_data.min_y_data
+    initial_global_data = {
+        "train_latency_data": train_latency_data,
+        "train_threadpool_and_throughput_data": train_threadpool_and_throughput_data,
 
-    initial_global_data.random_eval_check = global_data.random_eval_check
-    initial_global_data.eval_pool = global_data.eval_pool
+        "min_x_data": global_data.min_x_data,
+        "min_y_data": global_data.min_y_data,
 
-    initial_global_data.optimizer_plot_data = global_data.optimizer_plot_data
-    initial_global_data.object_plot_data = global_data.object_plot_data
+        "random_eval_check": global_data.random_eval_check,
+        "eval_pool": global_data.eval_pool,
 
-    initial_global_data.threadpool_and_throughput = global_data.threadpool_and_throughput
-    initial_global_data.latency = global_data.latency
+        "optimizer_plot_data": global_data.optimizer_plot_data,
+        "object_plot_data": global_data.object_plot_data,
 
-    initial_global_data.train_latency_data = train_latency_data
-    initial_global_data.train_threadpool_and_throughput_data = train_threadpool_and_throughput_data
+        "threadpool_and_throughput": global_data.threadpool_and_throughput,
+        "latency": global_data.latency
+    }
 
-    return gpr_model, initial_global_data
+    with open('Data/Training_data/initial_global_data.json', 'w') as fp:
+        json.dump(initial_global_data, fp)
+
+    return gpr_model
 
 
 if __name__ == '__main__':
-    model, initial_data = build_model()
+    model = build_model()
     app.run()
