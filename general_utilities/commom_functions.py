@@ -10,6 +10,19 @@ parameter_count = Config.NUMBER_OF_PARAMETERS
 feature_count = Config.NUMBER_OF_FEATURES
 
 
+# Dead code
+def min_point_find_no_feature(x_data, y_data, min_x=None, min_y=None):
+    if min_x in x_data and min_y in y_data:
+        if y_data[-1] < min_y:
+            min_y = y_data[-1]
+            min_x = x_data[-1]
+    else:
+        min_y = min(y_data)
+        x_location = y_data.index(min(y_data))
+        min_x = x_data[x_location]
+    return min_x, min_y
+
+
 def data_point_finder(parameter_bounds, feature_bounds=None):
     points_combined = [
         np.arange(parameter_bounds[i][0], parameter_bounds[i][1]).tolist() for i in range(parameter_count)]
@@ -24,19 +37,6 @@ def data_point_finder(parameter_bounds, feature_bounds=None):
         points_combined = list(itertools.product(*points_combined))
 
     return points_combined
-
-
-# Dead code
-def min_point_find_no_feature(x_data, y_data, min_x=None, min_y=None):
-    if min_x in x_data and min_y in y_data:
-        if y_data[-1] < min_y:
-            min_y = y_data[-1]
-            min_x = x_data[-1]
-    else:
-        min_y = min(y_data)
-        x_location = y_data.index(min(y_data))
-        min_x = x_data[x_location]
-    return min_x, min_y
 
 
 def ini_min_point_find_with_feature(x_data, y_data):
