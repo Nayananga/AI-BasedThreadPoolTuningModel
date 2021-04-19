@@ -1,7 +1,7 @@
 import global_data
-from general_utilities.data_generation_initialization import data_generation_ini
 from general_utilities.commom_functions import *
 from general_utilities.commom_functions import data_point_finder
+from general_utilities.data_generation_initialization import data_generation_ini
 
 
 def generate_data():

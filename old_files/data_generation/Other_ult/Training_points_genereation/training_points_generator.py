@@ -4,10 +4,10 @@ import numpy as np
 import sympy as sy
 
 import Config
-from old_files.data_generation.Other_ult.Training_points_genereation.dse_tool.explorer import Explorer
-from old_files.data_generation.Other_ult.Training_points_genereation.dse_tool.util import RandomInt
 from general_utilities.commom_functions import selecting_random_point
 from general_utilities.sample_system_old import sample_system
+from old_files.data_generation.Other_ult.Training_points_genereation.dse_tool.explorer import Explorer
+from old_files.data_generation.Other_ult.Training_points_genereation.dse_tool.util import RandomInt
 
 
 def generate_training_points(number_of_training_points, para_bounds, feat_bounds=None, select_random=False):

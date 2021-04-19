@@ -30,7 +30,6 @@ model = None
 
 @app.before_request
 def before_request_func():
-
     if "INITIALIZED" not in session:
         print("New User : ", session.sid)
 
