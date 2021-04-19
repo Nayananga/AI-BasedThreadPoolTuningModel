@@ -25,7 +25,7 @@ import pandas as pd
 from mpl_toolkits import mplot3d
 from sklearn.utils import shuffle
 
-from data_generation.Other_ult.Training_points_genereation.dse_tool.model import GPR
+from old_files.data_generation.Other_ult.Training_points_genereation.dse_tool.model import GPR
 
 seed = 42
 np.random.seed(seed)

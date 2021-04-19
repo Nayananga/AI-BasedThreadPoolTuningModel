@@ -4,8 +4,8 @@ import numpy as np
 import sympy as sy
 
 import Config
-from data_generation.Other_ult.Training_points_genereation.dse_tool.explorer import Explorer
-from data_generation.Other_ult.Training_points_genereation.dse_tool.util import RandomInt
+from old_files.data_generation.Other_ult.Training_points_genereation.dse_tool.explorer import Explorer
+from old_files.data_generation.Other_ult.Training_points_genereation.dse_tool.util import RandomInt
 from general_utilities.commom_functions import selecting_random_point
 from old_files.sample_system import sample_system
 

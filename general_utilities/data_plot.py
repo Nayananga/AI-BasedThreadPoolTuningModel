@@ -1,11 +1,9 @@
 import os
 
 import matplotlib.pyplot as plt
-import numpy as np
 
 import Config
 from general_utilities.commom_functions import create_folders
-from old_files.bayesian_optimization_util import plot_approximation
 
 
 # plotting of initial function
@@ -17,13 +15,13 @@ def initial_plot(parameter_plot_data, object_plot_data):
 
 
 # plot the gaussian model with new data points
-def surrogate_data_plot(next_x, i, model, x_plot_data, y_plot_data, parameter_history, y_data):
-    x_plot_data = np.array(x_plot_data).reshape(-1, 1)
-    plot_approximation(model, x_plot_data, y_plot_data, parameter_history, y_data, next_x, show_legend=i == 0)
-    plt.title(f'Iteration {i + 1}')
-    plt.show(block=False)
-    plt.pause(0.5)
-    plt.close()
+# def surrogate_data_plot(next_x, i, model, x_plot_data, y_plot_data, parameter_history, y_data):
+#     x_plot_data = np.array(x_plot_data).reshape(-1, 1)
+#     plot_approximation(model, x_plot_data, y_plot_data, parameter_history, y_data, next_x, show_legend=i == 0)
+#     plt.title(f'Iteration {i + 1}')
+#     plt.show(block=False)
+#     plt.pause(0.5)
+#     plt.close()
 
 
 def feature_function_plot(data, title="workload", x_label='time', y_label='workers', plot_name='Throughput',

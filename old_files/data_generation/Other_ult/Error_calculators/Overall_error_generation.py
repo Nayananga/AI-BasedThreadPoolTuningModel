@@ -1,5 +1,5 @@
 import Config
-from data_generation.Referance_data_plot import compare_data
+from old_files.data_generation.Referance_data_plot import compare_data
 
 COMMON_PATH = Config.ROOT_PATH + Config.FUNCTION_NAME + '/'
 

@@ -1,7 +1,7 @@
 import csv
 
 import Config
-from data_generation.Other_ult.Feature_generator.feature_functions import feature_generator
+from old_files.data_generation.Other_ult.Feature_generator.feature_functions import feature_generator
 
 
 def feature_data_generation():

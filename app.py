@@ -6,12 +6,11 @@ from flask_session import Session
 
 import Config
 import global_data
-from data_generation import data_generator
+from general_utilities import data_generator
 from general_utilities.Bayesian_point_selection import update_min_point
 from general_utilities.commom_functions import create_folders
-from general_utilities.data_plot import plot_data, save_plots
 from general_utilities.gaussian_process import GPR
-from threadpool_tuner import find_next_threadpool_size, update_model, file_write
+from threadpool_tuner import find_next_threadpool_size, update_model
 
 app = Flask(__name__)
 

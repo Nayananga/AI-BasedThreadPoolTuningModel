@@ -29,9 +29,9 @@ from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF
 from sklearn.metrics import mean_squared_error
 
-from data_generation.Other_ult.Training_points_genereation.dse_tool.explorer import Explorer
+from old_files.data_generation.Other_ult.Training_points_genereation.dse_tool.explorer import Explorer
 # from ..explorer import Explorer
-from data_generation.Other_ult.Training_points_genereation.dse_tool.util import RandomFloat
+from old_files.data_generation.Other_ult.Training_points_genereation.dse_tool.util import RandomFloat
 
 warnings.filterwarnings("ignore")
 
