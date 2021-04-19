@@ -2,6 +2,7 @@ import logging
 
 import pandas as pd
 
+import Config
 import global_data
 from general_utilities.commom_functions import *
 from general_utilities.sample_system import sample_system
@@ -46,22 +47,22 @@ def config_errors():
 
 
 def get_training_points():
-    folder_name = Config.ROOT_PATH + 'Training_data/'
-    latency = pd.read_csv(folder_name + 'latency_training_data.csv')
-    thread = pd.read_csv(folder_name + 'threadpool_and_concurrency_training_data.csv')
+    folder_name = Config.TRAINING_DATA_PATH + '/' + Config.TEST_NAME
+    latency = pd.read_csv(folder_name + '/train_data.csv', names=['99th percentile Latency'])
+    thread = pd.read_csv(folder_name + '/train_data.csv', names=['Thread pool size', 'Current 10 Second Throughput'])
 
     object_data = []
     optimize_data = []
 
-    latency_data = latency.iloc[:, 0]
-    thread_data = thread.iloc[:, 0]
-    feature_data = thread.iloc[:, 1]
+    latency_data = latency.iloc[1:, 0]
+    thread_data = thread.iloc[1:, 0]
+    feature_data = thread.iloc[1:, 1]
 
     for latency_point in latency_data:
-        object_data.append(latency_point)
+        object_data.append(float(latency_point))
 
     for i, thread_point in enumerate(thread_data):
-        point = [thread_point, feature_data[i]]
+        point = [float(thread_point), float(feature_data[i])]
         optimize_data.append(point)
 
     return optimize_data, object_data

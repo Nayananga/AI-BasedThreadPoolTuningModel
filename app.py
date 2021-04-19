@@ -1,4 +1,5 @@
 import json
+import sys
 
 import redis as redis
 from flask import Flask, request, session
@@ -75,6 +76,9 @@ def threadpool_tuner():
 
     request_data = request.get_json()
     print(request_data)
+
+    if request_data['currentTenSecondRate'] <= 0:
+        sys.exit(0)
 
     next_threadpool_size_with_throughput, trade_off_level = find_next_threadpool_size(
         threadpool_and_throughput_data,
@@ -231,5 +235,6 @@ def build_model():
 
 
 if __name__ == '__main__':
+    Config.TEST_NAME = sys.argv[1]
     model = build_model()
     app.run()

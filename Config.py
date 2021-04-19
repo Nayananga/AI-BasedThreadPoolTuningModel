@@ -31,6 +31,9 @@ FUNCTION = "0.000002*(p1 - f1)^4 - 0.00091*(p1 - f1) ^ 3 + 0.123*(p1 - f1) ^ 2 -
 
 ROOT_PATH = '/home/nayananga/PycharmProjects/AI-BasedThreadPoolTuningModel/Data/'
 
+TRAINING_DATA_PATH = '/home/nayananga/Desktop/jmeter_service/python_service_train_data'
+TEST_NAME = None
+
 FUNCTION_NAME = 'Function_2'
 
 REFERENCE_PATH = ROOT_PATH + FUNCTION_NAME + '/Reference_min_point/'
