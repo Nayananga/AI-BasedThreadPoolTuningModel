@@ -101,6 +101,8 @@ def threadpool_tuner():
     session['USER_LATENCY_DATA'] = latency_data
     session['USER_THREADPOOL_AND_THROUGHPUT_DATA'] = threadpool_and_throughput_data
 
+    update_session_data()
+
     return str(next_threadpool_size_with_throughput[0])
 
 
@@ -115,6 +117,8 @@ def after_request_func(response):
     plot_data_1 = list(session['USER_PLOT_DATA'])
     latency_data = list(session['USER_LATENCY_DATA'])
     threadpool_and_throughput_data = list(session['USER_THREADPOOL_AND_THROUGHPUT_DATA'])
+
+    update_global_data()
 
     threadpool_and_throughput_data, latency_data, trade_off_level, model = update_model(
         next_threadpool_size_with_throughput, threadpool_and_throughput_data, latency_data, trade_off_level)
