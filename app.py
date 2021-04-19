@@ -78,7 +78,7 @@ def threadpool_tuner():
     print(request_data)
 
     if request_data['currentTenSecondRate'] <= 0:
-        sys.exit(0)
+        shutdown_server()
 
     next_threadpool_size_with_throughput, trade_off_level = find_next_threadpool_size(
         threadpool_and_throughput_data,
@@ -192,6 +192,13 @@ def update_session_data():
 
     session['THREADPOOL_AND_THROUGHPUT'] = global_data.threadpool_and_throughput
     session['LATENCY'] = global_data.latency
+
+
+def shutdown_server():
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    func()
 
 
 def build_model():
