@@ -26,6 +26,7 @@ def data_point_finder(parameter_bounds, feature_bounds=None):
     return points_combined
 
 
+# Dead code
 def min_point_find_no_feature(x_data, y_data, min_x=None, min_y=None):
     if min_x in x_data and min_y in y_data:
         if y_data[-1] < min_y:

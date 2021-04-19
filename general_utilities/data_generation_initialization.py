@@ -3,9 +3,8 @@ import logging
 import pandas as pd
 
 import global_data
-from general_utilities import data_plot
 from general_utilities.commom_functions import *
-from general_utilities.sample_system_old import sample_system
+from general_utilities.sample_system import sample_system
 
 parameter_names = Config.PARAMETERS
 parameter_bounds = Config.PARAMETER_BOUNDS
@@ -25,7 +24,6 @@ def data_generation_ini():
                 object_plot_data.append(sample_system(optimizer_plot_data[i]))
             global_data.optimizer_plot_data = optimizer_plot_data
             global_data.object_plot_data = object_plot_data
-            data_plot.initial_plot(optimizer_plot_data, object_plot_data)
 
     config_errors()
     optimize_data, object_data = get_training_points()

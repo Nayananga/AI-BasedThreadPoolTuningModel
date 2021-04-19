@@ -3,7 +3,7 @@ import sys
 import numpy as np
 
 import Config
-from general_utilities import data_plot
+from old_files import data_plot
 
 
 def feature_generator(function_name, bounds):

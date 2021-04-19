@@ -2,8 +2,8 @@ import csv
 
 import Config
 from general_utilities.commom_functions import create_folders
-from general_utilities.data_plot import min_point_plot
-from general_utilities.sample_system import sample_system
+from old_files.data_plot import min_point_plot
+from old_files.sample_system import sample_system
 
 threadpool_bounds = Config.PARAMETER_BOUNDS
 throughput_bounds = Config.FEATURE_BOUNDS

@@ -10,15 +10,15 @@ class GPR:
 
     def __init__(self, x, y):
         # Define the Kernel for gaussian process
-        kernel = gp.kernels.Matern()  # TODO: Check
+        kernel = gp.kernels.Matern()
 
         # level of noise for gaussian
         noise_level = 1e-6
 
-        self.scaler = StandardScaler()  # TODO: Check
-        x = self.scaler.fit_transform(x)  # TODO: Check
+        self.scaler = StandardScaler()
+        x = self.scaler.fit_transform(x)
         self.model = gp.GaussianProcessRegressor(kernel=kernel, alpha=noise_level, n_restarts_optimizer=10,
-                                                 normalize_y=True)  # TODO: Check
+                                                 normalize_y=True)
         self.model.fit(x, y)
 
     def predict(self, x, return_std=False):
