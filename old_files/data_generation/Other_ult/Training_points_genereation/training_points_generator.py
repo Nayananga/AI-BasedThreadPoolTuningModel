@@ -7,7 +7,7 @@ import Config
 from old_files.data_generation.Other_ult.Training_points_genereation.dse_tool.explorer import Explorer
 from old_files.data_generation.Other_ult.Training_points_genereation.dse_tool.util import RandomInt
 from general_utilities.commom_functions import selecting_random_point
-from old_files.sample_system import sample_system
+from general_utilities.sample_system_old import sample_system
 
 
 def generate_training_points(number_of_training_points, para_bounds, feat_bounds=None, select_random=False):

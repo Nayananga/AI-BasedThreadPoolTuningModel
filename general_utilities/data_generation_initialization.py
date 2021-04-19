@@ -5,7 +5,7 @@ import pandas as pd
 import global_data
 from general_utilities import data_plot
 from general_utilities.commom_functions import *
-from old_files.sample_system import sample_system
+from general_utilities.sample_system_old import sample_system
 
 parameter_names = Config.PARAMETERS
 parameter_bounds = Config.PARAMETER_BOUNDS
