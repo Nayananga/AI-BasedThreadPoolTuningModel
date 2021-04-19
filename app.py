@@ -97,13 +97,11 @@ def threadpool_tuner():
     threadpool_and_throughput_data.append(
         [request_data['currentThreadPoolSize'], request_data['currentTenSecondRate']])
 
+    session['TRADE_OFF_LEVEL'] = trade_off_level
     session['NEXT_THROUGHPUT'] = [request_data['currentTenSecondRate']]
     session['NEXT_THREADPOOL_SIZE_WITH_THROUGHPUT'] = next_threadpool_size_with_throughput
-    session['TRADE_OFF_LEVEL'] = trade_off_level
     session['USER_LATENCY_DATA'] = latency_data
     session['USER_THREADPOOL_AND_THROUGHPUT_DATA'] = threadpool_and_throughput_data
-
-    update_session_data()
 
     return str(next_threadpool_size_with_throughput[0])
 
@@ -119,8 +117,6 @@ def after_request_func(response):
     plot_data_1 = list(session['USER_PLOT_DATA'])
     latency_data = list(session['USER_LATENCY_DATA'])
     threadpool_and_throughput_data = list(session['USER_THREADPOOL_AND_THROUGHPUT_DATA'])
-
-    update_global_data()
 
     threadpool_and_throughput_data, latency_data, trade_off_level, model = update_model(
         next_threadpool_size_with_throughput, threadpool_and_throughput_data, latency_data, trade_off_level)
@@ -141,16 +137,16 @@ def after_request_func(response):
     print("min_y_data", global_data.min_y_data)
     print("-------------------------------------")
 
-    if iteration % 20 == 0:
-        plot_data(plot_data_1[1], plot_data_1[0], Config.PAUSE_TIME, save=True)
-        save_plots(plot_data_1[1])
-        file_write(plot_data_1[1], plot_data_1[0], exploration_factor, folder_name=Config.PATH + 'plot_')
-        file_write(threadpool_and_throughput_data, latency_data, exploration_factor, folder_name=Config.PATH)
-        # compare_data()
-        # generate_overall_error()
-
-    else:
-        plot_data(plot_data_1[1], plot_data_1[0], Config.PAUSE_TIME)
+    # if iteration % 20 == 0:
+    #     plot_data(plot_data_1[1], plot_data_1[0], Config.PAUSE_TIME, save=True)
+    #     save_plots(plot_data_1[1])
+    #     file_write(plot_data_1[1], plot_data_1[0], exploration_factor, folder_name=Config.PATH + 'plot_')
+    #     file_write(threadpool_and_throughput_data, latency_data, exploration_factor, folder_name=Config.PATH)
+    #     # compare_data()
+    #     # generate_overall_error()
+    #
+    # else:
+    #     plot_data(plot_data_1[1], plot_data_1[0], Config.PAUSE_TIME)
 
     session['ITERATION'] = iteration + 1
     session['TRADE_OFF_LEVEL'] = trade_off_level
