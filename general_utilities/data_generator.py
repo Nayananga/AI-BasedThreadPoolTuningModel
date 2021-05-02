@@ -38,17 +38,13 @@ def initial_configurations():
         global_data.random_eval_check = False
 
 
-def eval_points_generator(parameter_bounds, feature_bounds=None):
+def eval_points_generator(parameter_bounds):
     points_combined = [
         np.arange(parameter_bounds[i][0], parameter_bounds[i][1]).tolist() for i in range(parameter_count)]
 
     if parameter_count == 1 and feature_count == 0:
         points_combined = points_combined[0]
     else:
-        if feature_bounds is not None:
-            for k in range(feature_count):
-                points_combined.append(np.arange(feature_bounds[k][0], feature_bounds[k][1]).tolist())
-
         points_combined = list(itertools.product(*points_combined))
 
     return points_combined
