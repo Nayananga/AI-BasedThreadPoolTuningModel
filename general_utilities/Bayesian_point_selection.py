@@ -47,8 +47,7 @@ def estimate_minimum_point(x_data, y_data, feature_val, model):
         global_data.min_x_data.append(min_x)
     else:
         if Config.SELECTION_METHOD == "Random":
-            min_x = selecting_random_point(number_of_points=1, parameter_bounds=Config.PARAMETER_BOUNDS,
-                                           feature_value=feature_val)
+            min_x = selecting_random_point(1, Config.PARAMETER_BOUNDS, feature_value=feature_val)
             min_x = min_x[0]
         elif Config.SELECTION_METHOD == "From_model":
             min_x = generate_min_point(feature_val, model)
@@ -89,8 +88,7 @@ def generate_min_point(feature_value, model):
     if not global_data.random_eval_check:
         eval_pool = global_data.eval_pool
     else:
-        eval_pool = selecting_random_point(Config.EVAL_POINT_SIZE, Config.PARAMETER_BOUNDS,
-                                           feature_value=feature_value)
+        eval_pool = selecting_random_point(Config.EVAL_POINT_SIZE, Config.PARAMETER_BOUNDS)
 
     min_latency, min_eval_value = generate_min_point_based_on_distance(feature_value)
     explore_factor = 0.01

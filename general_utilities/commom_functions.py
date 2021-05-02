@@ -80,7 +80,7 @@ def create_folders(path):
 
 
 def file_write(threadpool_and_throughput_data, latency_data, exploration_factor, noise_data=None,
-               folder_name=Config.PATH):
+               folder_name=Config.RESULT_DATA_PATH):
     if os.path.exists(folder_name + "99th_percentile_data.csv"):
         os.remove(folder_name + "99th_percentile_data.csv")
 

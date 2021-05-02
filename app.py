@@ -10,7 +10,7 @@ import global_data
 from general_utilities import data_generator
 from general_utilities.Bayesian_point_selection import update_min_point
 from general_utilities.commom_functions import create_folders
-from general_utilities.gaussian_process import GPR
+from general_utilities.gaussian_process import gpr
 from threadpool_tuner import find_next_threadpool_size, update_model
 
 app = Flask(__name__)
@@ -140,8 +140,8 @@ def after_request_func(response):
     # if iteration % 20 == 0:
     #     plot_data(plot_data_1[1], plot_data_1[0], Config.PAUSE_TIME, save=True)
     #     save_plots(plot_data_1[1])
-    #     file_write(plot_data_1[1], plot_data_1[0], exploration_factor, folder_name=Config.PATH + 'plot_')
-    #     file_write(threadpool_and_throughput_data, latency_data, exploration_factor, folder_name=Config.PATH)
+    #     file_write(plot_data_1[1], plot_data_1[0], exploration_factor, folder_name=Config.RESULT_DATA_PATH + 'plot_')
+    #     file_write(threadpool_and_throughput_data, latency_data, exploration_factor, folder_name=Config.RESULT_DATA_PATH)
     #
     # else:
     #     plot_data(plot_data_1[1], plot_data_1[0], Config.PAUSE_TIME)
@@ -182,21 +182,13 @@ def shutdown_server():
 
 
 def build_model():
-    common_path = Config.COMMON_PATH
-    noise_name = Config.NOISE_CHANGE
 
-    for j, noise in enumerate(Config.NOISE_LEVEL):
-        Config.COMMON_PATH = common_path + '/' + noise_name[j] + '/'
-        for i in range(len(Config.FEATURE_FUNCTION_ARRAY)):
-            Config.FOLDER = Config.COMMON_PATH + Config.FILE_NAME[i]
-            Config.PATH = Config.FOLDER + '/'
-            Config.FEATURE_FUNCTION = Config.FEATURE_FUNCTION_ARRAY[i]
-
-            create_folders(Config.FOLDER)
+    create_folders(Config.RESULT_DATA_PATH)
 
     train_threadpool_and_throughput_data, train_latency_data = data_generator.generate_data()
 
-    gpr_model = GPR(train_threadpool_and_throughput_data, train_latency_data)  # fit initial data to gaussian model
+    # fit initial data to gaussian model
+    gpr_model = gpr(train_threadpool_and_throughput_data, train_latency_data)
 
     initial_global_data = {
         "train_latency_data": train_latency_data,

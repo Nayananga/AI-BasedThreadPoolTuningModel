@@ -1,8 +1,7 @@
 import random
 
 import numpy as np
-
-from general_utilities.acquisition import gaussian_ei
+from skopt.acquisition import gaussian_ei
 
 """
 bayesian_expected_improvement : Bayesian expected improvement calculation
@@ -33,11 +32,11 @@ def next_x_point_selection(max_expected_improvement, min_x, trade_off_level, max
         if trade_off_level < 0.00001:
             trade_off_level = 0
     else:
-
         idx = random.randint(0, len(max_points) - 1)
         next_x = max_points[idx]
 
         trade_off_level = trade_off_level + (trade_off_level / 8)
+
         if trade_off_level > 0.01:
             trade_off_level = 0.01
         elif trade_off_level == 0:

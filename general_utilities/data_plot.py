@@ -6,7 +6,7 @@ import Config
 
 
 def plot_data(threadpool_and_throughput_data, latency_data, pause_time, save=False):
-    folder_name = Config.PATH
+    folder_name = Config.RESULT_DATA_PATH
 
     threadpool_size, throughput = map(list, zip(*threadpool_and_throughput_data))
     plt.plot(threadpool_size, label='thread pool size')
@@ -31,7 +31,7 @@ def plot_data(threadpool_and_throughput_data, latency_data, pause_time, save=Fal
 
 
 def save_plots(threadpool_and_throughput_data):
-    folder_name = Config.PATH
+    folder_name = Config.RESULT_DATA_PATH
 
     threadpool_size, throughput = map(list, zip(*threadpool_and_throughput_data))
 
