@@ -5,7 +5,6 @@ import pandas as pd
 import Config
 
 parameter_bounds = Config.PARAMETER_BOUNDS
-feature_bounds = Config.FEATURE_BOUNDS
 
 
 def data_generation_ini():
@@ -17,8 +16,6 @@ def data_generation_ini():
 def config_errors():
     if len(parameter_bounds) == 0:
         logging.error("Parameter bounds are not defined")
-    elif len(feature_bounds) == 0:
-        logging.error("Feature bounds are not defined properly")
     else:
         logging.info("Everything is defined properly")
 
