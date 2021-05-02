@@ -3,7 +3,7 @@ import global_data
 from general_utilities.Bayesian_point_selection import update_min_point
 from general_utilities.FIFO import fifo_sampling
 from general_utilities.bayesian_opt import bayesian_expected_improvement, next_x_point_selection
-from general_utilities.commom_functions import selecting_random_point
+from general_utilities.data_generator import selecting_random_point
 from general_utilities.gaussian_process import gpr
 
 

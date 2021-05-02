@@ -3,7 +3,7 @@ import numpy as np
 import Config
 import global_data
 from general_utilities.bayesian_opt import bayesian_expected_improvement
-from general_utilities.commom_functions import selecting_random_point
+from general_utilities.data_generator import selecting_random_point
 
 
 def update_min_point(x_data, y_data, feature_val, model=None):
