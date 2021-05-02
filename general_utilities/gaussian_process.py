@@ -1,4 +1,4 @@
-import sklearn.gaussian_process as gp
+from sklearn import gaussian_process
 from sklearn.preprocessing import StandardScaler
 
 '''
@@ -10,28 +10,18 @@ class GPR:
 
     def __init__(self, x, y):
         # Define the Kernel for gaussian process
-        kernel = gp.kernels.Matern()
+        kernel = gaussian_process.kernels.Matern()
 
         # level of noise for gaussian
         noise_level = 1e-6
 
         self.scaler = StandardScaler()
         x = self.scaler.fit_transform(x)
-        self.model = gp.GaussianProcessRegressor(kernel=kernel, alpha=noise_level, n_restarts_optimizer=10,
-                                                 normalize_y=True)
+        self.model = gaussian_process.GaussianProcessRegressor(kernel=kernel, alpha=noise_level,
+                                                               n_restarts_optimizer=10,
+                                                               normalize_y=True)
         self.model.fit(x, y)
 
     def predict(self, x, return_std=False):
         x = self.scaler.transform(x)
         return self.model.predict(x, return_std)
-
-    def thread_pool_tuning_model(self, yy):
-        # Define the Kernel for gaussian process
-        kernel = gp.kernels.Matern()
-
-        # level of noise for gaussian
-        noise_level = 1e-6
-
-        model = gp.GaussianProcessRegressor(kernel=kernel, alpha=noise_level, n_restarts_optimizer=10, normalize_y=True)
-        model.fit(self, yy)
-        return model

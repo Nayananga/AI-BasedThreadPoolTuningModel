@@ -1,6 +1,6 @@
+import Config
 import global_data
-from general_utilities.commom_functions import *
-from general_utilities.commom_functions import data_point_finder
+from general_utilities.commom_functions import data_point_finder, ini_min_point_find_with_feature
 from general_utilities.data_generation_initialization import data_generation_ini
 
 
@@ -10,9 +10,6 @@ def generate_data():
 
     optimize_data, object_data = data_generation_ini()
     global_data.min_x_data, global_data.min_y_data = ini_min_point_find_with_feature(optimize_data, object_data)
-
-    global_data.threadpool_and_throughput = optimize_data
-    global_data.latency = object_data
 
     return optimize_data, object_data
 

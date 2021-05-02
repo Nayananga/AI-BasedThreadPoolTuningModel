@@ -1,3 +1,4 @@
+import csv
 import itertools
 import os
 import random
@@ -8,19 +9,6 @@ import Config
 
 parameter_count = Config.NUMBER_OF_PARAMETERS
 feature_count = Config.NUMBER_OF_FEATURES
-
-
-# Dead code
-def min_point_find_no_feature(x_data, y_data, min_x=None, min_y=None):
-    if min_x in x_data and min_y in y_data:
-        if y_data[-1] < min_y:
-            min_y = y_data[-1]
-            min_x = x_data[-1]
-    else:
-        min_y = min(y_data)
-        x_location = y_data.index(min(y_data))
-        min_x = x_data[x_location]
-    return min_x, min_y
 
 
 def data_point_finder(parameter_bounds, feature_bounds=None):
@@ -44,14 +32,12 @@ def ini_min_point_find_with_feature(x_data, y_data):
     min_y_data = []
     for i in range(len(x_data)):
         found_feature_val = False
-        check_feature_val = x_data[i][Config.NUMBER_OF_PARAMETERS:]  # why not[:Config.NUMBER_OF_PARAMETERS]?
+        check_feature_val = x_data[i][Config.NUMBER_OF_PARAMETERS:]
         for j in range(len(min_x_data)):
             if min_x_data[j][Config.NUMBER_OF_PARAMETERS:] == check_feature_val:
-                # why not[:Config.NUMBER_OF_PARAMETERS]?
+
                 found_feature_val = True
                 if y_data[i] < min_y_data[j]:
-                    # TODO: We dont need our training data to confuse model with two different values for same
-                    #  throughput where the later latency is higher than the previous one
                     min_y_data[j] = y_data[i]
                     min_x_data[j] = x_data[i]
                 break
@@ -91,3 +77,39 @@ def create_folders(path):
         os.makedirs(path)
     except FileExistsError:
         print("requested directory already exists")
+
+
+def file_write(threadpool_and_throughput_data, latency_data, exploration_factor, noise_data=None,
+               folder_name=Config.PATH):
+    if os.path.exists(folder_name + "99th_percentile_data.csv"):
+        os.remove(folder_name + "99th_percentile_data.csv")
+
+    with open(folder_name + "99th_percentile_data.csv", 'w') as f:
+        writer = csv.writer(f)
+        for val in latency_data:
+            writer.writerow([val])
+
+    if noise_data is not None:
+
+        if os.path.exists(folder_name + "noise_data.csv"):
+            os.remove(folder_name + "noise_data.csv")
+
+        with open(folder_name + "noise_data.csv", 'w') as f:
+            writer = csv.writer(f)
+            for val in noise_data:
+                writer.writerow([val])
+
+    if os.path.exists(folder_name + "thread_and_con_data.csv"):
+        os.remove(folder_name + "thread_and_con_data.csv")
+
+    with open(folder_name + "thread_and_con_data.csv", "w") as f:
+        writer = csv.writer(f, delimiter=',')
+        writer.writerows(threadpool_and_throughput_data)
+
+    if os.path.exists(folder_name + "Exploration_factor.csv"):
+        os.remove(folder_name + "Exploration_factor.csv")
+
+    with open(folder_name + "Exploration_factor.csv", 'w') as f:
+        writer = csv.writer(f)
+        for val in exploration_factor:
+            writer.writerow([val])

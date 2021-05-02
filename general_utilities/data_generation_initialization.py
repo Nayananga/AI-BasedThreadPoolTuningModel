@@ -3,9 +3,6 @@ import logging
 import pandas as pd
 
 import Config
-import global_data
-from general_utilities.commom_functions import *
-from general_utilities.sample_system import sample_system
 
 parameter_names = Config.PARAMETERS
 parameter_bounds = Config.PARAMETER_BOUNDS
@@ -17,15 +14,6 @@ feature_count = Config.NUMBER_OF_FEATURES
 
 
 def data_generation_ini():
-    if feature_count == 0:
-        optimizer_plot_data = data_point_finder(parameter_bounds)
-        if parameter_count == 1:
-            object_plot_data = []
-            for i in range(len(optimizer_plot_data)):
-                object_plot_data.append(sample_system(optimizer_plot_data[i]))
-            global_data.optimizer_plot_data = optimizer_plot_data
-            global_data.object_plot_data = object_plot_data
-
     config_errors()
     optimize_data, object_data = get_training_points()
     return optimize_data, object_data

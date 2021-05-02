@@ -18,9 +18,9 @@ app = Flask(__name__)
 app.secret_key = "My secret key"
 
 # Configure Redis for storing the session data on the server-side
-app.config['SESSION_TYPE'] = 'redis'
-app.config['SESSION_PERMANENT'] = False
-app.config['SESSION_USE_SIGNER'] = True
+app.config['SESSION_TYPE'] = str('redis')
+app.config['SESSION_PERMANENT'] = bool(False)
+app.config['SESSION_USE_SIGNER'] = bool(True)
 app.config['SESSION_REDIS'] = redis.from_url('redis://localhost:6379')
 
 # Create and initialize the Flask-Session object AFTER `app` has been configured
@@ -37,7 +37,7 @@ def before_request_func():
         with open('Data/Training_data/initial_global_data.json') as f:
             initial_global_data = json.load(f)
 
-        session['INITIALIZED'] = True
+        session['INITIALIZED'] = bool(True)
 
         session['ITERATION'] = int(1)
 
@@ -45,24 +45,18 @@ def before_request_func():
 
         session['EXPLORATION_FACTOR'] = [float(Config.DEFAULT_TRADE_OFF_LEVEL)]
 
-        session['USER_PLOT_DATA'] = list([[], [], []])
+        session['USER_PLOT_DATA'] = [[], [], []]
 
         session['USER_LATENCY_DATA'] = list(initial_global_data['train_latency_data'])
 
         session['USER_THREADPOOL_AND_THROUGHPUT_DATA'] = list(
             initial_global_data['train_threadpool_and_throughput_data'])
 
-        session['MIN_X_DATA'] = initial_global_data['min_x_data']
-        session['MIN_Y_DATA'] = initial_global_data['min_y_data']
+        session['MIN_X_DATA'] = list(initial_global_data['min_x_data'])
+        session['MIN_Y_DATA'] = list(initial_global_data['min_y_data'])
 
-        session['RANDOM_EVAL_CHECK'] = initial_global_data['random_eval_check']
-        session['EVAL_POOL'] = initial_global_data['eval_pool']
-
-        session['OPTIMIZER_PLOT_DATA'] = initial_global_data['optimizer_plot_data']
-        session['OBJECT_PLOT_DATA'] = initial_global_data['object_plot_data']
-
-        session['LATENCY'] = initial_global_data['latency']
-        session['THREADPOOL_AND_THROUGHPUT'] = initial_global_data['threadpool_and_throughput']
+        session['RANDOM_EVAL_CHECK'] = bool(initial_global_data['random_eval_check'])
+        session['EVAL_POOL'] = list(initial_global_data['eval_pool'])
 
 
 @app.route('/', methods=['POST'])
@@ -74,33 +68,33 @@ def threadpool_tuner():
 
     update_global_data()
 
-    request_data = request.get_json()
+    request_data = dict(request.get_json())
     print(request_data)
 
-    if request_data['currentTenSecondRate'] <= 0:
+    if float(request_data['currentTenSecondRate']) <= 0.0:
         shutdown_server()
 
     next_threadpool_size_with_throughput, trade_off_level = find_next_threadpool_size(
         threadpool_and_throughput_data,
         latency_data, trade_off_level, model,
-        [request_data['currentTenSecondRate']])
+        [float(request_data['currentTenSecondRate'])])
 
     # T = ThroughputOptimized, M = Mean latency Optimized, 99P = 99th Percentile of latency optimized
-    if request_data['optimization'] == 'T':
+    if str(request_data['optimization']) == 'T':
         latency_data.append(float(request_data['currentTenSecondRate']))
-    elif request_data['optimization'] == 'M':
+    elif str(request_data['optimization']) == 'M':
         latency_data.append(float(request_data['currentMeanLatency']))
-    elif request_data['optimization'] == '99P':
+    elif str(request_data['optimization']) == '99P':
         latency_data.append(float(request_data['current99PLatency']))
     else:
         Exception("Invalid optimization, use T = ThroughputOptimized, M = Mean latency Optimized, 99P = 99th "
                   "Percentile of latency optimized")
 
     threadpool_and_throughput_data.append(
-        [request_data['currentThreadPoolSize'], request_data['currentTenSecondRate']])
+        [float(request_data['currentThreadPoolSize']), float(request_data['currentTenSecondRate'])])
 
     session['TRADE_OFF_LEVEL'] = trade_off_level
-    session['NEXT_THROUGHPUT'] = [request_data['currentTenSecondRate']]
+    session['NEXT_THROUGHPUT'] = [float(request_data['currentTenSecondRate'])]
     session['NEXT_THREADPOOL_SIZE_WITH_THROUGHPUT'] = next_threadpool_size_with_throughput
     session['USER_LATENCY_DATA'] = latency_data
     session['USER_THREADPOOL_AND_THROUGHPUT_DATA'] = threadpool_and_throughput_data
@@ -148,8 +142,6 @@ def after_request_func(response):
     #     save_plots(plot_data_1[1])
     #     file_write(plot_data_1[1], plot_data_1[0], exploration_factor, folder_name=Config.PATH + 'plot_')
     #     file_write(threadpool_and_throughput_data, latency_data, exploration_factor, folder_name=Config.PATH)
-    #     # compare_data()
-    #     # generate_overall_error()
     #
     # else:
     #     plot_data(plot_data_1[1], plot_data_1[0], Config.PAUSE_TIME)
@@ -173,12 +165,6 @@ def update_global_data():
     global_data.random_eval_check = session['RANDOM_EVAL_CHECK']
     global_data.eval_pool = session['EVAL_POOL']
 
-    global_data.optimizer_plot_data = session['OPTIMIZER_PLOT_DATA']
-    global_data.object_plot_data = session['OBJECT_PLOT_DATA']
-
-    global_data.threadpool_and_throughput = session['THREADPOOL_AND_THROUGHPUT']
-    global_data.latency = session['LATENCY']
-
 
 def update_session_data():
     session['MIN_X_DATA'] = global_data.min_x_data
@@ -186,12 +172,6 @@ def update_session_data():
 
     session['RANDOM_EVAL_CHECK'] = global_data.random_eval_check
     session['EVAL_POOL'] = global_data.eval_pool
-
-    session['OPTIMIZER_PLOT_DATA'] = global_data.optimizer_plot_data
-    session['OBJECT_PLOT_DATA'] = global_data.object_plot_data
-
-    session['THREADPOOL_AND_THROUGHPUT'] = global_data.threadpool_and_throughput
-    session['LATENCY'] = global_data.latency
 
 
 def shutdown_server():
@@ -227,12 +207,6 @@ def build_model():
 
         "random_eval_check": global_data.random_eval_check,
         "eval_pool": global_data.eval_pool,
-
-        "optimizer_plot_data": global_data.optimizer_plot_data,
-        "object_plot_data": global_data.object_plot_data,
-
-        "threadpool_and_throughput": global_data.threadpool_and_throughput,
-        "latency": global_data.latency
     }
 
     with open('Data/Training_data/initial_global_data.json', 'w') as fp:
