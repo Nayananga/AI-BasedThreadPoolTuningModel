@@ -9,6 +9,7 @@ def plot_data(threadpool_and_throughput_data, latency_data, pause_time, save=Fal
     folder_name = Config.RESULT_DATA_PATH
 
     threadpool_size, throughput = map(list, zip(*threadpool_and_throughput_data))
+
     plt.plot(threadpool_size, label='thread pool size')
     plt.plot(throughput, label='throughput')
     plt.plot(latency_data, label='latency (ms)')

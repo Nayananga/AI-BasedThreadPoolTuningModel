@@ -19,9 +19,10 @@ def initial_configurations():
     Find out whether the number of parameter points to check in one bayesian optimization is greater than
     the number of evaluation points configured.
     """
-    thread_pool_bound = Config.PARAMETER_BOUNDS
 
+    thread_pool_bound = Config.PARAMETER_BOUNDS
     number_of_points = 0
+
     for i in range(Config.NUMBER_OF_PARAMETERS):
         number_of_points = number_of_points + (thread_pool_bound[i][1] - thread_pool_bound[i][0])
 

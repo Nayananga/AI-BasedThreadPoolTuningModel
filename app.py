@@ -182,7 +182,6 @@ def shutdown_server():
 
 
 def build_model():
-
     create_folders(Config.RESULT_DATA_PATH)
 
     train_threadpool_and_throughput_data, train_latency_data = data_generator.generate_data()

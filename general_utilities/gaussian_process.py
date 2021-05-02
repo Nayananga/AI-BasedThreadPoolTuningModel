@@ -13,10 +13,10 @@ def gpr(x, y):
     # level of noise for gaussian
     noise_level = 1e-6
 
-    x = StandardScaler().fit_transform(x)
     model = gaussian_process.GaussianProcessRegressor(kernel=kernel, alpha=noise_level,
                                                       n_restarts_optimizer=10,
                                                       normalize_y=True)
+    x = StandardScaler().fit_transform(x)
     model.fit(x, y)
 
     return model

@@ -17,7 +17,6 @@ def bayesian_expected_improvement(x_val, max_expected_improvement, max_improve_p
     if expected_improvement > max_expected_improvement:
         max_expected_improvement = expected_improvement
         max_improve_points = [x_val[0]]  # here x_val[0][1] has a throughput from workload data
-
     elif expected_improvement == max_expected_improvement:
         max_improve_points.append(x_val[0])
 
