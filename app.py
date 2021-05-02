@@ -7,9 +7,9 @@ from flask_session import Session
 
 import Config
 import global_data
-from general_utilities.data_generator import generate_data
 from general_utilities.Bayesian_point_selection import update_min_point
 from general_utilities.commom_functions import create_folders
+from general_utilities.data_generator import generate_data
 from general_utilities.gaussian_process import gpr
 from threadpool_tuner import find_next_threadpool_size, update_model
 
