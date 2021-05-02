@@ -1,5 +1,4 @@
 import itertools
-import random
 
 import numpy as np
 
@@ -77,22 +76,15 @@ def ini_min_point_find_with_feature(x_data, y_data):
     return min_x_data, min_y_data
 
 
-def selecting_random_point(number_of_points, parameter_bounds, feature_bounds=None, feature_value=None):
+def selecting_random_point(number_of_points, parameter_bounds, feature_value=None):
     size = 0
     random_points = []
 
     while size < number_of_points:
         point = []
-        random_choice = []
 
         for parameter_bound in parameter_bounds:
-            random_choice.append(np.random.randint(parameter_bound[0], parameter_bound[1]))
-
-        if feature_bounds is not None:
-            for feature_bound in feature_bounds:
-                random_choice.append(np.random.randint(feature_bound[0], feature_bound[1]))
-
-        point.append(random.choice(random_choice))
+            point.append(np.random.randint(parameter_bound[0], parameter_bound[1]))
 
         if feature_value is not None:
             for f_loc in range(Config.NUMBER_OF_FEATURES):

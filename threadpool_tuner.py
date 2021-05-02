@@ -18,6 +18,7 @@ def find_next_threadpool_size(threadpool_and_throughput_data, latency_data, trad
     else:
         max_expected_improvement = 0
         max_threadpool_sizes = []
+
         if not global_data.random_eval_check:
             eval_pool = global_data.eval_pool
         else:
