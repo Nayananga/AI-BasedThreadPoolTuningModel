@@ -7,7 +7,7 @@ from flask_session import Session
 
 import Config
 import global_data
-from general_utilities import data_generator
+from general_utilities.data_generator import generate_data
 from general_utilities.Bayesian_point_selection import update_min_point
 from general_utilities.commom_functions import create_folders
 from general_utilities.gaussian_process import gpr
@@ -184,7 +184,7 @@ def shutdown_server():
 def build_model():
     create_folders(Config.RESULT_DATA_PATH)
 
-    train_threadpool_and_throughput_data, train_latency_data = data_generator.generate_data()
+    train_threadpool_and_throughput_data, train_latency_data = generate_data()
 
     # fit initial data to gaussian model
     gpr_model = gpr(train_threadpool_and_throughput_data, train_latency_data)
