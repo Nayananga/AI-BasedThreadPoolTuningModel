@@ -140,8 +140,10 @@ def after_request_func(response):
     # if iteration % 20 == 0:
     #     plot_data(plot_data_1[1], plot_data_1[0], Config.PAUSE_TIME, save=True)
     #     save_plots(plot_data_1[1])
-    #     write_into_file(plot_data_1[1], plot_data_1[0], exploration_factor, folder_name=Config.RESULT_DATA_PATH + 'plot_')
-    #     write_into_file(threadpool_and_throughput_data, latency_data, exploration_factor, folder_name=Config.RESULT_DATA_PATH)
+    #     write_into_file(plot_data_1[1], plot_data_1[0], exploration_factor,
+    #                     folder_name=Config.RESULT_DATA_PATH + 'plot_')
+    #     write_into_file(threadpool_and_throughput_data, latency_data, exploration_factor,
+    #                     folder_name=Config.RESULT_DATA_PATH)
     #
     # else:
     #     plot_data(plot_data_1[1], plot_data_1[0], Config.PAUSE_TIME)

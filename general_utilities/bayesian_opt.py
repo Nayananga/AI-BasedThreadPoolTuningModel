@@ -10,7 +10,8 @@ select_next_x_point : Next x point selection algorithm according to the expected
 
 
 # Bayesian expected improvement calculation
-def calculate_maximum_bayesian_expected_improvement(x_val, max_expected_improvement, max_improve_points, min_y, trade_off_level, model):
+def calculate_maximum_bayesian_expected_improvement(x_val, max_expected_improvement, max_improve_points, min_y,
+                                                    trade_off_level, model):
     x_val = np.array(x_val).reshape(1, -1)
     expected_improvement = gaussian_ei(x_val, model, min_y, trade_off_level)
 
