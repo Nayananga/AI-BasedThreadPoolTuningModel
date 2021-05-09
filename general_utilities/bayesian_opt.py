@@ -4,13 +4,13 @@ import numpy as np
 from skopt.acquisition import gaussian_ei
 
 """
-bayesian_expected_improvement : Bayesian expected improvement calculation
-next_x_point_selection : Next x point selection algorithm according to the expected improvement
+calculate_maximum_bayesian_expected_improvement : Bayesian expected improvement calculation
+select_next_x_point : Next x point selection algorithm according to the expected improvement
 """
 
 
 # Bayesian expected improvement calculation
-def bayesian_expected_improvement(x_val, max_expected_improvement, max_improve_points, min_y, trade_off_level, model):
+def calculate_maximum_bayesian_expected_improvement(x_val, max_expected_improvement, max_improve_points, min_y, trade_off_level, model):
     x_val = np.array(x_val).reshape(1, -1)
     expected_improvement = gaussian_ei(x_val, model, min_y, trade_off_level)
 
@@ -23,7 +23,7 @@ def bayesian_expected_improvement(x_val, max_expected_improvement, max_improve_p
     return max_expected_improvement, max_improve_points
 
 
-def next_x_point_selection(max_expected_improvement, min_x, trade_off_level, max_points):
+def select_next_x_point(max_expected_improvement, min_x, trade_off_level, max_points):
     if not max_expected_improvement:
         print("WARN: Maximum expected improvement was 0")
         next_x = min_x

@@ -4,21 +4,23 @@ import numpy as np
 
 import Config
 import global_data
-from general_utilities.commom_functions import parameter_count, feature_count
-from general_utilities.data_generation_initialization import data_generation_ini
+from general_utilities.data_generation_initialization import initialize_data_generation
+
+parameter_count = Config.NUMBER_OF_PARAMETERS
+feature_count = Config.NUMBER_OF_FEATURES
 
 
 def generate_data():
     """initial data Configuration"""
-    initial_configurations()
+    initialize_configurations()
 
-    optimize_data, object_data = data_generation_ini()
-    global_data.min_x_data, global_data.min_y_data = ini_min_point_find_with_feature(optimize_data, object_data)
+    optimize_data, object_data = initialize_data_generation()
+    global_data.min_x_data, global_data.min_y_data = find_initial_min_point_with_feature(optimize_data, object_data)
 
     return optimize_data, object_data
 
 
-def initial_configurations():
+def initialize_configurations():
     """
     Find out whether the number of parameter points to check in one bayesian optimization is greater than
     the number of evaluation points configured.
@@ -33,12 +35,12 @@ def initial_configurations():
     if number_of_points > Config.EVAL_POINT_SIZE:
         global_data.random_eval_check = True
     else:
-        eval_pool = eval_points_generator(thread_pool_bound)
+        eval_pool = generate_eval_points(thread_pool_bound)
         global_data.eval_pool = eval_pool
         global_data.random_eval_check = False
 
 
-def eval_points_generator(parameter_bounds):
+def generate_eval_points(parameter_bounds):
     points_combined = [
         np.arange(parameter_bounds[i][0], parameter_bounds[i][1]).tolist() for i in range(parameter_count)]
 
@@ -50,7 +52,7 @@ def eval_points_generator(parameter_bounds):
     return points_combined
 
 
-def ini_min_point_find_with_feature(x_data, y_data):
+def find_initial_min_point_with_feature(x_data, y_data):
     min_x_data = []
     min_y_data = []
     for i in range(len(x_data)):
@@ -72,7 +74,7 @@ def ini_min_point_find_with_feature(x_data, y_data):
     return min_x_data, min_y_data
 
 
-def selecting_random_point(number_of_points, parameter_bounds, feature_value=None):
+def generate_random_eval_points(number_of_points, parameter_bounds, feature_value=None):
     size = 0
     random_points = []
 

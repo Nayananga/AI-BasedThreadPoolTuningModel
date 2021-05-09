@@ -7,13 +7,13 @@ import Config
 parameter_bounds = Config.PARAMETER_BOUNDS
 
 
-def data_generation_ini():
-    config_errors()
+def initialize_data_generation():
+    check_config_errors()
     optimize_data, object_data = get_training_points()
     return optimize_data, object_data
 
 
-def config_errors():
+def check_config_errors():
     if len(parameter_bounds) == 0:
         logging.error("Parameter bounds are not defined")
     else:

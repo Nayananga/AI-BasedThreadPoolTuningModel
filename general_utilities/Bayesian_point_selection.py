@@ -2,8 +2,8 @@ import numpy as np
 
 import Config
 import global_data
-from general_utilities.bayesian_opt import bayesian_expected_improvement
-from general_utilities.data_generator import selecting_random_point
+from general_utilities.bayesian_opt import calculate_maximum_bayesian_expected_improvement
+from general_utilities.data_generator import generate_random_eval_points
 
 
 def update_min_point(x_data, y_data, feature_val, model=None):
@@ -45,7 +45,7 @@ def estimate_minimum_point(x_data, y_data, feature_val, model):
         global_data.min_x_data.append(min_x)
     else:
         if Config.SELECTION_METHOD == "Random":
-            min_x = selecting_random_point(1, Config.PARAMETER_BOUNDS, feature_value=feature_val).pop()
+            min_x = generate_random_eval_points(1, Config.PARAMETER_BOUNDS, feature_value=feature_val).pop()
         elif Config.SELECTION_METHOD == "From_model":
             min_x = generate_min_point_based_on_model(feature_val, model)
         elif Config.SELECTION_METHOD == "Nearest_point":
@@ -84,7 +84,7 @@ def generate_min_point_based_on_model(feature_value, model):
     if not global_data.random_eval_check:
         eval_pool = global_data.eval_pool
     else:
-        eval_pool = selecting_random_point(Config.EVAL_POINT_SIZE, Config.PARAMETER_BOUNDS)
+        eval_pool = generate_random_eval_points(Config.EVAL_POINT_SIZE, Config.PARAMETER_BOUNDS)
 
     min_latency, min_eval_value = generate_min_point_based_on_distance(feature_value)
     explore_factor = 0.01
@@ -94,7 +94,7 @@ def generate_min_point_based_on_model(feature_value, model):
         for f_val in feature_value:
             check_point.append(f_val)
 
-        max_expected_improvement, max_threadpool_sizes = bayesian_expected_improvement(
+        max_expected_improvement, max_threadpool_sizes = calculate_maximum_bayesian_expected_improvement(
             check_point, max_expected_improvement, max_threadpool_sizes, min_latency, explore_factor, model)
 
     if max_expected_improvement == 0:
@@ -117,7 +117,7 @@ def generate_min_point_based_on_distance(feature_value):
     min_y = []
 
     for i in range(len(min_x_data)):
-        distance = distance_calculation(feature_value, min_x_data[i][num_parameters:])
+        distance = calculate_distance(feature_value, min_x_data[i][num_parameters:])
         if min_distance is None:
             min_distance = distance
             min_distance_location = i
@@ -135,7 +135,7 @@ def generate_min_point_based_on_distance(feature_value):
     return min_y, min_x  # respective latency, respective threadpool_size, similar throughput to the feature_val
 
 
-def distance_calculation(v, u):
+def calculate_distance(v, u):
     s = 0
     for v_i, u_i in zip(v, u):
         s += (v_i - u_i) ** 2

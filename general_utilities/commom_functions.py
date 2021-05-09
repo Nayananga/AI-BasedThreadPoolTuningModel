@@ -3,9 +3,6 @@ import os
 
 import Config
 
-parameter_count = Config.NUMBER_OF_PARAMETERS
-feature_count = Config.NUMBER_OF_FEATURES
-
 
 def create_folders(path):
     try:
@@ -14,8 +11,8 @@ def create_folders(path):
         print("requested directory already exists")
 
 
-def file_write(threadpool_and_throughput_data, latency_data, exploration_factor, noise_data=None,
-               folder_name=Config.RESULT_DATA_PATH):
+def write_into_file(threadpool_and_throughput_data, latency_data, exploration_factor, noise_data=None,
+                    folder_name=Config.RESULT_DATA_PATH):
     if os.path.exists(folder_name + "99th_percentile_data.csv"):
         os.remove(folder_name + "99th_percentile_data.csv")
 
