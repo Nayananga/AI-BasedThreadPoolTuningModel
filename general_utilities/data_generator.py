@@ -1,23 +1,18 @@
-import itertools
-
 import numpy as np
 
 import Config
 import global_data
 from general_utilities.data_generation_initialization import initialize_data_generation
 
-parameter_count = Config.NUMBER_OF_PARAMETERS
-feature_count = Config.NUMBER_OF_FEATURES
-
 
 def generate_data():
-    """initial data Configuration"""
+    """initial threadpool_data Configuration"""
     initialize_configurations()
+    threadpool_data, latency_data = initialize_data_generation()
+    global_data.min_threadpool_data, global_data.min_feature_data = find_initial_min_point_with_feature(threadpool_data,
+                                                                                                        latency_data)
 
-    optimize_data, object_data = initialize_data_generation()
-    global_data.min_x_data, global_data.min_y_data = find_initial_min_point_with_feature(optimize_data, object_data)
-
-    return optimize_data, object_data
+    return threadpool_data, latency_data
 
 
 def initialize_configurations():
@@ -27,66 +22,39 @@ def initialize_configurations():
     """
 
     thread_pool_bound = Config.PARAMETER_BOUNDS
-    number_of_points = 0
-
-    for i in range(Config.NUMBER_OF_PARAMETERS):
-        number_of_points = number_of_points + (thread_pool_bound[i][1] - thread_pool_bound[i][0])
+    number_of_points = thread_pool_bound[1] - thread_pool_bound[0]
 
     if number_of_points > Config.EVAL_POINT_SIZE:
         global_data.random_eval_check = True
     else:
-        eval_pool = generate_eval_points(thread_pool_bound)
-        global_data.eval_pool = eval_pool
+        global_data.eval_pool = list(range(thread_pool_bound[0], thread_pool_bound[1]))
         global_data.random_eval_check = False
 
 
-def generate_eval_points(parameter_bounds):
-    points_combined = [
-        np.arange(parameter_bounds[i][0], parameter_bounds[i][1]).tolist() for i in range(parameter_count)]
+def find_initial_min_point_with_feature(threadpool_data, feature_data):
+    min_threadpool_data = []
+    min_feature_data = []
+    for i, feature_value in enumerate(feature_data):
+        if feature_value not in min_feature_data:
+            minimum_threadpool_size = min(
+                [threadpool_data[i] for i, feature_data_value in enumerate(feature_data) if
+                 feature_data_value == feature_value])
 
-    if parameter_count == 1 and feature_count == 0:
-        points_combined = points_combined[0]
-    else:
-        points_combined = list(itertools.product(*points_combined))
+            min_threadpool_data.append(minimum_threadpool_size)
+            min_feature_data.append(feature_value)
 
-    return points_combined
+        else:
+            pass
 
-
-def find_initial_min_point_with_feature(x_data, y_data):
-    min_x_data = []
-    min_y_data = []
-    for i in range(len(x_data)):
-        found_feature_val = False
-        check_feature_val = x_data[i][Config.NUMBER_OF_PARAMETERS:]
-        for j in range(len(min_x_data)):
-            if min_x_data[j][Config.NUMBER_OF_PARAMETERS:] == check_feature_val:
-
-                found_feature_val = True
-                if y_data[i] < min_y_data[j]:
-                    min_y_data[j] = y_data[i]
-                    min_x_data[j] = x_data[i]
-                break
-
-        if not found_feature_val:
-            min_y_data.append(y_data[i])
-            min_x_data.append(x_data[i])
-
-    return min_x_data, min_y_data
+    return min_threadpool_data, min_feature_data
 
 
-def generate_random_eval_points(number_of_points, parameter_bounds, feature_value=None):
+def generate_random_eval_points(number_of_points, parameter_bounds):
     size = 0
     random_points = []
 
     while size < number_of_points:
-        point = []
-
-        for parameter_bound in parameter_bounds:
-            point.append(np.random.randint(parameter_bound[0], parameter_bound[1]))
-
-        if feature_value is not None:
-            for f_loc in range(Config.NUMBER_OF_FEATURES):
-                point.append(feature_value[f_loc])
+        point = np.random.randint(parameter_bounds[0], parameter_bounds[1])
 
         if point not in random_points:
             size += 1

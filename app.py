@@ -7,7 +7,7 @@ from flask_session import Session
 
 import Config
 import global_data
-from general_utilities.Bayesian_point_selection import update_min_point
+from general_utilities.Bayesian_point_selection import update_min_data
 from general_utilities.commom_functions import create_folders
 from general_utilities.data_generator import generate_data
 from general_utilities.gaussian_process import gpr
@@ -17,7 +17,7 @@ app = Flask(__name__)
 
 app.secret_key = "My secret key"
 
-# Configure Redis for storing the session data on the server-side
+# Configure Redis for storing the session threadpool_data on the server-side
 app.config['SESSION_TYPE'] = str('redis')
 app.config['SESSION_PERMANENT'] = bool(False)
 app.config['SESSION_USE_SIGNER'] = bool(True)
@@ -41,30 +41,26 @@ def before_request_func():
 
         session['ITERATION'] = int(1)
 
-        session['TRADE_OFF_LEVEL'] = float(Config.DEFAULT_TRADE_OFF_LEVEL)
-
         session['EXPLORATION_FACTOR'] = [float(Config.DEFAULT_TRADE_OFF_LEVEL)]
 
-        session['USER_PLOT_DATA'] = [[], [], []]
+        session['USER_PLOT_DATA'] = [[], [], [], []]
 
         session['USER_LATENCY_DATA'] = list(initial_global_data['train_latency_data'])
 
-        session['USER_THREADPOOL_AND_THROUGHPUT_DATA'] = list(
-            initial_global_data['train_threadpool_and_throughput_data'])
+        session['USER_THREADPOOL_DATA'] = list(
+            initial_global_data['train_threadpool_data'])
 
-        session['MIN_X_DATA'] = list(initial_global_data['min_x_data'])
-        session['MIN_Y_DATA'] = list(initial_global_data['min_y_data'])
-
-        session['RANDOM_EVAL_CHECK'] = bool(initial_global_data['random_eval_check'])
-        session['EVAL_POOL'] = list(initial_global_data['eval_pool'])
+        session['MIN_X_DATA'] = list(initial_global_data['min_threadpool_data'])
+        session['MIN_Y_DATA'] = list(initial_global_data['min_feature_data'])
 
 
 @app.route('/', methods=['POST'])
 def threadpool_tuner():
     global model
-    trade_off_level = session['TRADE_OFF_LEVEL']
+    feature_value = None
+    exploration_factor = session['EXPLORATION_FACTOR']
     latency_data = session['USER_LATENCY_DATA']
-    threadpool_and_throughput_data = session['USER_THREADPOOL_AND_THROUGHPUT_DATA']
+    threadpool_data = session['USER_THREADPOOL_DATA']
 
     update_global_data()
 
@@ -74,67 +70,66 @@ def threadpool_tuner():
     if float(request_data['currentTenSecondRate']) <= 0.0:
         shutdown_server()
 
-    next_threadpool_size_with_throughput, trade_off_level = find_next_threadpool_size(
-        threadpool_and_throughput_data,
-        latency_data, trade_off_level, model,
-        [float(request_data['currentTenSecondRate'])])
-
     # T = ThroughputOptimized, M = Mean latency Optimized, 99P = 99th Percentile of latency optimized
     if str(request_data['optimization']) == 'T':
-        latency_data.append(float(request_data['currentTenSecondRate']))
+        feature_value = float(request_data['currentTenSecondRate'])
     elif str(request_data['optimization']) == 'M':
-        latency_data.append(float(request_data['currentMeanLatency']))
+        feature_value = float(request_data['currentMeanLatency'])
     elif str(request_data['optimization']) == '99P':
-        latency_data.append(float(request_data['current99PLatency']))
+        feature_value = float(request_data['current99PLatency'])
     else:
         Exception("Invalid optimization, use T = ThroughputOptimized, M = Mean latency Optimized, 99P = 99th "
                   "Percentile of latency optimized")
 
-    threadpool_and_throughput_data.append(
-        [float(request_data['currentThreadPoolSize']), float(request_data['currentTenSecondRate'])])
+    next_threadpool_size, next_trade_off_level = find_next_threadpool_size(exploration_factor[-1], model, feature_value)
 
-    session['TRADE_OFF_LEVEL'] = trade_off_level
-    session['NEXT_THROUGHPUT'] = [float(request_data['currentTenSecondRate'])]
-    session['NEXT_THREADPOOL_SIZE_WITH_THROUGHPUT'] = next_threadpool_size_with_throughput
+    latency_data.append(feature_value)
+
+    threadpool_data.append(float(request_data['currentThreadPoolSize']))
+
+    session['NEXT_THROUGHPUT'] = float(request_data['currentTenSecondRate'])
+    session['NEXT_TRADE_OFF_LEVEL'] = next_trade_off_level
+    session['NEXT_THREADPOOL_SIZE'] = next_threadpool_size
     session['USER_LATENCY_DATA'] = latency_data
-    session['USER_THREADPOOL_AND_THROUGHPUT_DATA'] = threadpool_and_throughput_data
+    session['USER_THREADPOOL_DATA'] = threadpool_data
 
     update_session_data()
 
-    return str(next_threadpool_size_with_throughput[0])
+    return str(next_threadpool_size)
 
 
 @app.after_request
 def after_request_func(response):
     global model
     iteration = session['ITERATION']
-    trade_off_level = session['TRADE_OFF_LEVEL']
-    next_throughput = session['NEXT_THROUGHPUT']
-    next_threadpool_size_with_throughput = session['NEXT_THREADPOOL_SIZE_WITH_THROUGHPUT']
     exploration_factor = session['EXPLORATION_FACTOR']
     plot_data_1 = session['USER_PLOT_DATA']
-    latency_data = session['USER_LATENCY_DATA']
-    threadpool_and_throughput_data = session['USER_THREADPOOL_AND_THROUGHPUT_DATA']
+    feature_data = session['USER_LATENCY_DATA']
+    threadpool_data = session['USER_THREADPOOL_DATA']
+    next_threadpool_size = session['NEXT_THREADPOOL_SIZE']
+    next_throughput = session['NEXT_THROUGHPUT']
+    next_trade_off_level = session['NEXT_TRADE_OFF_LEVEL']
 
     update_global_data()
 
-    threadpool_and_throughput_data, latency_data, trade_off_level, model = update_model(
-        next_threadpool_size_with_throughput, threadpool_and_throughput_data, latency_data, trade_off_level)
+    threadpool_data, feature_data, new_trade_off_level, model = update_model(
+        next_threadpool_size, threadpool_data, feature_data, next_trade_off_level)
 
-    plot_data_1[0].append(latency_data[-1])
-    plot_data_1[1].append(threadpool_and_throughput_data[-1])
-    plot_data_1[2].append(exploration_factor[-1])  # if we want to plot this
+    plot_data_1[0].append(feature_data[-1])
+    plot_data_1[1].append(threadpool_data[-1])
+    plot_data_1[2].append(exploration_factor[-1])
+    plot_data_1[3].append(next_throughput)  # if we want to plot this
 
-    update_min_point(threadpool_and_throughput_data, latency_data, next_throughput, model)
-    exploration_factor.append(trade_off_level)
+    update_min_data(threadpool_data, feature_data)
+    exploration_factor.append(new_trade_off_level)
 
     print("inter -", iteration)
     print("workers -", next_throughput)
-    print("trade_off_level -", exploration_factor[-1])
-    print("Next x- ", threadpool_and_throughput_data[-1])
-    print("Next y- ", latency_data[-1])
-    print("min_x_data", global_data.min_x_data)
-    print("min_y_data", global_data.min_y_data)
+    print("trade_off_level -", new_trade_off_level)
+    print("Next x- ", threadpool_data[-1])
+    print("Next y- ", feature_data[-1])
+    print("min_threadpool_data", global_data.min_threadpool_data)
+    print("min_feature_data", global_data.min_feature_data)
     print("-------------------------------------")
 
     # if iteration % 20 == 0:
@@ -142,17 +137,16 @@ def after_request_func(response):
     #     save_plots(plot_data_1[1])
     #     write_into_file(plot_data_1[1], plot_data_1[0], exploration_factor,
     #                     folder_name=Config.RESULT_DATA_PATH + 'plot_')
-    #     write_into_file(threadpool_and_throughput_data, latency_data, exploration_factor,
+    #     write_into_file(threadpool_data, feature_data, exploration_factor,
     #                     folder_name=Config.RESULT_DATA_PATH)
     #
     # else:
     #     plot_data(plot_data_1[1], plot_data_1[0], Config.PAUSE_TIME)
 
     session['ITERATION'] = iteration + 1
-    session['TRADE_OFF_LEVEL'] = trade_off_level
     session['EXPLORATION_FACTOR'] = exploration_factor
-    session['USER_LATENCY_DATA'] = latency_data
-    session['USER_THREADPOOL_AND_THROUGHPUT_DATA'] = threadpool_and_throughput_data
+    session['USER_LATENCY_DATA'] = feature_data
+    session['USER_THREADPOOL_DATA'] = threadpool_data
     session['USER_PLOT_DATA'] = plot_data_1
 
     update_session_data()
@@ -161,19 +155,13 @@ def after_request_func(response):
 
 
 def update_global_data():
-    global_data.min_x_data = session['MIN_X_DATA']
-    global_data.min_y_data = session['MIN_Y_DATA']
-
-    global_data.random_eval_check = session['RANDOM_EVAL_CHECK']
-    global_data.eval_pool = session['EVAL_POOL']
+    global_data.min_threadpool_data = session['MIN_X_DATA']
+    global_data.min_feature_data = session['MIN_Y_DATA']
 
 
 def update_session_data():
-    session['MIN_X_DATA'] = global_data.min_x_data
-    session['MIN_Y_DATA'] = global_data.min_y_data
-
-    session['RANDOM_EVAL_CHECK'] = global_data.random_eval_check
-    session['EVAL_POOL'] = global_data.eval_pool
+    session['MIN_X_DATA'] = global_data.min_threadpool_data
+    session['MIN_Y_DATA'] = global_data.min_feature_data
 
 
 def shutdown_server():
@@ -186,20 +174,17 @@ def shutdown_server():
 def build_model():
     create_folders(Config.RESULT_DATA_PATH)
 
-    train_threadpool_and_throughput_data, train_latency_data = generate_data()
+    train_threadpool_data, train_latency_data = generate_data()
 
-    # fit initial data to gaussian model
-    gpr_model = gpr(train_threadpool_and_throughput_data, train_latency_data)
+    # fit initial threadpool_data to gaussian model
+    gpr_model = gpr(train_threadpool_data, train_latency_data)
 
     initial_global_data = {
         "train_latency_data": train_latency_data,
-        "train_threadpool_and_throughput_data": train_threadpool_and_throughput_data,
+        "train_threadpool_data": train_threadpool_data,
 
-        "min_x_data": global_data.min_x_data,
-        "min_y_data": global_data.min_y_data,
-
-        "random_eval_check": global_data.random_eval_check,
-        "eval_pool": global_data.eval_pool,
+        "min_threadpool_data": global_data.min_threadpool_data,
+        "min_feature_data": global_data.min_feature_data
     }
 
     with open('Data/Training_data/initial_global_data.json', 'w') as fp:

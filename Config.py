@@ -9,14 +9,11 @@ DEFAULT_TRADE_OFF_LEVEL = 0.1
 # Plot show delay
 PAUSE_TIME = 0.1
 
-NUMBER_OF_PARAMETERS = 1
-NUMBER_OF_FEATURES = 1
-
 # Evaluation points array length
 EVAL_POINT_SIZE = 50
 
 # PARAMETER BOUNDS
-PARAMETER_BOUNDS = [[1, 50]]
+PARAMETER_BOUNDS = [1, 50]
 
 """Random, From_model, Nearest_point"""
 SELECTION_METHOD = "From_model"

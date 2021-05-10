@@ -11,7 +11,7 @@ def plot_data(threadpool_and_throughput_data, latency_data, pause_time, save=Fal
     threadpool_size, throughput = map(list, zip(*threadpool_and_throughput_data))
 
     plt.plot(threadpool_size, label='thread pool size')
-    plt.plot(throughput, label='throughput')
+    plt.plot(throughput, label='feature_value')
     plt.plot(latency_data, label='latency (ms)')
 
     plt.title("Data plot")
@@ -23,7 +23,7 @@ def plot_data(threadpool_and_throughput_data, latency_data, pause_time, save=Fal
     plt.legend()
 
     if save:
-        plt.savefig(folder_name + "data.png", bbox_inches="tight")
+        plt.savefig(folder_name + "threadpool_data.png", bbox_inches="tight")
 
     # Show the plot
     plt.show(block=False)
@@ -37,7 +37,7 @@ def save_plots(threadpool_and_throughput_data):
     threadpool_size, throughput = map(list, zip(*threadpool_and_throughput_data))
 
     plt.plot(threadpool_size, label='thread pool size')
-    plt.plot(throughput, label='throughput')
+    plt.plot(throughput, label='feature_value')
 
     plt.title("Throughput and Threadpool size")
     plt.xlabel("Time (Minutes)")

@@ -1,138 +1,101 @@
 import numpy as np
+from skopt.acquisition import gaussian_ei
 
 import Config
 import global_data
-from general_utilities.bayesian_opt import calculate_maximum_bayesian_expected_improvement
 from general_utilities.data_generator import generate_random_eval_points
 
 
-def update_min_point(x_data, y_data, feature_val, model=None):
-    min_x, min_y, min_location = None, None, None
-    min_x_data = global_data.min_x_data
-    min_y_data = global_data.min_y_data
-    found_feature_val = False
+def update_min_data(threadpool_data, feature_data, feature_value=None):
+    min_threadpool_data = global_data.min_threadpool_data
+    min_feature_data = global_data.min_feature_data
 
-    for j in range(len(min_x_data)):
-        if min_x_data[j][Config.NUMBER_OF_PARAMETERS:] == feature_val:
-            found_feature_val = True
-            min_y = min_y_data[j]
-            min_x = min_x_data[j]
-            min_location = j  # saved first occurrence
-            break
+    min_location = get_index(feature_value, min_feature_data)
 
-    if found_feature_val:
-        if min_x in x_data and min_y in y_data:
-            if y_data[-1] < min_y and x_data[-1][Config.NUMBER_OF_PARAMETERS:] == feature_val:
-                min_y = y_data[-1]
-                min_x = x_data[-1]
-                global_data.min_y_data[min_location] = min_y
-                global_data.min_x_data[min_location] = min_x
-        else:
-            min_x, min_y = replace_min_point(x_data, y_data, feature_val, min_location, model)
+    if min_location:
+        minimum_threadpool_size = min(
+            [threadpool_data[i] for i, feature_data_value in enumerate(feature_data) if
+             feature_data_value == feature_value])
+        if minimum_threadpool_size is None:
+            global_data.min_threadpool_data.remove(global_data.min_threadpool_data[min_location])
+            global_data.min_feature_data.remove(global_data.min_feature_data[min_location])
+        elif minimum_threadpool_size < min_threadpool_data[min_location]:
+            global_data.min_threadpool_data[min_location] = minimum_threadpool_size
     else:
-        min_x = estimate_minimum_point(x_data, y_data, feature_val, model)
-
-    return min_x, min_y
-
-
-def estimate_minimum_point(x_data, y_data, feature_val, model):
-    min_x = None
-
-    if x_data[-1][Config.NUMBER_OF_PARAMETERS:] == feature_val:
-        min_y = y_data[-1]
-        min_x = x_data[-1]
-        global_data.min_y_data.append(min_y)
-        global_data.min_x_data.append(min_x)
-    else:
-        if Config.SELECTION_METHOD == "Random":
-            min_x = generate_random_eval_points(1, Config.PARAMETER_BOUNDS, feature_value=feature_val).pop()
-        elif Config.SELECTION_METHOD == "From_model":
-            min_x = generate_min_point_based_on_model(feature_val, model)
-        elif Config.SELECTION_METHOD == "Nearest_point":
-            _min_y, min_x = generate_min_point_based_on_distance(feature_val)
-
-    return min_x
+        min_threadpool_data.append(threadpool_data[-1])
+        min_feature_data.append(feature_data[-1])
 
 
-def replace_min_point(x_data, y_data, feature_val, min_location, model):
-    min_x, min_y = None, None
+def estimate_minimum_point(feature_value, model, explore_factor=None):
+    minimum_threadpool_size = None
 
-    for i in range(len(x_data)):
-        if x_data[i][Config.NUMBER_OF_PARAMETERS:] == feature_val:
-            if min_y is None:
-                min_y = y_data[i]
-                min_x = x_data[i]
-            elif y_data[i] < min_y:
-                min_y = y_data[i]
-                min_x = x_data[i]
+    if Config.SELECTION_METHOD == "Random":
+        minimum_threadpool_size = generate_random_eval_points(1, Config.PARAMETER_BOUNDS).pop()
 
-    if min_x is None:
-        global_data.min_y_data.remove(global_data.min_y_data[min_location])
-        global_data.min_x_data.remove(global_data.min_x_data[min_location])
-        min_x = estimate_minimum_point(x_data, y_data, feature_val, model)
-    else:
-        global_data.min_y_data[min_location] = min_y
-        global_data.min_x_data[min_location] = min_x
+    elif Config.SELECTION_METHOD == "From_model":
+        minimum_threadpool_size = generate_min_point_based_on_model(feature_value, model, explore_factor)
 
-    return min_x, min_y
+    elif Config.SELECTION_METHOD == "Nearest_point":
+        minimum_threadpool_size, _minimum_feature_value = generate_min_point_based_on_distance(feature_value)
+
+    return minimum_threadpool_size
 
 
-def generate_min_point_based_on_model(feature_value, model):
+def generate_min_point_based_on_model(feature_value, model, explore_factor=0.01):
     max_expected_improvement = 0
     max_threadpool_sizes = []
 
     if not global_data.random_eval_check:
-        eval_pool = global_data.eval_pool
+        evaluation_pool = global_data.eval_pool
     else:
-        eval_pool = generate_random_eval_points(Config.EVAL_POINT_SIZE, Config.PARAMETER_BOUNDS)
+        evaluation_pool = generate_random_eval_points(Config.EVAL_POINT_SIZE, Config.PARAMETER_BOUNDS)
 
-    min_latency, min_eval_value = generate_min_point_based_on_distance(feature_value)
-    explore_factor = 0.01
-
-    for eval_point in eval_pool:
-        check_point = list(eval_point)
-        for f_val in feature_value:
-            check_point.append(f_val)
-
+    for evaluation_point in evaluation_pool:
         max_expected_improvement, max_threadpool_sizes = calculate_maximum_bayesian_expected_improvement(
-            check_point, max_expected_improvement, max_threadpool_sizes, min_latency, explore_factor, model)
+            evaluation_point, max_expected_improvement, max_threadpool_sizes, feature_value, explore_factor,
+            model)
 
-    if max_expected_improvement == 0:
-        next_x = min_eval_value
-    else:
-        idx = np.random.randint(0, len(max_threadpool_sizes))
-        next_x = max_threadpool_sizes[idx]
+    return max_threadpool_sizes, max_expected_improvement
 
-    min_x = list(next_x)
 
-    return min_x
+def calculate_maximum_bayesian_expected_improvement(evaluation_point, max_expected_improvement, max_threadpool_sizes,
+                                                    minimum_feature_value, trade_off_level, model):
+    expected_improvement = gaussian_ei(
+        np.atleast_2d(evaluation_point),
+        model,
+        minimum_feature_value,
+        trade_off_level)
+
+    if expected_improvement > max_expected_improvement:
+        max_expected_improvement = expected_improvement
+        max_threadpool_sizes = [evaluation_point]
+    elif expected_improvement == max_expected_improvement:
+        max_threadpool_sizes.append(evaluation_point)
+
+    return max_expected_improvement, max_threadpool_sizes
 
 
 def generate_min_point_based_on_distance(feature_value):
-    num_parameters = Config.NUMBER_OF_PARAMETERS
-    min_x_data = global_data.min_x_data
-    min_y_data = global_data.min_y_data
-    min_distance = None
-    min_distance_location = None
-    min_y = []
+    min_threadpool_data = global_data.min_threadpool_data
+    min_feature_data = global_data.min_feature_data
 
-    for i in range(len(min_x_data)):
-        distance = calculate_distance(feature_value, min_x_data[i][num_parameters:])
-        if min_distance is None:
-            min_distance = distance
-            min_distance_location = i
-            min_y = min_y_data[i]
-        elif min_distance > distance:
-            min_distance = distance
-            min_distance_location = i
-            min_y = min_y_data[i]
+    distances = [calculate_distance(min_feature_data_value, feature_value) for min_feature_data_value in
+                 min_feature_data]
+    min_distance = min(distances)
 
-    min_x = min_x_data[min_distance_location][:num_parameters]
+    min_distance_location = distances.index(min_distance)
 
-    for feature in feature_value:
-        min_x.append(feature)  # threadpool_size, throughput
+    minimum_threadpool_value = min_threadpool_data[min_distance_location]
+    minimum_feature_value = min_feature_data[min_distance_location]
 
-    return min_y, min_x  # respective latency, respective threadpool_size, similar throughput to the feature_val
+    return minimum_threadpool_value, minimum_feature_value
+
+
+def get_index(value, in_list):
+    try:
+        return in_list.index(value)
+    except ValueError:
+        return -1
 
 
 def calculate_distance(v, u):
