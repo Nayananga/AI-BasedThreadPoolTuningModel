@@ -9,8 +9,8 @@ import Config
 import global_data
 from general_utilities.commom_functions import create_folders
 from general_utilities.data_generator import generate_data, update_min_data
-from general_utilities.gaussian_process import gpr
-from threadpool_tuner import find_next_threadpool_size, update_model
+from general_utilities.gaussian_process import gpr, update_model
+from threadpool_tuner import find_next_threadpool_size
 
 app = Flask(__name__)
 
