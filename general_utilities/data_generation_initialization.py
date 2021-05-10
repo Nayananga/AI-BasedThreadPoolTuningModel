@@ -9,8 +9,8 @@ parameter_bounds = Config.PARAMETER_BOUNDS
 
 def initialize_data_generation():
     check_config_errors()
-    thread_data, latency_data = get_training_points()
-    return thread_data, latency_data
+    thread_data, latency_data, throughput_data = get_training_points()
+    return thread_data, latency_data, throughput_data
 
 
 def check_config_errors():
@@ -22,9 +22,10 @@ def check_config_errors():
 
 def get_training_points():
     folder_name = Config.TRAINING_DATA_PATH + '/' + Config.TEST_NAME
-    train_data = pd.read_csv(folder_name + '/train_data.csv', usecols=['Thread pool size', '99th percentile Latency'])
+    train_data = pd.read_csv(folder_name + '/train_data.csv')
 
-    thread_data = train_data["Thread pool size"].tolist()
+    threadpool_data = train_data["Thread pool size"].tolist()
     latency_data = train_data["99th percentile Latency"].tolist()
+    throughput_data = train_data["Current 10 Second Throughput"].tolist()
 
-    return thread_data, latency_data
+    return threadpool_data, latency_data, throughput_data

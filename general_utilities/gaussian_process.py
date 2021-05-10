@@ -7,7 +7,7 @@ Gaussian Model calculation with new threadpool_data
 '''
 
 
-def gpr(x, y):
+def gpr(sample_data, target_data, feature_data):
     # Define the Kernel for gaussian process
     kernel = gaussian_process.kernels.Matern()
 
@@ -17,11 +17,9 @@ def gpr(x, y):
     model = gaussian_process.GaussianProcessRegressor(kernel=kernel, alpha=noise_level,
                                                       n_restarts_optimizer=10,
                                                       normalize_y=True)
-    x = np.atleast_2d(x)
-    x = StandardScaler().fit_transform(x)
+    _x = np.column_stack((sample_data, feature_data))
+    x = StandardScaler().fit_transform(_x)
 
-    y = np.atleast_2d(y)
-
-    model.fit(x, y)
+    model.fit(x, target_data)
 
     return model
