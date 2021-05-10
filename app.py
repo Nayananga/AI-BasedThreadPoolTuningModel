@@ -44,13 +44,13 @@ def before_request_func():
 
         session['USER_PLOT_DATA'] = [[], [], [], []]
 
-        session['USER_TARGET_DATA'] = list(initial_global_data['train_latency_data'])
+        session['USER_TARGET_DATA'] = list(initial_global_data['train_target_data'])
 
         session['USER_THREADPOOL_DATA'] = list(
             initial_global_data['train_threadpool_data'])
 
         session['USER_FEATURE_DATA'] = list(
-            initial_global_data['train_throughput_data'])
+            initial_global_data['train_feature_data'])
 
         session['MIN_TARGET_DATA'] = list(initial_global_data['min_target_data'])
         session['MIN_THREADPOOL_DATA'] = list(initial_global_data['min_threadpool_data'])
@@ -133,18 +133,18 @@ def after_request_func(response):
     exploration_factor.append(new_trade_off_level)
 
     print("inter -", iteration)
-    print("workers -", threadpool_data[-1])
-    print("trade_off_level -", new_trade_off_level)
-    print("Next sample_data- ", threadpool_data[-1])
-    print("Next target_data- ", target_data[-1])
-    print("min_threadpool_data", global_data.min_threadpool_data)
-    print("min_target_data", global_data.min_target_data)
+    print("Next trade_off_level - ", new_trade_off_level)
+    print("Next threadpool_data - ", threadpool_data[-1])
+    print("Next latency_data - ", target_data[-1])
+    print("Next throughput - ", feature_data[-1])
+    print("min_threadpool_data - ", global_data.min_threadpool_data)
+    print("min_target_data - ", global_data.min_target_data)
     print("-------------------------------------")
 
     # if iteration % 20 == 0:
     #     plot_data(plot_data_1[1], plot_data_1[0], Config.PAUSE_TIME, save=True)
     #     save_plots(plot_data_1[1])
-    #     write_into_file(plot_data_1[1], plot_data_1[0], exploration_factor,
+    #     write_into_file(plot_data_1[1], plot_data_1[0], plot_data_1[3],
     #                     folder_name=Config.RESULT_DATA_PATH + 'plot_')
     #     write_into_file(threadpool_data, target_data, exploration_factor,
     #                     folder_name=Config.RESULT_DATA_PATH)
@@ -186,15 +186,15 @@ def shutdown_server():
 def build_model():
     create_folders(Config.RESULT_DATA_PATH)
 
-    train_threadpool_data, train_latency_data, train_throughput_data = generate_data()
+    train_threadpool_data, train_target_data, train_feature_data = generate_data()
 
     # fit initial threadpool_data to gaussian model
-    gpr_model = gpr(train_threadpool_data, train_latency_data, train_throughput_data)
+    gpr_model = gpr(train_threadpool_data, train_target_data, train_feature_data)
 
     initial_global_data = {
-        "train_latency_data": train_latency_data,
+        "train_target_data": train_target_data,
         "train_threadpool_data": train_threadpool_data,
-        "train_throughput_data": train_throughput_data,
+        "train_feature_data": train_feature_data,
 
         "min_threadpool_data": global_data.min_threadpool_data,
         "min_target_data": global_data.min_target_data,
