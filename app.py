@@ -64,7 +64,7 @@ def threadpool_tuner():
     exploration_factor = session['EXPLORATION_FACTOR']
     target_data = session['USER_TARGET_DATA']
     threadpool_data = session['USER_THREADPOOL_DATA']
-    throughput_data = session['USER_FEATURE_DATA']
+    feature_data = session['USER_FEATURE_DATA']
 
     update_global_data()
 
@@ -86,21 +86,22 @@ def threadpool_tuner():
                   "Percentile of latency optimized")
 
     next_threadpool_size, next_trade_off_level = find_next_threadpool_size(target_value,
-                                                                           float(request_data['currentTenSecondRate']),
-                                                                           exploration_factor[-1],
-                                                                           model)
+                                                                           feature_value=float(
+                                                                               request_data['currentTenSecondRate']),
+                                                                           trade_off_level=exploration_factor[-1],
+                                                                           model=model)
 
     target_data.append(target_value)
 
     threadpool_data.append(float(request_data['currentThreadPoolSize']))
 
-    throughput_data.append(float(request_data['currentTenSecondRate']))
+    feature_data.append(float(request_data['currentTenSecondRate']))
 
     session['NEXT_TRADE_OFF_LEVEL'] = next_trade_off_level
     session['NEXT_THREADPOOL_SIZE'] = next_threadpool_size
     session['USER_TARGET_DATA'] = target_data
     session['USER_THREADPOOL_DATA'] = threadpool_data
-    session['USER_FEATURE_DATA'] = throughput_data
+    session['USER_FEATURE_DATA'] = feature_data
 
     update_session_data()
 
@@ -113,11 +114,11 @@ def after_request_func(response):
     iteration = session['ITERATION']
     next_trade_off_level = session['NEXT_TRADE_OFF_LEVEL']
     next_threadpool_size = session['NEXT_THREADPOOL_SIZE']
-    exploration_factor = session['EXPLORATION_FACTOR']
-    plot_data_1 = session['USER_PLOT_DATA']
     target_data = session['USER_TARGET_DATA']
     threadpool_data = session['USER_THREADPOOL_DATA']
     feature_data = session['USER_FEATURE_DATA']
+    exploration_factor = session['EXPLORATION_FACTOR']
+    plot_data_1 = session['USER_PLOT_DATA']
 
     update_global_data()
 
@@ -133,12 +134,13 @@ def after_request_func(response):
     exploration_factor.append(new_trade_off_level)
 
     print("inter -", iteration)
-    print("Next trade_off_level - ", new_trade_off_level)
-    print("Next threadpool_data - ", threadpool_data[-1])
-    print("Next latency_data - ", target_data[-1])
-    print("Next throughput - ", feature_data[-1])
+    print("Current trade_off_level - ", new_trade_off_level)
+    print("Current threadpool_data - ", threadpool_data[-1])
+    print("Current latency_data - ", target_data[-1])
+    print("Current throughput - ", feature_data[-1])
     print("min_threadpool_data - ", global_data.min_threadpool_data)
     print("min_target_data - ", global_data.min_target_data)
+    print("min_feature_data - ", global_data.min_feature_data)
     print("-------------------------------------")
 
     # if iteration % 20 == 0:
