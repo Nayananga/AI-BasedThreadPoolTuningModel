@@ -125,9 +125,9 @@ def after_request_func(response):
     threadpool_data, target_data, feature_data, new_trade_off_level, model = update_model(
         next_threadpool_size, threadpool_data, target_data, feature_data, next_trade_off_level)
 
-    plot_data_1[0].append(target_data[-1])
-    plot_data_1[1].append(threadpool_data[-1])
-    plot_data_1[2].append(feature_data[-1])
+    plot_data_1[0].append(target_data[-1])  # latency_data
+    plot_data_1[1].append(threadpool_data[-1])  # threadpool_data
+    plot_data_1[2].append(feature_data[-1])  # throughput
     plot_data_1[3].append(exploration_factor[-1])  # if we want to plot this
 
     update_min_data(threadpool_data, target_data, feature_data)
@@ -144,15 +144,20 @@ def after_request_func(response):
     print("-------------------------------------")
 
     # if iteration % 20 == 0:
-    #     plot_data(plot_data_1[1], plot_data_1[0], Config.PAUSE_TIME, save=True)
-    #     save_plots(plot_data_1[1])
-    #     write_into_file(plot_data_1[1], plot_data_1[0], plot_data_1[3],
+    #
+    #     plot_data(latency_data=plot_data_1[0], threadpool_data=plot_data_1[1],
+    #               throughput_data=plot_data_1[2], save=True)
+    #
+    #     write_into_file(latency_data=plot_data_1[0], threadpool_data=plot_data_1[1],
+    #                     throughput_data=plot_data_1[2], exploration_factor=plot_data_1[3],
     #                     folder_name=Config.RESULT_DATA_PATH + 'plot_')
-    #     write_into_file(threadpool_data, target_data, exploration_factor,
+    #
+    #     write_into_file(latency_data=target_data, threadpool_data=threadpool_data,
+    #                     throughput_data=feature_data, exploration_factor=exploration_factor,
     #                     folder_name=Config.RESULT_DATA_PATH)
     #
     # else:
-    #     plot_data(plot_data_1[1], plot_data_1[0], Config.PAUSE_TIME)
+    #     plot_data(latency_data=plot_data_1[0], threadpool_data=plot_data_1[1], throughput_data=plot_data_1[2])
 
     session['ITERATION'] = iteration + 1
     session['EXPLORATION_FACTOR'] = exploration_factor
