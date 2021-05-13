@@ -15,10 +15,11 @@ def generate_min_point_based_on_model(target_value, feature_value, model, explor
     else:
         evaluation_pool = generate_random_eval_points(Config.EVAL_POINT_SIZE, Config.PARAMETER_BOUNDS)
 
+    query_point = np.column_stack(([target_value], [feature_value]))
+
     for evaluation_point in evaluation_pool:
-        query_point = np.column_stack(([evaluation_point], [feature_value]))
         max_expected_improvement, max_threadpool_sizes = calculate_maximum_bayesian_expected_improvement(
-            query_point, max_expected_improvement, max_threadpool_sizes, target_value, explore_factor,
+            query_point, max_expected_improvement, max_threadpool_sizes, evaluation_point, explore_factor,
             model)
 
     return max_threadpool_sizes, max_expected_improvement
