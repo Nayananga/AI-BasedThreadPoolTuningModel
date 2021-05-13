@@ -33,7 +33,7 @@ def before_request_func():
     if "INITIALIZED" not in session:
         print("New User : ", session.sid)
 
-        with open('Data/Training_data/initial_global_data.json') as f:
+        with open(config.ROOT_PATH + 'initial_global_data.json') as f:
             initial_global_data = json.load(f)
 
         session['INITIALIZED'] = bool(True)
