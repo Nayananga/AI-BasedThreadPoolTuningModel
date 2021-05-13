@@ -17,9 +17,9 @@ def gpr(sample_data, target_data, feature_data):
     model = gaussian_process.GaussianProcessRegressor(kernel=kernel, alpha=noise_level,
                                                       n_restarts_optimizer=10,
                                                       normalize_y=True)
-    _x = np.column_stack((target_data, feature_data))
+    _x = np.column_stack((sample_data, feature_data))
     x = StandardScaler().fit_transform(_x)
 
-    model.fit(x, sample_data)
+    model.fit(x, target_data)
 
     return model

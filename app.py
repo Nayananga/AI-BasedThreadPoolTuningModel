@@ -10,7 +10,7 @@ import global_data
 from general_utilities.model_functions import build_model, update_model
 from general_utilities.threadpool_tuner import find_next_threadpool_size
 from general_utilities.update_functions import update_min_data, update_session_data, update_global_data
-from general_utilities.utility_functions import shutdown_server
+from general_utilities.utility_functions import shutdown_server, plot_data, write_into_file
 
 app = Flask(__name__)
 
@@ -136,6 +136,7 @@ def after_request_func(response):
     print("inter -", iteration)
     print("Current trade_off_level - ", new_trade_off_level)
     print("Current threadpool_data - ", threadpool_data[-1])
+    print("New threadpool_data - ", next_threadpool_size)
     print("Current latency_data - ", target_data[-1])
     print("Current throughput - ", feature_data[-1])
     print("min_threadpool_data - ", global_data.min_threadpool_data)
@@ -143,21 +144,21 @@ def after_request_func(response):
     print("min_feature_data - ", global_data.min_feature_data)
     print("-------------------------------------")
 
-    # if iteration % 20 == 0:
-    #
-    #     plot_data(latency_data=plot_data_1[0], threadpool_data=plot_data_1[1],
-    #               throughput_data=plot_data_1[2], save=True)
-    #
-    #     write_into_file(latency_data=plot_data_1[0], threadpool_data=plot_data_1[1],
-    #                     throughput_data=plot_data_1[2], exploration_factor=plot_data_1[3],
-    #                     folder_name=Config.RESULT_DATA_PATH + 'plot_')
-    #
-    #     write_into_file(latency_data=target_data, threadpool_data=threadpool_data,
-    #                     throughput_data=feature_data, exploration_factor=exploration_factor,
-    #                     folder_name=Config.RESULT_DATA_PATH)
-    #
-    # else:
-    #     plot_data(latency_data=plot_data_1[0], threadpool_data=plot_data_1[1], throughput_data=plot_data_1[2])
+    if iteration % 20 == 0:
+
+        plot_data(latency_data=plot_data_1[0], threadpool_data=plot_data_1[1],
+                  throughput_data=plot_data_1[2], save=True)
+
+        write_into_file(latency_data=plot_data_1[0], threadpool_data=plot_data_1[1],
+                        throughput_data=plot_data_1[2], exploration_factor=plot_data_1[3],
+                        folder_name=config.RESULT_DATA_PATH + 'plot_')
+
+        write_into_file(latency_data=target_data, threadpool_data=threadpool_data,
+                        throughput_data=feature_data, exploration_factor=exploration_factor,
+                        folder_name=config.RESULT_DATA_PATH)
+
+    else:
+        plot_data(latency_data=plot_data_1[0], threadpool_data=plot_data_1[1], throughput_data=plot_data_1[2])
 
     session['ITERATION'] = iteration + 1
     session['EXPLORATION_FACTOR'] = exploration_factor

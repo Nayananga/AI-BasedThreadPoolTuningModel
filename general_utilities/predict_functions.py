@@ -20,39 +20,39 @@ def generate_random_eval_points(number_of_points, parameter_bounds):
 
 
 def generate_min_point_based_on_model(target_value, feature_value, model, explore_factor=0.01):
-    max_expected_improvement = 0
-    max_threadpool_sizes = []
+    max_expected_improvement = 0.0
+    threadpool_sizes = []
 
     if not global_data.random_eval_check:
         evaluation_pool = global_data.eval_pool
     else:
         evaluation_pool = generate_random_eval_points(config.EVAL_POINT_SIZE, config.PARAMETER_BOUNDS)
 
-    query_point = np.column_stack(([target_value], [feature_value]))
-
     for evaluation_point in evaluation_pool:
-        max_expected_improvement, max_threadpool_sizes = calculate_maximum_bayesian_expected_improvement(
-            query_point, max_expected_improvement, max_threadpool_sizes, evaluation_point, explore_factor,
+        query_point = np.column_stack(([evaluation_point], [feature_value]))
+        max_expected_improvement, threadpool_sizes = calculate_maximum_bayesian_expected_improvement(
+            query_point, max_expected_improvement, threadpool_sizes, target_value, explore_factor,
             model)
 
-    return max_threadpool_sizes, max_expected_improvement
+    return threadpool_sizes, max_expected_improvement
 
 
-def calculate_maximum_bayesian_expected_improvement(evaluation_point, max_expected_improvement, max_threadpool_sizes,
+def calculate_maximum_bayesian_expected_improvement(query_point, max_expected_improvement, threadpool_sizes,
                                                     minimum_feature_value, trade_off_level, model):
     expected_improvement = gaussian_ei(
-        evaluation_point,
+        query_point,
         model,
         minimum_feature_value,
         trade_off_level)
-
+    expected_improvement = float(expected_improvement[0])
+    threadpool_point = int(query_point[0][0])
     if expected_improvement > max_expected_improvement:
         max_expected_improvement = expected_improvement
-        max_threadpool_sizes = [evaluation_point]
+        threadpool_sizes = [threadpool_point]
     elif expected_improvement == max_expected_improvement:
-        max_threadpool_sizes.append(evaluation_point)
+        threadpool_sizes.append(threadpool_point)
 
-    return max_expected_improvement, max_threadpool_sizes
+    return max_expected_improvement, threadpool_sizes
 
 
 def generate_min_point_based_on_distance(target_value):

@@ -25,7 +25,7 @@ def sample_by_fifo(next_threadpool_size, threadpool_data, target_data, feature_d
         elif number_of_points >= maximum_in_sampler:
             threadpool_data.remove(points[0][0])
             target_data.remove(points[0][1])
-            feature_data.remove(points[0][1])
+            feature_data.remove(points[0][2])
 
     return threadpool_data, target_data, feature_data, trade_off_level
 
