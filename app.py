@@ -5,12 +5,12 @@ import redis as redis
 from flask import Flask, request, session
 from flask_session import Session
 
-import Config
+import config
 import global_data
-from general_utilities.commom_functions import create_folders
-from general_utilities.data_generator import generate_data, update_min_data
-from general_utilities.gaussian_process import gpr, update_model
-from threadpool_tuner import find_next_threadpool_size
+from general_utilities.model_functions import build_model, update_model
+from general_utilities.threadpool_tuner import find_next_threadpool_size
+from general_utilities.update_functions import update_min_data, update_session_data, update_global_data
+from general_utilities.utility_functions import shutdown_server
 
 app = Flask(__name__)
 
@@ -40,7 +40,7 @@ def before_request_func():
 
         session['ITERATION'] = int(1)
 
-        session['EXPLORATION_FACTOR'] = [float(Config.DEFAULT_TRADE_OFF_LEVEL)]
+        session['EXPLORATION_FACTOR'] = [float(config.DEFAULT_TRADE_OFF_LEVEL)]
 
         session['USER_PLOT_DATA'] = [[], [], [], []]
 
@@ -66,7 +66,7 @@ def threadpool_tuner():
     threadpool_data = session['USER_THREADPOOL_DATA']
     feature_data = session['USER_FEATURE_DATA']
 
-    update_global_data()
+    update_global_data(session)
 
     request_data = dict(request.get_json())
     print(request_data)
@@ -103,7 +103,7 @@ def threadpool_tuner():
     session['USER_THREADPOOL_DATA'] = threadpool_data
     session['USER_FEATURE_DATA'] = feature_data
 
-    update_session_data()
+    update_session_data(session)
 
     return str(next_threadpool_size)
 
@@ -120,7 +120,7 @@ def after_request_func(response):
     exploration_factor = session['EXPLORATION_FACTOR']
     plot_data_1 = session['USER_PLOT_DATA']
 
-    update_global_data()
+    update_global_data(session)
 
     threadpool_data, target_data, feature_data, new_trade_off_level, model = update_model(
         next_threadpool_size, threadpool_data, target_data, feature_data, next_trade_off_level)
@@ -166,55 +166,12 @@ def after_request_func(response):
     session['USER_FEATURE_DATA'] = feature_data
     session['USER_PLOT_DATA'] = plot_data_1
 
-    update_session_data()
+    update_session_data(session)
 
     return response
 
 
-def update_global_data():
-    global_data.min_threadpool_data = session['MIN_THREADPOOL_DATA']
-    global_data.min_target_data = session['MIN_TARGET_DATA']
-    global_data.min_feature_data = session['MIN_FEATURE_DATA']
-
-
-def update_session_data():
-    session['MIN_THREADPOOL_DATA'] = global_data.min_threadpool_data
-    session['MIN_TARGET_DATA'] = global_data.min_target_data
-    session['MIN_FEATURE_DATA'] = global_data.min_feature_data
-
-
-def shutdown_server():
-    func = request.environ.get('werkzeug.server.shutdown')
-    if func is None:
-        raise RuntimeError('Not running with the Werkzeug Server')
-    func()
-
-
-def build_model():
-    create_folders(Config.RESULT_DATA_PATH)
-
-    train_threadpool_data, train_target_data, train_feature_data = generate_data()
-
-    # fit initial threadpool_data to gaussian model
-    gpr_model = gpr(train_threadpool_data, train_target_data, train_feature_data)
-
-    initial_global_data = {
-        "train_target_data": train_target_data,
-        "train_threadpool_data": train_threadpool_data,
-        "train_feature_data": train_feature_data,
-
-        "min_threadpool_data": global_data.min_threadpool_data,
-        "min_target_data": global_data.min_target_data,
-        "min_feature_data": global_data.min_feature_data
-    }
-
-    with open('Data/Training_data/initial_global_data.json', 'w') as fp:
-        json.dump(initial_global_data, fp)
-
-    return gpr_model
-
-
 if __name__ == '__main__':
-    Config.TEST_NAME = sys.argv[1]
+    config.TEST_NAME = sys.argv[1]
     model = build_model()
     app.run()

@@ -1,6 +1,6 @@
 import numpy as np
 
-import Config
+import config
 
 '''
 FIFO calculation in target_data direction of the gaussian process
@@ -21,17 +21,13 @@ def sample_by_fifo(next_threadpool_size, threadpool_data, target_data, feature_d
         if variance >= variance_threshold:
             threadpool_data, target_data, feature_data = remove_data(
                 number_of_points, points, threadpool_data, target_data, feature_data)
-            trade_off_level = Config.DEFAULT_TRADE_OFF_LEVEL
+            trade_off_level = config.DEFAULT_TRADE_OFF_LEVEL
         elif number_of_points >= maximum_in_sampler:
             threadpool_data.remove(points[0][0])
             target_data.remove(points[0][1])
             feature_data.remove(points[0][1])
 
     return threadpool_data, target_data, feature_data, trade_off_level
-
-
-def get_index(next_threadpool_size, threadpool_data):
-    return [i for i, data_item in enumerate(threadpool_data) if data_item == next_threadpool_size]
 
 
 def calculate_variance(points):
@@ -52,3 +48,7 @@ def remove_data(number_of_points, points, threadpool_data, target_data, feature_
         feature_data.remove(points[i][2])
 
     return threadpool_data, target_data, feature_data
+
+
+def get_index(next_threadpool_size, threadpool_data):
+    return [i for i, data_item in enumerate(threadpool_data) if data_item == next_threadpool_size]

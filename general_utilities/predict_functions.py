@@ -1,9 +1,22 @@
 import numpy as np
 from skopt.acquisition import gaussian_ei
 
-import Config
+import config
 import global_data
-from general_utilities.data_generator import generate_random_eval_points
+
+
+def generate_random_eval_points(number_of_points, parameter_bounds):
+    size = 0
+    random_points = []
+
+    while size < number_of_points:
+        point = np.random.randint(parameter_bounds[0], parameter_bounds[1])
+
+        if point not in random_points:
+            size += 1
+            random_points.append(point)
+
+    return random_points
 
 
 def generate_min_point_based_on_model(target_value, feature_value, model, explore_factor=0.01):
@@ -13,7 +26,7 @@ def generate_min_point_based_on_model(target_value, feature_value, model, explor
     if not global_data.random_eval_check:
         evaluation_pool = global_data.eval_pool
     else:
-        evaluation_pool = generate_random_eval_points(Config.EVAL_POINT_SIZE, Config.PARAMETER_BOUNDS)
+        evaluation_pool = generate_random_eval_points(config.EVAL_POINT_SIZE, config.PARAMETER_BOUNDS)
 
     query_point = np.column_stack(([target_value], [feature_value]))
 
