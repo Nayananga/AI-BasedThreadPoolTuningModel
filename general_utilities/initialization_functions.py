@@ -52,15 +52,15 @@ def find_initial_min_data(threadpool_data, target_data, feature_data):
     min_threadpool_data = []
     min_target_data = []
     min_feature_data = []
-    for i, target_value in enumerate(target_data):
-        if target_value not in min_target_data:
-            minimum_threadpool_size = min(
-                [threadpool_data[i] for i, feature_data_value in enumerate(target_data) if
-                 feature_data_value == target_value])
+    for i, feature_value in enumerate(feature_data):
+        if feature_value not in min_feature_data:
+            min_target_value = min(
+                [target_data[i] for i, f_value in enumerate(feature_data) if
+                 f_value == feature_value])
 
-            min_threadpool_data.append(minimum_threadpool_size)
-            min_target_data.append(target_value)
-            min_feature_data.append(feature_data[threadpool_data.index(minimum_threadpool_size)])
+            min_threadpool_data.append(threadpool_data[target_data.index(min_target_value)])
+            min_target_data.append(min_target_value)
+            min_feature_data.append(feature_value)
 
         else:
             pass

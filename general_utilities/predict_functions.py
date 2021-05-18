@@ -19,7 +19,7 @@ def generate_random_eval_points(number_of_points, parameter_bounds):
     return random_points
 
 
-def generate_min_point_based_on_model(target_value, feature_value, model, explore_factor=0.01):
+def find_min_point_based_on_model(min_target_value, feature_value, model, explore_factor):
     max_expected_improvement = 0.0
     threadpool_sizes = []
 
@@ -29,9 +29,9 @@ def generate_min_point_based_on_model(target_value, feature_value, model, explor
         evaluation_pool = generate_random_eval_points(config.EVAL_POINT_SIZE, config.PARAMETER_BOUNDS)
 
     for evaluation_point in evaluation_pool:
-        query_point = np.column_stack(([evaluation_point], [feature_value]))
+        query_point = np.column_stack((evaluation_point, feature_value))
         max_expected_improvement, threadpool_sizes = calculate_maximum_bayesian_expected_improvement(
-            query_point, max_expected_improvement, threadpool_sizes, target_value, explore_factor,
+            query_point, max_expected_improvement, threadpool_sizes, min_target_value, explore_factor,
             model)
 
     return threadpool_sizes, max_expected_improvement
@@ -55,19 +55,31 @@ def calculate_maximum_bayesian_expected_improvement(query_point, max_expected_im
     return max_expected_improvement, threadpool_sizes
 
 
-def generate_min_point_based_on_distance(target_value):
+def find_min_threadpool_size_based_on_distance(feature_value):
     min_threadpool_data = global_data.min_threadpool_data
-    min_target_data = global_data.min_target_data
 
-    distances = [calculate_distance([min_target_data_value], [target_value]) for min_target_data_value in
-                 min_target_data]
-    min_distance = min(distances)
-
-    min_distance_location = distances.index(min_distance)
-
+    min_distance_location = find_min_feature_location_based_on_distance(feature_value)
     minimum_threadpool_value = min_threadpool_data[min_distance_location]
 
     return minimum_threadpool_value
+
+
+def find_min_target_value_based_on_distance(feature_value):
+    min_target_data = global_data.min_target_data
+
+    min_distance_location = find_min_feature_location_based_on_distance(feature_value)
+    minimum_target_value = min_target_data[min_distance_location]
+
+    return minimum_target_value
+
+
+def find_min_feature_location_based_on_distance(feature_value):
+    min_feature_data = global_data.min_feature_data
+    distances = [calculate_distance([min_feature_data_value], [feature_value]) for min_feature_data_value in
+                 min_feature_data]
+    min_distance = min(distances)
+    min_distance_location = distances.index(min_distance)
+    return min_distance_location
 
 
 def calculate_distance(v, u):
