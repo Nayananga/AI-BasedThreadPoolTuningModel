@@ -28,9 +28,9 @@ def update_min_data(threadpool_data, target_data, feature_data):
         if min_target_value is None:
             global_data.min_threadpool_data.remove(global_data.min_threadpool_data[min_location])
             global_data.min_target_data.remove(global_data.min_target_data[min_location])
-            global_data.min_feature_data.remove(global_data.min_feature_data[min_location])
-        elif min_target_value < min_threadpool_data[min_location]:
-            global_data.min_threadpool_data[min_location] = min_target_value
+            global_data.min_feature_data.remove(feature_value)
+        elif min_target_value < min_target_data[min_location]:
+            global_data.min_target_data[min_location] = min_target_value
             global_data.min_threadpool_data[min_location] = threadpool_data[target_data.index(min_target_value)]
     else:
         min_threadpool_data.append(threadpool_data[-1])
