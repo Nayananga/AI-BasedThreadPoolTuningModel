@@ -58,7 +58,7 @@ def find_initial_min_data(threadpool_data, target_data, feature_data):
                 [target_data[i] for i, f_value in enumerate(feature_data) if
                  f_value == feature_value])
 
-            min_threadpool_data.append(threadpool_data[target_data.index(min_target_value)])
+            min_threadpool_data.append(threadpool_data[feature_data.index(feature_value)])
             min_target_data.append(min_target_value)
             min_feature_data.append(feature_value)
 
