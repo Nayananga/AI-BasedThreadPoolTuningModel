@@ -26,6 +26,9 @@ def find_next_threadpool_size(target_value, feature_value, trade_off_level, mode
     elif config.SELECTION_METHOD == "Nearest_point":
         next_threadpool_size = find_min_threadpool_size_based_on_distance(feature_value)
 
+    else:
+        Exception("Invalid selection method, check SELECTION METHOD in configuration")
+
     return next_threadpool_size, trade_off_level
 
 

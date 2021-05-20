@@ -3,7 +3,7 @@ import json
 import config
 import global_data
 from general_utilities.data_sampler import sample_by_fifo
-from general_utilities.gaussian_process import gpr
+from general_utilities.gaussian_process import GPR
 from general_utilities.initialization_functions import generate_data
 from general_utilities.utility_functions import create_folder
 
@@ -14,7 +14,7 @@ def build_model():
     train_threadpool_data, train_target_data, train_feature_data = generate_data()
 
     # fit initial threadpool_data to gaussian model
-    gpr_model = gpr(train_threadpool_data, train_target_data, train_feature_data)
+    gpr_model = GPR(train_threadpool_data, train_target_data, train_feature_data)
 
     initial_global_data = {
         "train_target_data": train_target_data,
@@ -39,6 +39,6 @@ def update_model(next_threadpool_size, threadpool_data, target_data, feature_dat
                                                                                  trade_off_level)
 
     # fit new threadpool_data to gaussian process
-    model = gpr(threadpool_data, target_data, feature_data)
+    model = GPR(threadpool_data, target_data, feature_data)
 
     return threadpool_data, target_data, feature_data, trade_off_level, model

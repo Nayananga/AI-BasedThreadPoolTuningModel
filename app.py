@@ -6,7 +6,6 @@ from flask import Flask, request, session
 from flask_session import Session
 
 import config
-import global_data
 from general_utilities.model_functions import build_model, update_model
 from general_utilities.threadpool_tuner import find_next_threadpool_size
 from general_utilities.update_functions import update_min_data, update_session_data, update_global_data
@@ -93,7 +92,7 @@ def threadpool_tuner():
 
     target_data.append(target_value)
 
-    threadpool_data.append(float(request_data['currentThreadPoolSize']))
+    threadpool_data.append(int(request_data['currentThreadPoolSize']))
 
     feature_data.append(float(request_data['currentTenSecondRate']))
 
@@ -134,14 +133,10 @@ def after_request_func(response):
     exploration_factor.append(new_trade_off_level)
 
     print("inter -", iteration)
-    print("Current trade_off_level - ", new_trade_off_level)
     print("Current threadpool_data - ", threadpool_data[-1])
     print("New threadpool_data - ", next_threadpool_size)
     print("Current latency_data - ", target_data[-1])
     print("Current throughput - ", feature_data[-1])
-    print("min_threadpool_data - ", global_data.min_threadpool_data)
-    print("min_target_data - ", global_data.min_target_data)
-    print("min_feature_data - ", global_data.min_feature_data)
     print("-------------------------------------")
 
     # if iteration % 20 == 0:
