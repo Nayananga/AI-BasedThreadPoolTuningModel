@@ -1,3 +1,5 @@
+import random
+
 import config
 from general_utilities.predict_functions import find_min_threadpool_size_based_on_distance, \
     find_min_point_based_on_model, generate_random_eval_points, find_min_target_value_based_on_distance
@@ -41,7 +43,7 @@ def select_next_threadpool_size(max_expected_improvement, feature_value, trade_o
             trade_off_level = 0
     else:
         print("check", len(threadpool_sizes))
-        next_threadpool_size = min(threadpool_sizes)
+        next_threadpool_size = random.choice(threadpool_sizes)
         trade_off_level = trade_off_level + (trade_off_level / 8)
 
         if trade_off_level > 0.01:
