@@ -2,6 +2,7 @@ import csv
 import os
 
 import numpy as np
+import pandas as pd
 from flask import request
 from matplotlib import pyplot as plt
 
@@ -34,33 +35,11 @@ def plot_data(threadpool_data, throughput_data, latency_data, pause_time=config.
     plt.close()
 
 
-def write_into_file(threadpool_data, latency_data, throughput_data, exploration_factor, noise_data=None,
-                    folder_name=config.RESULT_DATA_PATH):
+def write_into_file(plot_data_1, folder_name=config.RESULT_DATA_PATH):
     if os.path.exists(folder_name + "result_data.csv"):
         os.remove(folder_name + "result_data.csv")
 
-    with open(folder_name + "result_data.csv", 'w') as f:
-        writer = csv.writer(f)
-        data = np.column_stack((threadpool_data, throughput_data, latency_data))
-        for val in data:
-            writer.writerow([val])
-
-    if os.path.exists(folder_name + "Exploration_factor.csv"):
-        os.remove(folder_name + "Exploration_factor.csv")
-
-    with open(folder_name + "Exploration_factor.csv", 'w') as f:
-        writer = csv.writer(f)
-        for val in exploration_factor:
-            writer.writerow([val])
-
-    if noise_data is not None:
-        if os.path.exists(folder_name + "noise_data.csv"):
-            os.remove(folder_name + "noise_data.csv")
-
-        with open(folder_name + "noise_data.csv", 'w') as f:
-            writer = csv.writer(f)
-            for val in noise_data:
-                writer.writerow([val])
+    pd.DataFrame(plot_data_1).to_csv('result_data.csv', index=True)
 
 
 def create_folder(path):

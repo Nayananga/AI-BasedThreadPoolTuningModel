@@ -9,7 +9,7 @@ import config
 from general_utilities.model_functions import build_model, update_model
 from general_utilities.threadpool_tuner import find_next_threadpool_size
 from general_utilities.update_functions import update_min_data, update_session_data, update_global_data
-from general_utilities.utility_functions import shutdown_server
+from general_utilities.utility_functions import shutdown_server, create_folder, write_into_file
 
 app = Flask(__name__)
 
@@ -41,7 +41,13 @@ def before_request_func():
 
         session['EXPLORATION_FACTOR'] = [float(config.DEFAULT_TRADE_OFF_LEVEL)]
 
-        session['USER_PLOT_DATA'] = [[], [], [], []]
+        session['USER_PLOT_DATA'] = {
+            "latency_data": [],
+            "threadpool_data": [],
+            "throughput_data": [],
+            "model_predict_data": [],
+            "exploration_factor_data": []
+        }
 
         session['USER_TARGET_DATA'] = list(initial_global_data['train_target_data'])
 
@@ -64,6 +70,7 @@ def threadpool_tuner():
     target_data = session['USER_TARGET_DATA']
     threadpool_data = session['USER_THREADPOOL_DATA']
     feature_data = session['USER_FEATURE_DATA']
+    plot_data_1 = session['USER_PLOT_DATA']
 
     update_global_data(session)
 
@@ -71,6 +78,8 @@ def threadpool_tuner():
     print(request_data)
 
     if float(request_data['currentTenSecondRate']) <= 0.0:
+        create_folder(config.RESULT_DATA_PATH + '/' + config.TEST_NAME)
+        write_into_file(plot_data_1, config.RESULT_DATA_PATH + '/' + config.TEST_NAME)
         shutdown_server()
 
     # T = ThroughputOptimized, M = Mean latency Optimized, 99P = 99th Percentile of latency optimized
@@ -121,21 +130,25 @@ def after_request_func(response):
 
     update_global_data(session)
 
+    predicted_target = model.predict([threadpool_data[-1], feature_data[-1]])
+
     threadpool_data, target_data, feature_data, new_trade_off_level, model = update_model(
         next_threadpool_size, threadpool_data, target_data, feature_data, next_trade_off_level)
 
-    plot_data_1[0].append(target_data[-1])  # latency_data
-    plot_data_1[1].append(threadpool_data[-1])  # threadpool_data
-    plot_data_1[2].append(feature_data[-1])  # throughput
-    plot_data_1[3].append(exploration_factor[-1])  # if we want to plot this
+    plot_data_1["latency_data"].append(target_data[-1])
+    plot_data_1["threadpool_data"].append(threadpool_data[-1])
+    plot_data_1["throughput_data"].append(feature_data[-1])
+    plot_data_1["model_predict_data"].append(predicted_target)
+    plot_data_1["exploration_factor_data"].append(exploration_factor[-1])  # if we want to plot this
 
     update_min_data(threadpool_data, target_data, feature_data)
     exploration_factor.append(new_trade_off_level)
 
     print("inter -", iteration)
+    print("Current latency_data - ", target_data[-1])
+    print("Predicted latency_data - ", target_data[-1])
     print("Current threadpool_data - ", threadpool_data[-1])
     print("New threadpool_data - ", next_threadpool_size)
-    print("Current latency_data - ", target_data[-1])
     print("Current throughput - ", feature_data[-1])
     print("-------------------------------------")
 
