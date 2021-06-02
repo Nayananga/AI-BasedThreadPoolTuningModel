@@ -1,7 +1,5 @@
-import csv
 import os
 
-import numpy as np
 import pandas as pd
 from flask import request
 from matplotlib import pyplot as plt
@@ -9,13 +7,13 @@ from matplotlib import pyplot as plt
 import config
 
 
-def plot_data(threadpool_data, throughput_data, latency_data, pause_time=config.PAUSE_TIME, save=False):
+def plot_data(plot_data_1, pause_time=config.PAUSE_TIME, save=False):
     folder_name = config.RESULT_DATA_PATH
 
-    plt.plot(threadpool_data, label='thread pool size')
-    plt.plot(latency_data, label='latency (ms)')
+    plt.plot(plot_data_1["latency_data"], label='Actual')
+    plt.plot(plot_data_1["model_predict_data"], label='predicted')
 
-    plt.title("thread pool size vs latency")
+    plt.title("model performance")
     plt.xlabel("Time (Minutes)")
 
     plt.grid(color='k', linestyle='-', linewidth=.1)
@@ -36,10 +34,10 @@ def plot_data(threadpool_data, throughput_data, latency_data, pause_time=config.
 
 
 def write_into_file(plot_data_1, folder_name=config.RESULT_DATA_PATH):
-    if os.path.exists(folder_name + "result_data.csv"):
-        os.remove(folder_name + "result_data.csv")
+    if os.path.exists(folder_name + "resultdata.csv"):
+        os.remove(folder_name + "resultdata.csv")
 
-    pd.DataFrame(plot_data_1).to_csv('result_data.csv', index=True)
+    pd.DataFrame(plot_data_1).to_csv(folder_name + "resultdata.csv", index=True)
 
 
 def create_folder(path):

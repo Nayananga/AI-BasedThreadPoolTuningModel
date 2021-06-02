@@ -1,6 +1,7 @@
 import json
 import sys
 
+import numpy as np
 import redis as redis
 from flask import Flask, request, session
 from flask_session import Session
@@ -9,7 +10,7 @@ import config
 from general_utilities.model_functions import build_model, update_model
 from general_utilities.threadpool_tuner import find_next_threadpool_size
 from general_utilities.update_functions import update_min_data, update_session_data, update_global_data
-from general_utilities.utility_functions import shutdown_server, create_folder, write_into_file
+from general_utilities.utility_functions import shutdown_server, create_folder, write_into_file, plot_data
 
 app = Flask(__name__)
 
@@ -130,7 +131,7 @@ def after_request_func(response):
 
     update_global_data(session)
 
-    predicted_target = model.predict([threadpool_data[-1], feature_data[-1]])
+    predicted_target = model.predict(np.column_stack((threadpool_data[-1], feature_data[-1]))).pop()
 
     threadpool_data, target_data, feature_data, new_trade_off_level, model = update_model(
         next_threadpool_size, threadpool_data, target_data, feature_data, next_trade_off_level)
@@ -138,7 +139,7 @@ def after_request_func(response):
     plot_data_1["latency_data"].append(target_data[-1])
     plot_data_1["threadpool_data"].append(threadpool_data[-1])
     plot_data_1["throughput_data"].append(feature_data[-1])
-    plot_data_1["model_predict_data"].append(predicted_target)
+    plot_data_1["model_predict_data"].append(predicted_target[-1])
     plot_data_1["exploration_factor_data"].append(exploration_factor[-1])  # if we want to plot this
 
     update_min_data(threadpool_data, target_data, feature_data)
@@ -146,27 +147,13 @@ def after_request_func(response):
 
     print("inter -", iteration)
     print("Current latency_data - ", target_data[-1])
-    print("Predicted latency_data - ", target_data[-1])
+    print("Predicted latency_data - ", predicted_target[-1])
     print("Current threadpool_data - ", threadpool_data[-1])
     print("New threadpool_data - ", next_threadpool_size)
     print("Current throughput - ", feature_data[-1])
     print("-------------------------------------")
 
-    # if iteration % 20 == 0:
-    #
-    #     plot_data(latency_data=plot_data_1[0], threadpool_data=plot_data_1[1],
-    #               throughput_data=plot_data_1[2], save=True)
-    #
-    #     write_into_file(latency_data=plot_data_1[0], threadpool_data=plot_data_1[1],
-    #                     throughput_data=plot_data_1[2], exploration_factor=plot_data_1[3],
-    #                     folder_name=config.RESULT_DATA_PATH + 'plot_')
-    #
-    #     write_into_file(latency_data=target_data, threadpool_data=threadpool_data,
-    #                     throughput_data=feature_data, exploration_factor=exploration_factor,
-    #                     folder_name=config.RESULT_DATA_PATH)
-    #
-    # else:
-    #     plot_data(latency_data=plot_data_1[0], threadpool_data=plot_data_1[1], throughput_data=plot_data_1[2])
+    plot_data(plot_data_1)
 
     session['ITERATION'] = iteration + 1
     session['EXPLORATION_FACTOR'] = exploration_factor
