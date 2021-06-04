@@ -1,6 +1,6 @@
-ROOT_PATH = '/home/nayananga/PycharmProjects/AI-BasedThreadPoolTuningModel/Data/'
+ROOT_PATH = '/app/Data/'
 
-TRAINING_DATA_PATH = '/home/nayananga/Desktop/jmeter_service/python_service_train_data'
+TRAINING_DATA_PATH = '/app/Data/Training_data'
 
 RESULT_DATA_PATH = ROOT_PATH + 'ACTUAL/'
 

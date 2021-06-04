@@ -19,7 +19,7 @@ app.secret_key = "My secret key"
 app.config['SESSION_TYPE'] = str('redis')
 app.config['SESSION_PERMANENT'] = bool(False)
 app.config['SESSION_USE_SIGNER'] = bool(True)
-app.config['SESSION_REDIS'] = redis.from_url('redis://localhost:6379')
+app.config['SESSION_REDIS'] = redis.from_url('redis://192.168.1.2:6379')
 
 # Create and initialize the Flask-Session object AFTER `app` has been configured
 Session(app)
@@ -74,7 +74,7 @@ def threadpool_tuner():
     if float(request_data['currentTenSecondRate']) <= 0.0:
         create_folder(config.RESULT_DATA_PATH + '/' + config.TEST_NAME)
         write_into_file(plot_data_1, config.RESULT_DATA_PATH + config.TEST_NAME + '/')
-        shutdown_server()
+        # shutdown_server()
 
     # T = ThroughputOptimized, M = Mean latency Optimized, 99P = 99th Percentile of latency optimized
     if str(request_data['optimization']) == 'T':
@@ -153,4 +153,4 @@ def after_request_func(response):
 if __name__ == '__main__':
     config.TEST_NAME = sys.argv[1]
     model = build_model()
-    app.run()
+    app.run(host="0.0.0.0")
