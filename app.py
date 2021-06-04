@@ -131,7 +131,7 @@ def after_request_func(response):
 
     update_global_data(session)
 
-    predicted_target = model.predict(np.column_stack((threadpool_data[-1], feature_data[-1]))).pop()
+    predicted_target = model.predict(np.column_stack((threadpool_data[-1], feature_data[-1])))
 
     threadpool_data, target_data, feature_data, new_trade_off_level, model = update_model(
         next_threadpool_size, threadpool_data, target_data, feature_data, next_trade_off_level)
