@@ -107,7 +107,6 @@ def threadpool_tuner():
     feature_data.append(float(request_data['currentTenSecondRate']))
 
     session['NEXT_TRADE_OFF_LEVEL'] = next_trade_off_level
-    session['NEXT_THREADPOOL_SIZE'] = next_threadpool_size
     session['USER_TARGET_DATA'] = target_data
     session['USER_THREADPOOL_DATA'] = threadpool_data
     session['USER_FEATURE_DATA'] = feature_data
@@ -122,7 +121,6 @@ def after_request_func(response):
     global model
     iteration = session['ITERATION']
     next_trade_off_level = session['NEXT_TRADE_OFF_LEVEL']
-    next_threadpool_size = session['NEXT_THREADPOOL_SIZE']
     target_data = session['USER_TARGET_DATA']
     threadpool_data = session['USER_THREADPOOL_DATA']
     feature_data = session['USER_FEATURE_DATA']
@@ -134,7 +132,7 @@ def after_request_func(response):
     predicted_target = model.predict(np.column_stack((threadpool_data[-1], feature_data[-1])))
 
     threadpool_data, target_data, feature_data, new_trade_off_level, model = update_model(
-        next_threadpool_size, threadpool_data, target_data, feature_data, next_trade_off_level)
+        threadpool_data, target_data, feature_data, next_trade_off_level)
 
     plot_data_1["latency_data"].append(target_data[-1])
     plot_data_1["threadpool_data"].append(threadpool_data[-1])
@@ -149,7 +147,6 @@ def after_request_func(response):
     print("Current latency_data - ", target_data[-1])
     print("Predicted latency_data - ", predicted_target[-1])
     print("Current threadpool_data - ", threadpool_data[-1])
-    print("New threadpool_data - ", next_threadpool_size)
     print("Current throughput - ", feature_data[-1])
     print("-------------------------------------")
 

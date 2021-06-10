@@ -32,9 +32,8 @@ def build_model():
     return gpr_model
 
 
-def update_model(next_threadpool_size, threadpool_data, target_data, feature_data, trade_off_level):
-    threadpool_data, target_data, feature_data, trade_off_level = sample_by_fifo(next_threadpool_size,
-                                                                                 threadpool_data,
+def update_model(threadpool_data, target_data, feature_data, trade_off_level):
+    threadpool_data, target_data, feature_data, trade_off_level = sample_by_fifo(threadpool_data,
                                                                                  target_data, feature_data,
                                                                                  trade_off_level)
 
