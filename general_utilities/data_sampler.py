@@ -12,7 +12,7 @@ variance_threshold = 50
 
 
 def sample_by_fifo(threadpool_data, target_data, feature_data, trade_off_level):
-    point_locations = get_index(threadpool_data[-1], threadpool_data)
+    point_locations = get_indexes(threadpool_data[-1], threadpool_data)
     number_of_points = len(point_locations)
 
     if number_of_points > 1:
@@ -50,5 +50,5 @@ def remove_data(number_of_points, points, threadpool_data, target_data, feature_
     return threadpool_data, target_data, feature_data
 
 
-def get_index(next_threadpool_size, threadpool_data):
+def get_indexes(next_threadpool_size, threadpool_data):
     return [i for i, data_item in enumerate(threadpool_data) if data_item == next_threadpool_size]
