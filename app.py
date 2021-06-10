@@ -80,7 +80,7 @@ def threadpool_tuner():
 
     if float(request_data['currentTenSecondRate']) <= 0.0:
         create_folder(config.RESULT_DATA_PATH + '/' + config.TEST_NAME)
-        write_into_file(plot_data_1, config.RESULT_DATA_PATH + '/' + config.TEST_NAME)
+        write_into_file(plot_data_1, config.RESULT_DATA_PATH + config.TEST_NAME + '/')
         shutdown_server()
 
     # T = ThroughputOptimized, M = Mean latency Optimized, 99P = 99th Percentile of latency optimized
