@@ -53,37 +53,3 @@ def calculate_maximum_bayesian_expected_improvement(query_point, max_expected_im
         threadpool_sizes.append(threadpool_point)
 
     return max_expected_improvement, threadpool_sizes
-
-
-def find_min_threadpool_size_based_on_distance(feature_value):
-    min_threadpool_data = global_data.min_threadpool_data
-
-    min_distance_location = find_min_feature_location_based_on_distance(feature_value)
-    minimum_threadpool_value = min_threadpool_data[min_distance_location]
-
-    return minimum_threadpool_value
-
-
-def find_min_target_value_based_on_distance(feature_value):
-    min_target_data = global_data.min_target_data
-
-    min_distance_location = find_min_feature_location_based_on_distance(feature_value)
-    minimum_target_value = min_target_data[min_distance_location]
-
-    return minimum_target_value
-
-
-def find_min_feature_location_based_on_distance(feature_value):
-    min_feature_data = global_data.min_feature_data
-    distances = [calculate_distance([min_feature_data_value], [feature_value]) for min_feature_data_value in
-                 min_feature_data]
-    min_distance = min(distances)
-    min_distance_location = distances.index(min_distance)
-    return min_distance_location
-
-
-def calculate_distance(v, u):
-    s = 0
-    for v_i, u_i in zip(v, u):
-        s += (v_i - u_i) ** 2
-    return s ** 0.5

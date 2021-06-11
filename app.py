@@ -9,7 +9,6 @@ from flask_session import Session
 import config
 from general_utilities.model_functions import build_model, update_model
 from general_utilities.threadpool_tuner import find_next_threadpool_size
-from general_utilities.update_functions import update_min_data, update_session_data, update_global_data
 from general_utilities.utility_functions import shutdown_server, create_folder, write_into_file, plot_data
 
 app = Flask(__name__)
@@ -58,10 +57,6 @@ def before_request_func():
         session['USER_FEATURE_DATA'] = list(
             initial_global_data['train_feature_data'])
 
-        session['MIN_TARGET_DATA'] = list(initial_global_data['min_target_data'])
-        session['MIN_THREADPOOL_DATA'] = list(initial_global_data['min_threadpool_data'])
-        session['MIN_FEATURE_DATA'] = list(initial_global_data['min_feature_data'])
-
 
 @app.route('/', methods=['POST'])
 def threadpool_tuner():
@@ -72,8 +67,6 @@ def threadpool_tuner():
     threadpool_data = session['USER_THREADPOOL_DATA']
     feature_data = session['USER_FEATURE_DATA']
     plot_data_1 = session['USER_PLOT_DATA']
-
-    update_global_data(session)
 
     request_data = dict(request.get_json())
     print(request_data)
@@ -94,11 +87,11 @@ def threadpool_tuner():
         Exception("Invalid optimization, use T = ThroughputOptimized, M = Mean latency Optimized, 99P = 99th "
                   "Percentile of latency optimized")
 
-    next_threadpool_size, next_trade_off_level = find_next_threadpool_size(target_value,
-                                                                           feature_value=float(
-                                                                               request_data['currentTenSecondRate']),
-                                                                           trade_off_level=exploration_factor[-1],
-                                                                           model=model)
+    next_threadpool_size, next_trade_off_level = find_next_threadpool_size(int(request_data['currentThreadPoolSize']),
+                                                                           target_value,
+                                                                           float(request_data['currentTenSecondRate']),
+                                                                           exploration_factor[-1],
+                                                                           model)
 
     target_data.append(target_value)
 
@@ -110,8 +103,6 @@ def threadpool_tuner():
     session['USER_TARGET_DATA'] = target_data
     session['USER_THREADPOOL_DATA'] = threadpool_data
     session['USER_FEATURE_DATA'] = feature_data
-
-    update_session_data(session)
 
     return str(next_threadpool_size)
 
@@ -127,8 +118,6 @@ def after_request_func(response):
     exploration_factor = session['EXPLORATION_FACTOR']
     plot_data_1 = session['USER_PLOT_DATA']
 
-    update_global_data(session)
-
     predicted_target = model.predict(np.column_stack((threadpool_data[-1], feature_data[-1])))
 
     threadpool_data, target_data, feature_data, new_trade_off_level, model = update_model(
@@ -140,7 +129,6 @@ def after_request_func(response):
     plot_data_1["model_predict_data"].append(predicted_target[-1])
     plot_data_1["exploration_factor_data"].append(exploration_factor[-1])  # if we want to plot this
 
-    update_min_data(threadpool_data, target_data, feature_data)
     exploration_factor.append(new_trade_off_level)
 
     print("inter -", iteration)
@@ -150,7 +138,7 @@ def after_request_func(response):
     print("Current throughput - ", feature_data[-1])
     print("-------------------------------------")
 
-    plot_data(plot_data_1)
+    # plot_data(plot_data_1)
 
     session['ITERATION'] = iteration + 1
     session['EXPLORATION_FACTOR'] = exploration_factor
@@ -158,8 +146,6 @@ def after_request_func(response):
     session['USER_THREADPOOL_DATA'] = threadpool_data
     session['USER_FEATURE_DATA'] = feature_data
     session['USER_PLOT_DATA'] = plot_data_1
-
-    update_session_data(session)
 
     return response
 

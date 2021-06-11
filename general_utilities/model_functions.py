@@ -1,7 +1,6 @@
 import json
 
 import config
-import global_data
 from general_utilities.data_sampler import sample_by_fifo
 from general_utilities.gaussian_process import GPR
 from general_utilities.initialization_functions import generate_data
@@ -19,11 +18,7 @@ def build_model():
     initial_global_data = {
         "train_target_data": train_target_data,
         "train_threadpool_data": train_threadpool_data,
-        "train_feature_data": train_feature_data,
-
-        "min_threadpool_data": global_data.min_threadpool_data,
-        "min_target_data": global_data.min_target_data,
-        "min_feature_data": global_data.min_feature_data
+        "train_feature_data": train_feature_data
     }
 
     with open(config.ROOT_PATH + 'initial_global_data.json', 'w') as fp:

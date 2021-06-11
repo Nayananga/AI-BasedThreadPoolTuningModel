@@ -15,8 +15,5 @@ EVAL_POINT_SIZE = 50
 # PARAMETER BOUNDS
 PARAMETER_BOUNDS = [1, 50]
 
-"""Random, From_model, Nearest_point"""
-SELECTION_METHOD = "From_model"
-
 # System argument
 TEST_NAME = None

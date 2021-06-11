@@ -10,7 +10,6 @@ def generate_data():
     """initial threadpool_data Configuration"""
     initialize_configurations()
     threadpool_data, latency_data, throughput_data = get_training_points()
-    find_initial_min_data(threadpool_data, latency_data, throughput_data)
 
     return threadpool_data, latency_data, throughput_data
 
@@ -46,25 +45,3 @@ def get_training_points():
     throughput_data = train_data["Current 10 Second Throughput"].tolist()
 
     return threadpool_data, latency_data, throughput_data
-
-
-def find_initial_min_data(threadpool_data, target_data, feature_data):
-    min_threadpool_data = []
-    min_target_data = []
-    min_feature_data = []
-    for i, feature_value in enumerate(feature_data):
-        if feature_value not in min_feature_data:
-            min_target_value = min(
-                [target_data[i] for i, f_value in enumerate(feature_data) if
-                 f_value == feature_value])
-
-            min_threadpool_data.append(threadpool_data[feature_data.index(feature_value)])
-            min_target_data.append(min_target_value)
-            min_feature_data.append(feature_value)
-
-        else:
-            pass
-
-    global_data.min_threadpool_data = min_threadpool_data
-    global_data.min_target_data = min_target_data
-    global_data.min_feature_data = min_feature_data
