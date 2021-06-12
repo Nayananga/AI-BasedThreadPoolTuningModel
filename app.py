@@ -9,7 +9,7 @@ from flask_session import Session
 import config
 from general_utilities.model_functions import build_model, update_model
 from general_utilities.threadpool_tuner import find_next_threadpool_size
-from general_utilities.utility_functions import shutdown_server, create_folder, write_into_file, plot_data
+from general_utilities.utility_functions import create_folder, write_into_file
 
 app = Flask(__name__)
 
@@ -74,7 +74,6 @@ def threadpool_tuner():
     if float(request_data['currentTenSecondRate']) <= 0.0:
         create_folder(config.RESULT_DATA_PATH + '/' + config.TEST_NAME)
         write_into_file(plot_data_1, config.RESULT_DATA_PATH + config.TEST_NAME + '/')
-        # shutdown_server()
 
     # T = ThroughputOptimized, M = Mean latency Optimized, 99P = 99th Percentile of latency optimized
     if str(request_data['optimization']) == 'T':
@@ -89,7 +88,7 @@ def threadpool_tuner():
 
     next_threadpool_size, next_trade_off_level = find_next_threadpool_size(int(request_data['currentThreadPoolSize']),
                                                                            target_value,
-                                                                           10,
+                                                                           float(request_data['currentTenSecondRate']),
                                                                            exploration_factor[-1],
                                                                            model)
 
@@ -137,8 +136,6 @@ def after_request_func(response):
     print("Current threadpool_data - ", threadpool_data[-1])
     print("Current throughput - ", feature_data[-1])
     print("-------------------------------------")
-
-    plot_data(plot_data_1)
 
     session['ITERATION'] = iteration + 1
     session['EXPLORATION_FACTOR'] = exploration_factor
