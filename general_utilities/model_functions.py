@@ -1,4 +1,5 @@
 import json
+import os
 
 import config
 from general_utilities.data_sampler import sample_by_fifo
@@ -20,6 +21,9 @@ def build_model():
         "train_threadpool_data": train_threadpool_data,
         "train_feature_data": train_feature_data
     }
+
+    if os.path.exists(config.ROOT_PATH + 'initial_global_data.json'):
+        os.remove(config.ROOT_PATH + 'initial_global_data.json')
 
     with open(config.ROOT_PATH + 'initial_global_data.json', 'w') as fp:
         json.dump(initial_global_data, fp)

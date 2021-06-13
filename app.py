@@ -89,7 +89,7 @@ def threadpool_tuner():
 
     next_threadpool_size, next_trade_off_level = find_next_threadpool_size(int(request_data['currentThreadPoolSize']),
                                                                            target_value,
-                                                                           float(request_data['currentTenSecondRate']),
+                                                                           10,
                                                                            exploration_factor[-1],
                                                                            model)
 
@@ -138,7 +138,7 @@ def after_request_func(response):
     print("Current throughput - ", feature_data[-1])
     print("-------------------------------------")
 
-    # plot_data(plot_data_1)
+    plot_data(plot_data_1)
 
     session['ITERATION'] = iteration + 1
     session['EXPLORATION_FACTOR'] = exploration_factor

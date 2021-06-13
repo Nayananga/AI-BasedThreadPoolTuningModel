@@ -12,6 +12,7 @@ def plot_data(plot_data_1, pause_time=config.PAUSE_TIME, save=False):
 
     plt.plot(plot_data_1["latency_data"], label='Actual')
     plt.plot(plot_data_1["model_predict_data"], label='predicted')
+    plt.plot(plot_data_1["threadpool_data"], label="Threadpool size")
 
     plt.title("model performance")
     plt.xlabel("Time (Minutes)")
