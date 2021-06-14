@@ -223,4 +223,4 @@ def build_model():
 if __name__ == '__main__':
     Config.TEST_NAME = sys.argv[1]
     model = build_model()
-    app.run()
+    app.run(host="0.0.0.0")
