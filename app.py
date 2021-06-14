@@ -21,7 +21,7 @@ app.secret_key = "My secret key"
 app.config['SESSION_TYPE'] = 'redis'
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
-app.config['SESSION_REDIS'] = redis.from_url('redis://localhost:6379')
+app.config['SESSION_REDIS'] = redis.from_url('redis://192.168.1.2:6379')
 
 # Create and initialize the Flask-Session object AFTER `app` has been configured
 Session(app)
@@ -34,7 +34,7 @@ def before_request_func():
     if "INITIALIZED" not in session:
         print("New User : ", session.sid)
 
-        with open('Data/Training_data/initial_global_data.json') as f:
+        with open('Data/initial_global_data.json') as f:
             initial_global_data = json.load(f)
 
         session['INITIALIZED'] = True
@@ -76,9 +76,6 @@ def threadpool_tuner():
 
     request_data = request.get_json()
     print(request_data)
-
-    if request_data['currentTenSecondRate'] <= 0:
-        shutdown_server()
 
     next_threadpool_size_with_throughput, trade_off_level = find_next_threadpool_size(
         threadpool_and_throughput_data,
@@ -143,17 +140,6 @@ def after_request_func(response):
     print("min_y_data", global_data.min_y_data)
     print("-------------------------------------")
 
-    # if iteration % 20 == 0:
-    #     plot_data(plot_data_1[1], plot_data_1[0], Config.PAUSE_TIME, save=True)
-    #     save_plots(plot_data_1[1])
-    #     file_write(plot_data_1[1], plot_data_1[0], exploration_factor, folder_name=Config.PATH + 'plot_')
-    #     file_write(threadpool_and_throughput_data, latency_data, exploration_factor, folder_name=Config.PATH)
-    #     # compare_data()
-    #     # generate_overall_error()
-    #
-    # else:
-    #     plot_data(plot_data_1[1], plot_data_1[0], Config.PAUSE_TIME)
-
     session['ITERATION'] = iteration + 1
     session['TRADE_OFF_LEVEL'] = trade_off_level
     session['EXPLORATION_FACTOR'] = exploration_factor
@@ -194,13 +180,6 @@ def update_session_data():
     session['LATENCY'] = global_data.latency
 
 
-def shutdown_server():
-    func = request.environ.get('werkzeug.server.shutdown')
-    if func is None:
-        raise RuntimeError('Not running with the Werkzeug Server')
-    func()
-
-
 def build_model():
     common_path = Config.COMMON_PATH
     noise_name = Config.NOISE_CHANGE
@@ -235,7 +214,7 @@ def build_model():
         "latency": global_data.latency
     }
 
-    with open('Data/Training_data/initial_global_data.json', 'w') as fp:
+    with open('Data/initial_global_data.json', 'w') as fp:
         json.dump(initial_global_data, fp)
 
     return gpr_model
