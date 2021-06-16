@@ -88,7 +88,7 @@ def threadpool_tuner():
 
     next_threadpool_size, next_trade_off_level = find_next_threadpool_size(int(request_data['currentThreadPoolSize']),
                                                                            target_value,
-                                                                           float(request_data['currentTenSecondRate']),
+                                                                           float(config.TEST_NAME.split('_')[1]),
                                                                            exploration_factor[-1],
                                                                            model)
 
