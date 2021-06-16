@@ -80,7 +80,7 @@ def threadpool_tuner():
     next_threadpool_size_with_throughput, trade_off_level = find_next_threadpool_size(
         threadpool_and_throughput_data,
         latency_data, trade_off_level, model,
-        [request_data['currentTenSecondRate']])
+        [float(Config.TEST_NAME.split('_')[1])])
 
     # T = ThroughputOptimized, M = Mean latency Optimized, 99P = 99th Percentile of latency optimized
     if request_data['optimization'] == 'T':
