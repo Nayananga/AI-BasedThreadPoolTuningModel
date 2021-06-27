@@ -1,3 +1,3 @@
 Thread pool size,Current 10 Second Throughput,99th percentile Latency
-1,50.0,1275.068415
-44,50.0,503.316479
+2,50.0,22548.578303
+47,50.0,872.415231
