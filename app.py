@@ -88,7 +88,7 @@ def threadpool_tuner():
 
     next_threadpool_size, next_trade_off_level = find_next_threadpool_size(int(request_data['currentThreadPoolSize']),
                                                                            target_value,
-                                                                           float(config.TEST_NAME.split('_')[1]),
+                                                                           float(request_data['concurrency']),
                                                                            exploration_factor[-1],
                                                                            model)
 
@@ -96,7 +96,7 @@ def threadpool_tuner():
 
     threadpool_data.append(int(request_data['currentThreadPoolSize']))
 
-    feature_data.append(float(request_data['currentTenSecondRate']))
+    feature_data.append(float(request_data['concurrency']))
 
     session['NEXT_TRADE_OFF_LEVEL'] = next_trade_off_level
     session['USER_TARGET_DATA'] = target_data
