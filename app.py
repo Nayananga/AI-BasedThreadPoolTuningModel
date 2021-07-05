@@ -94,10 +94,10 @@ def threadpool_tuner():
                   "Percentile of latency optimized")
 
     threadpool_and_throughput_data.append(
-        [request_data['currentThreadPoolSize'], request_data['concurrency']])
+        [request_data['currentThreadPoolSize'], request_data['currentTenSecondRate']])
 
     session['TRADE_OFF_LEVEL'] = trade_off_level
-    session['NEXT_THROUGHPUT'] = [request_data['concurrency']]
+    session['NEXT_THROUGHPUT'] = [request_data['currentTenSecondRate']]
     session['NEXT_THREADPOOL_SIZE_WITH_THROUGHPUT'] = next_threadpool_size_with_throughput
     session['USER_LATENCY_DATA'] = latency_data
     session['USER_THREADPOOL_AND_THROUGHPUT_DATA'] = threadpool_and_throughput_data
