@@ -1,0 +1,75 @@
+Thread pool size,Current 10 Second Throughput,99th percentile Latency
+21-10-18 05:28:39:708 ERROR - Exception,,
+java.sql.SQLNonTransientConnectionException: Could not create connection to database server. Attempted reconnect 10 times. Giving up.,,
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:108),,
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:95),,
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:87),,
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:61),,
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:71),,
+	at com.mysql.cj.jdbc.ConnectionImpl.connectWithRetries(ConnectionImpl.java:932),,
+	at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:857),,
+	at com.mysql.cj.jdbc.ConnectionImpl.<init>(ConnectionImpl.java:444),,
+	at com.mysql.cj.jdbc.ConnectionImpl.getInstance(ConnectionImpl.java:230),,
+	at com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:226),,
+	at java.sql.DriverManager.getConnection(DriverManager.java:664),,
+	at java.sql.DriverManager.getConnection(DriverManager.java:247),,
+	at com.nilushan.adaptive_concurrency_control.benchmarks.DbWrite.run(DbWrite.java:46),,
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149),,
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624),,
+	at java.lang.Thread.run(Thread.java:748),,
+Caused by: com.mysql.cj.exceptions.CJException: Public Key Retrieval is not allowed,,
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method),,
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62),,
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45),,
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423),,
+	at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:59),,
+	at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:103),,
+	at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:149),,
+	at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:122),,
+	at com.mysql.cj.protocol.a.authentication.CachingSha2PasswordPlugin.nextAuthenticationStep(CachingSha2PasswordPlugin.java:151),,
+	at com.mysql.cj.protocol.a.authentication.CachingSha2PasswordPlugin.nextAuthenticationStep(CachingSha2PasswordPlugin.java:49),,
+	at com.mysql.cj.protocol.a.NativeAuthenticationProvider.proceedHandshakeWithPluggableAuthentication(NativeAuthenticationProvider.java:609),,
+	at com.mysql.cj.protocol.a.NativeAuthenticationProvider.connect(NativeAuthenticationProvider.java:217),,
+	at com.mysql.cj.protocol.a.NativeProtocol.connect(NativeProtocol.java:1411),,
+	at com.mysql.cj.NativeSession.connect(NativeSession.java:165),,
+	at com.mysql.cj.jdbc.ConnectionImpl.connectWithRetries(ConnectionImpl.java:876),,
+	... 10 more,,
+Caused by: com.mysql.cj.exceptions.UnableToConnectException: Public Key Retrieval is not allowed,,
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method),,
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62),,
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45),,
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423),,
+	at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:59),,
+	at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:83),,
+	at com.mysql.cj.protocol.a.authentication.CachingSha2PasswordPlugin.nextAuthenticationStep(CachingSha2PasswordPlugin.java:128),,
+	... 16 more,,
+21-10-18 05:28:39:712 ERROR - Exception in Netty Handler,,
+java.lang.NullPointerException: content,,
+	at io.netty.util.internal.ObjectUtil.checkNotNull(ObjectUtil.java:31),,
+	at io.netty.handler.codec.http.DefaultFullHttpResponse.<init>(DefaultFullHttpResponse.java:62),,
+	at io.netty.handler.codec.http.DefaultFullHttpResponse.<init>(DefaultFullHttpResponse.java:56),,
+	at io.netty.handler.codec.http.DefaultFullHttpResponse.<init>(DefaultFullHttpResponse.java:42),,
+	at com.nilushan.adaptive_concurrency_control.benchmarks.DbWrite.run(DbWrite.java:80),,
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149),,
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624),,
+	at java.lang.Thread.run(Thread.java:748),,
+1,0.0,0.0
+1,0.0,0.0
+1,0.0,0.0
+1,0.0,0.0
+1,0.0,0.0
+1,0.0,0.0
+1,0.0,0.0
+1,0.0,0.0
+1,0.0,0.0
+1,0.0,0.0
+1,0.0,0.0
+1,0.0,0.0
+1,0.0,0.0
+1,0.0,0.0
+1,0.0,0.0
+1,0.0,0.0
+1,0.0,0.0
+1,0.0,0.0
+1,0.0,0.0
+1,0.0,0.0
