@@ -4,24 +4,49 @@ import numpy as np
 from scipy.stats import norm
 
 
-def gaussian_acquisition_1d(x, model, y_opt=None, acq_func="LCB", acq_func_kwargs=None, return_grad=True):
+def gaussian_acquisition_1d(
+        x,
+        model,
+        y_opt=None,
+        acq_func="LCB",
+        acq_func_kwargs=None,
+        return_grad=True):
     """
     A wrapper around the acquisition function that is called by fmin_l_bfgs_b.
 
     This is because lbfgs allows only 1-D input.
     """
-    return _gaussian_acquisition(np.expand_dims(x, axis=0), model, y_opt, acq_func=acq_func, return_grad=return_grad,
-                                 acq_func_kwargs=acq_func_kwargs)
+    return _gaussian_acquisition(
+        np.expand_dims(x, axis=0),
+        model,
+        y_opt,
+        acq_func=acq_func,
+        return_grad=return_grad,
+        acq_func_kwargs=acq_func_kwargs,
+    )
 
 
-def _gaussian_acquisition(x, model, y_opt=None, acq_func="LCB", return_grad=False, acq_func_kwargs=None):
+def _gaussian_acquisition(
+        x,
+        model,
+        y_opt=None,
+        acq_func="LCB",
+        return_grad=False,
+        acq_func_kwargs=None):
     """
     Wrapper so that the output of this function can be
 
     directly passed to a minimizer.
     """
     # Check inputs
-    time_model, acq_grad, std_grad, mu_grad, acq_grad, time_model = None, None, None, None, None, None
+    time_model, acq_grad, std_grad, mu_grad, acq_grad, time_model = (
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+    )
     x = np.asarray(x)
     if x.ndim != 2:
         raise ValueError("X should be 2-dimensional.")
@@ -260,8 +285,9 @@ def gaussian_ei(x, model, y_opt=0.0, xi=0.01, return_grad=False):
         warnings.simplefilter("ignore")
 
         if return_grad:
-            mu, std, mu_grad, std_grad = model.predict(x, return_std=True, return_mean_grad=True,
-                                                       return_std_grad=True)
+            mu, std, mu_grad, std_grad = model.predict(
+                x, return_std=True, return_mean_grad=True, return_std_grad=True
+            )
 
         else:
             mu, std = model.predict(x, return_std=True)
