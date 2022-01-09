@@ -1,4 +1,5 @@
 import json
+import logging
 import sys
 
 import redis as redis
@@ -7,11 +8,12 @@ from flask_session import Session
 
 import Config
 import global_data
-from general_utilities.commom_functions import data_point_finder
 from general_utilities.data_generation_initialization import \
     get_training_points
 from general_utilities.gaussian_process import GPR
 from threadpool_tuner import find_next_threadpool_size, update_model
+
+logging.basicConfig(level=logging.INFO, format='%(message)s')
 
 app = Flask(__name__)
 
@@ -33,7 +35,7 @@ model = None
 @app.before_request
 def before_request_func():
     if "INITIALIZED" not in session:
-        print("New User : ", session.sid)
+        logging.info(f"New User - {session.sid}")
 
         with open("Data/initial_global_data.json") as f:
             initial_global_data = json.load(f)
@@ -48,7 +50,6 @@ def before_request_func():
         session["USER_THREADPOOL_AND_THROUGHPUT_DATA"] = list(
             initial_global_data["train_threadpool_and_throughput_data"]
         )
-        session["EVAL_POOL"] = initial_global_data["eval_pool"]
 
 
 @app.route("/", methods=["POST"])
@@ -63,7 +64,7 @@ def threadpool_tuner():
     update_global_data()
 
     request_data = request.get_json()
-    print(request_data)
+    logging.info(f"request data - {request_data}")
 
     next_threadpool_size_with_throughput, trade_off_level = find_next_threadpool_size(
         trade_off_level, model, float(
@@ -115,13 +116,13 @@ def after_request_func(response):
     plot_data_1[2].append(exploration_factor[-1])  # if we want to plot this
     exploration_factor.append(trade_off_level)
 
-    print("inter -", iteration)
-    print("trade_off_level -", exploration_factor[-1])
-    print("Next x- ", threadpool_and_throughput_data[-1])
-    print("Next y- ", latency_data[-1])
-    print("min_x_data", global_data.min_x_data)
-    print("min_y_data", global_data.min_y_data)
-    print("-------------------------------------")
+    logging.info(f"inter - {iteration}")
+    logging.info(f"trade_off_level - {exploration_factor[-1]}")
+    logging.info(f"Current x - {threadpool_and_throughput_data[-1]}")
+    logging.info(f"Current y - {latency_data[-1]}")
+    logging.info(f"min_x_data - {global_data.min_x_data}")
+    logging.info(f"min_y_data - {global_data.min_y_data}")
+    logging.info("-------------------------------------")
 
     session["ITERATION"] = iteration + 1
     session["TRADE_OFF_LEVEL"] = trade_off_level
@@ -136,7 +137,6 @@ def after_request_func(response):
 def update_global_data():
     global_data.min_x_data = session["USER_THREADPOOL_AND_THROUGHPUT_DATA"]
     global_data.min_y_data = session["USER_LATENCY_DATA"]
-    global_data.eval_pool = session["EVAL_POOL"]
 
 
 def build_model():
@@ -150,8 +150,6 @@ def build_model():
     initial_global_data = {
         "train_latency_data": train_latency_data,
         "train_threadpool_and_throughput_data": train_threadpool_and_throughput_data,
-        "eval_pool": data_point_finder(
-            Config.PARAMETER_BOUNDS),
     }
 
     with open("Data/initial_global_data.json", "w") as fp:

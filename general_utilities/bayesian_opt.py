@@ -1,3 +1,4 @@
+import logging
 import random
 
 import numpy as np
@@ -35,7 +36,7 @@ def next_x_point_selection(
     max_expected_improvement, min_x, trade_off_level, max_points
 ):
     if not max_expected_improvement:
-        print("WARN: Maximum expected improvement was 0")
+        logging.warning("WARN: Maximum expected improvement was 0")
         next_x = min_x
         trade_off_level = trade_off_level - (trade_off_level / 10)
         if trade_off_level < 0.00001:

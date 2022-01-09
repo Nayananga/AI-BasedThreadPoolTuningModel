@@ -1,7 +1,9 @@
 import numpy as np
 
+import Config
 import global_data
 from general_utilities.bayesian_opt import bayesian_expected_improvement
+from general_utilities.commom_functions import data_point_finder
 
 
 def generate_min_point(feature_value, object_value, model):
@@ -9,9 +11,10 @@ def generate_min_point(feature_value, object_value, model):
 
     max_expected_improvement = 0
     max_threadpool_sizes = []
+    eval_pool = data_point_finder(Config.PARAMETER_BOUNDS)
     min_eval_value = generate_min_point_based_on_distance(object_value)
     explore_factor = 0.01
-    for eval_point in global_data.eval_pool:
+    for eval_point in eval_pool:
         check_point = [eval_point, feature_value]
         max_expected_improvement, max_threadpool_sizes = bayesian_expected_improvement(
             check_point,
@@ -39,17 +42,14 @@ def generate_min_point_based_on_distance(object_value):
     min_y_data = global_data.min_y_data
     min_distance = distance_calculation(object_value, min_y_data[0])
     min_distance_location = 0
-    for i in range(len(min_x_data)):
+    for i in range(1, len(min_y_data)):
         distance = distance_calculation(object_value, min_y_data[i])
         if min_distance > distance:
             min_distance = distance
             min_distance_location = i
-    min_x = min_x_data[min_distance_location]
-    return min_x
+    return min_x_data[min_distance_location]
 
 
 def distance_calculation(v, u):
-    s = 0
-    for v_i, u_i in zip(v, u):
-        s += (v_i - u_i) ** 2
+    s = (v - u) ** 2
     return s ** 0.5
