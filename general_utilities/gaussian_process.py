@@ -17,10 +17,8 @@ class GPR:
         self.scaler = StandardScaler()
         x = self.scaler.fit_transform(x)
         self.model = gp.GaussianProcessRegressor(
-            kernel=kernel,
-            alpha=noise_level,
-            n_restarts_optimizer=10,
-            normalize_y=True)
+            kernel=kernel, alpha=noise_level, n_restarts_optimizer=10, normalize_y=True
+        )
         self.model.fit(x, y)
 
     def predict(self, x, return_std=False):

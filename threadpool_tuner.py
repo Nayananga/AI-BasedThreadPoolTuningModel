@@ -3,11 +3,7 @@ from general_utilities.Bayesian_point_selection import generate_min_point
 from general_utilities.gaussian_process import GPR
 
 
-def find_next_threadpool_size(
-        trade_off_level,
-        model,
-        feature_value,
-        object_value):
+def find_next_threadpool_size(trade_off_level, model, feature_value, object_value):
     (
         max_expected_improvement,
         min_threadpool_size,

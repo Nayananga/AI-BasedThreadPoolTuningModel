@@ -1,6 +1,9 @@
+import json
+
 import pandas as pd
 
 import Config
+from general_utilities.gaussian_process import GPR
 
 
 def get_training_points():
@@ -8,15 +11,15 @@ def get_training_points():
     data = pd.read_csv(
         folder_name + "/train_data.csv",
         usecols=[
-            "99th percentile Latency",
             "Thread pool size",
-            "Current 10 Second Throughput",
+            "Concurrency",
+            "99th percentile Latency",
         ],
     )
 
-    latency_data = data.iloc[:, 0]
-    thread_pool_data = data.iloc[:, 1]
-    throughput_data = data.iloc[:, 2]
+    thread_pool_data = data.iloc[:, 0]
+    throughput_data = data.iloc[:, 1]
+    latency_data = data.iloc[:, 2]
 
     object_data = [float(latency_point) for latency_point in latency_data]
 
@@ -26,3 +29,22 @@ def get_training_points():
     ]
 
     return optimize_data, object_data
+
+
+def build_model():
+
+    train_threadpool_and_feature_data, train_object_data = get_training_points()
+
+    gpr_model = GPR(
+        train_threadpool_and_feature_data, train_object_data
+    )  # fit initial data to gaussian model
+
+    initial_global_data = {
+        "train_object_data": train_object_data,
+        "train_threadpool_and_feature_data": train_threadpool_and_feature_data,
+    }
+
+    with open("Data/initial_global_data.json", "w") as fp:
+        json.dump(initial_global_data, fp)
+
+    return gpr_model

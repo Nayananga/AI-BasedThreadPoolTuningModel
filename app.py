@@ -8,12 +8,10 @@ from flask_session import Session
 
 import Config
 import global_data
-from general_utilities.data_generation_initialization import \
-    get_training_points
-from general_utilities.gaussian_process import GPR
+from general_utilities.data_generation_initialization import build_model
 from threadpool_tuner import find_next_threadpool_size, update_model
 
-logging.basicConfig(level=logging.INFO, format='%(message)s')
+logging.basicConfig(level=logging.INFO, format="%(message)s")
 
 app = Flask(__name__)
 
@@ -45,8 +43,7 @@ def before_request_func():
         session["TRADE_OFF_LEVEL"] = float(Config.DEFAULT_TRADE_OFF_LEVEL)
         session["EXPLORATION_FACTOR"] = [float(Config.DEFAULT_TRADE_OFF_LEVEL)]
         session["USER_PLOT_DATA"] = list([[], [], []])
-        session["USER_OBJECT_DATA"] = list(
-            initial_global_data["train_object_data"])
+        session["USER_OBJECT_DATA"] = list(initial_global_data["train_object_data"])
         session["USER_THREADPOOL_AND_FEATURE_DATA"] = list(
             initial_global_data["train_threadpool_and_feature_data"]
         )
@@ -57,9 +54,7 @@ def threadpool_tuner():
     global model
     trade_off_level = float(session["TRADE_OFF_LEVEL"])
     object_data = list(session["USER_OBJECT_DATA"])
-    threadpool_and_feature_data = list(
-        session["USER_THREADPOOL_AND_FEATURE_DATA"]
-    )
+    threadpool_and_feature_data = list(session["USER_THREADPOOL_AND_FEATURE_DATA"])
 
     update_global_data()
 
@@ -67,9 +62,11 @@ def threadpool_tuner():
     logging.info(f"request data - {request_data}")
 
     next_threadpool_size_with_throughput, trade_off_level = find_next_threadpool_size(
-        trade_off_level, model, float(
-            request_data["concurrency"]), float(
-            request_data["current99PLatency"]), )
+        trade_off_level,
+        model,
+        float(request_data["concurrency"]),
+        float(request_data["current99PLatency"]),
+    )
 
     # T = ThroughputOptimized, M = Mean latency Optimized, 99P = 99th
     # Percentile of latency optimized
@@ -82,7 +79,8 @@ def threadpool_tuner():
     else:
         Exception(
             "Invalid optimization, use T = ThroughputOptimized, M = Mean latency Optimized, 99P = 99th "
-            "Percentile of latency optimized")
+            "Percentile of latency optimized"
+        )
 
     threadpool_and_feature_data.append(
         [request_data["currentThreadPoolSize"], request_data["concurrency"]]
@@ -103,9 +101,7 @@ def after_request_func(response):
     exploration_factor = list(session["EXPLORATION_FACTOR"])
     plot_data_1 = list(session["USER_PLOT_DATA"])
     object_data = list(session["USER_OBJECT_DATA"])
-    threadpool_and_feature_data = list(
-        session["USER_THREADPOOL_AND_FEATURE_DATA"]
-    )
+    threadpool_and_feature_data = list(session["USER_THREADPOOL_AND_FEATURE_DATA"])
 
     update_global_data()
 
@@ -137,25 +133,6 @@ def after_request_func(response):
 def update_global_data():
     global_data.min_x_data = session["USER_THREADPOOL_AND_FEATURE_DATA"]
     global_data.min_y_data = session["USER_OBJECT_DATA"]
-
-
-def build_model():
-
-    train_threadpool_and_feature_data, train_object_data = get_training_points()
-
-    gpr_model = GPR(
-        train_threadpool_and_feature_data, train_object_data
-    )  # fit initial data to gaussian model
-
-    initial_global_data = {
-        "train_object_data": train_object_data,
-        "train_threadpool_and_feature_data": train_threadpool_and_feature_data,
-    }
-
-    with open("Data/initial_global_data.json", "w") as fp:
-        json.dump(initial_global_data, fp)
-
-    return gpr_model
 
 
 if __name__ == "__main__":
