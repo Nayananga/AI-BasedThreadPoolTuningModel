@@ -45,10 +45,10 @@ def before_request_func():
         session["TRADE_OFF_LEVEL"] = float(Config.DEFAULT_TRADE_OFF_LEVEL)
         session["EXPLORATION_FACTOR"] = [float(Config.DEFAULT_TRADE_OFF_LEVEL)]
         session["USER_PLOT_DATA"] = list([[], [], []])
-        session["USER_LATENCY_DATA"] = list(
-            initial_global_data["train_latency_data"])
-        session["USER_THREADPOOL_AND_THROUGHPUT_DATA"] = list(
-            initial_global_data["train_threadpool_and_throughput_data"]
+        session["USER_OBJECT_DATA"] = list(
+            initial_global_data["train_object_data"])
+        session["USER_THREADPOOL_AND_FEATURE_DATA"] = list(
+            initial_global_data["train_threadpool_and_feature_data"]
         )
 
 
@@ -56,9 +56,9 @@ def before_request_func():
 def threadpool_tuner():
     global model
     trade_off_level = float(session["TRADE_OFF_LEVEL"])
-    latency_data = list(session["USER_LATENCY_DATA"])
-    threadpool_and_throughput_data = list(
-        session["USER_THREADPOOL_AND_THROUGHPUT_DATA"]
+    object_data = list(session["USER_OBJECT_DATA"])
+    threadpool_and_feature_data = list(
+        session["USER_THREADPOOL_AND_FEATURE_DATA"]
     )
 
     update_global_data()
@@ -68,29 +68,29 @@ def threadpool_tuner():
 
     next_threadpool_size_with_throughput, trade_off_level = find_next_threadpool_size(
         trade_off_level, model, float(
-            request_data["currentTenSecondRate"]), float(
+            request_data["concurrency"]), float(
             request_data["current99PLatency"]), )
 
     # T = ThroughputOptimized, M = Mean latency Optimized, 99P = 99th
     # Percentile of latency optimized
     if request_data["optimization"] == "T":
-        latency_data.append(float(request_data["currentTenSecondRate"]))
+        object_data.append(float(request_data["currentTenSecondRate"]))
     elif request_data["optimization"] == "M":
-        latency_data.append(float(request_data["currentMeanLatency"]))
+        object_data.append(float(request_data["currentMeanLatency"]))
     elif request_data["optimization"] == "99P":
-        latency_data.append(float(request_data["current99PLatency"]))
+        object_data.append(float(request_data["current99PLatency"]))
     else:
         Exception(
             "Invalid optimization, use T = ThroughputOptimized, M = Mean latency Optimized, 99P = 99th "
             "Percentile of latency optimized")
 
-    threadpool_and_throughput_data.append(
-        [request_data["currentThreadPoolSize"], request_data["currentTenSecondRate"]]
+    threadpool_and_feature_data.append(
+        [request_data["currentThreadPoolSize"], request_data["concurrency"]]
     )
 
     session["TRADE_OFF_LEVEL"] = trade_off_level
-    session["USER_LATENCY_DATA"] = latency_data
-    session["USER_THREADPOOL_AND_THROUGHPUT_DATA"] = threadpool_and_throughput_data
+    session["USER_OBJECT_DATA"] = object_data
+    session["USER_THREADPOOL_AND_FEATURE_DATA"] = threadpool_and_feature_data
 
     return str(next_threadpool_size_with_throughput[0])
 
@@ -102,24 +102,24 @@ def after_request_func(response):
     trade_off_level = float(session["TRADE_OFF_LEVEL"])
     exploration_factor = list(session["EXPLORATION_FACTOR"])
     plot_data_1 = list(session["USER_PLOT_DATA"])
-    latency_data = list(session["USER_LATENCY_DATA"])
-    threadpool_and_throughput_data = list(
-        session["USER_THREADPOOL_AND_THROUGHPUT_DATA"]
+    object_data = list(session["USER_OBJECT_DATA"])
+    threadpool_and_feature_data = list(
+        session["USER_THREADPOOL_AND_FEATURE_DATA"]
     )
 
     update_global_data()
 
-    model = update_model(threadpool_and_throughput_data, latency_data)
+    model = update_model(threadpool_and_feature_data, object_data)
 
-    plot_data_1[0].append(latency_data[-1])
-    plot_data_1[1].append(threadpool_and_throughput_data[-1])
+    plot_data_1[0].append(object_data[-1])
+    plot_data_1[1].append(threadpool_and_feature_data[-1])
     plot_data_1[2].append(exploration_factor[-1])  # if we want to plot this
     exploration_factor.append(trade_off_level)
 
     logging.info(f"inter - {iteration}")
     logging.info(f"trade_off_level - {exploration_factor[-1]}")
-    logging.info(f"Current x - {threadpool_and_throughput_data[-1]}")
-    logging.info(f"Current y - {latency_data[-1]}")
+    logging.info(f"Current x - {threadpool_and_feature_data[-1]}")
+    logging.info(f"Current y - {object_data[-1]}")
     logging.info(f"min_x_data - {global_data.min_x_data}")
     logging.info(f"min_y_data - {global_data.min_y_data}")
     logging.info("-------------------------------------")
@@ -127,29 +127,29 @@ def after_request_func(response):
     session["ITERATION"] = iteration + 1
     session["TRADE_OFF_LEVEL"] = trade_off_level
     session["EXPLORATION_FACTOR"] = exploration_factor
-    session["USER_LATENCY_DATA"] = latency_data
-    session["USER_THREADPOOL_AND_THROUGHPUT_DATA"] = threadpool_and_throughput_data
+    session["USER_OBJECT_DATA"] = object_data
+    session["USER_THREADPOOL_AND_FEATURE_DATA"] = threadpool_and_feature_data
     session["USER_PLOT_DATA"] = plot_data_1
 
     return response
 
 
 def update_global_data():
-    global_data.min_x_data = session["USER_THREADPOOL_AND_THROUGHPUT_DATA"]
-    global_data.min_y_data = session["USER_LATENCY_DATA"]
+    global_data.min_x_data = session["USER_THREADPOOL_AND_FEATURE_DATA"]
+    global_data.min_y_data = session["USER_OBJECT_DATA"]
 
 
 def build_model():
 
-    train_threadpool_and_throughput_data, train_latency_data = get_training_points()
+    train_threadpool_and_feature_data, train_object_data = get_training_points()
 
     gpr_model = GPR(
-        train_threadpool_and_throughput_data, train_latency_data
+        train_threadpool_and_feature_data, train_object_data
     )  # fit initial data to gaussian model
 
     initial_global_data = {
-        "train_latency_data": train_latency_data,
-        "train_threadpool_and_throughput_data": train_threadpool_and_throughput_data,
+        "train_object_data": train_object_data,
+        "train_threadpool_and_feature_data": train_threadpool_and_feature_data,
     }
 
     with open("Data/initial_global_data.json", "w") as fp:

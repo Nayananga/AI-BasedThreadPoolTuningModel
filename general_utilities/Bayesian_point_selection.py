@@ -26,7 +26,7 @@ def generate_min_point(feature_value, object_value, model):
         )
 
     if max_expected_improvement == 0:
-        next_x = min_eval_value
+        next_x = [min_eval_value[0], feature_value]
     else:
         idx = np.random.randint(0, len(max_threadpool_sizes))
         next_x = max_threadpool_sizes[idx]
